@@ -517,7 +517,7 @@ if st.session_state._dark_mode:
 df_all = carregar_clientes()
 hoje = pd.to_datetime(date.today())
 
-if not df_all.empty:
+if not df_all.empty and "shaken_vencimento" in df_all.columns:
     df_all["dt"] = pd.to_datetime(df_all["shaken_vencimento"], errors="coerce")
 
     total_clientes = len(df_all)
