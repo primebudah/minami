@@ -98,7 +98,16 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         supabase = get_supabase()
         result = supabase.rpc('listar_clientes_rpc').execute()
         data = result.data or []
+        
+        # Debug: tipo de dado retornado pelo RPC
+        st.write(f"DEBUG - Tipo de result.data: {type(data)}")
+        st.write(f"DEBUG - Conteúdo de data[:1]: {data[:1] if data else data}")
+        
         df = pd.DataFrame(data)
+        
+        # Debug: tipo após conversão
+        st.write(f"DEBUG - Tipo de df: {type(df)}")
+        st.write(f"DEBUG - df.empty: {df.empty}")
         
         # Debug: mostra colunas retornadas
         if not df.empty:
