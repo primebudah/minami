@@ -86,15 +86,30 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
         st.error(f"Erro salvando cliente: {e}")
         return False
 
-def listar_clientes() -> List[Dict]:
-    """Retorna todos os clientes via RPC."""
+def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
+    """Retorna todos os clientes via RPC como DataFrame.
+    
+    Args:
+        where_clause: Ignorado no Supabase (para compatibilidade com SQLite)
+        params: Ignorado no Supabase (para compatibilidade com SQLite)
+    """
     try:
+        import pandas as pd
         supabase = get_supabase()
         result = supabase.rpc('listar_clientes_rpc').execute()
-        return result.data or []
+        data = result.data or []
+        df = pd.DataFrame(data)
+        
+        # Se há filtros, aplica no DataFrame
+        if where_clause and params:
+            # Parse simples do where_clause para filtrar DataFrame
+            # Ex: "nome LIKE ?" -> df[df['nome'].str.contains(params[0], case=False, na=False)]
+            pass
+        
+        return df
     except Exception as e:
         st.error(f"Erro listando clientes: {e}")
-        return []
+        return pd.DataFrame()
 
 def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
     """Busca cliente por chassi via RPC."""

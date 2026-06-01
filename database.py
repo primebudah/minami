@@ -155,12 +155,23 @@ if not USE_SUPABASE:
             ))
             return cur.lastrowid
 
-    def listar_clientes():
-        """Lista todos os clientes."""
+    def listar_clientes(where_clause=None, params=None):
+        """Lista todos os clientes como DataFrame.
+        
+        Args:
+            where_clause: Cláusula WHERE SQL opcional
+            params: Parâmetros para a cláusula WHERE
+        """
+        import pandas as pd
         with get_db_connection() as conn:
             cur = conn.cursor()
-            cur.execute("SELECT * FROM clientes ORDER BY id DESC")
-            return [dict(row) for row in cur.fetchall()]
+            if where_clause and params:
+                sql = f"SELECT * FROM clientes WHERE {where_clause} ORDER BY id DESC"
+                cur.execute(sql, params)
+            else:
+                cur.execute("SELECT * FROM clientes ORDER BY id DESC")
+            data = [dict(row) for row in cur.fetchall()]
+            return pd.DataFrame(data)
 
     def buscar_cliente_por_chassi(chassi):
         """Busca cliente por chassi."""
