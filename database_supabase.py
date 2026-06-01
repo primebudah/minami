@@ -35,6 +35,28 @@ def get_supabase() -> Client:
         _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
     return _supabase
 
+def rpc_df(name: str, params: Optional[Dict] = None) -> pd.DataFrame:
+    """Wrapper para chamadas RPC que sempre retorna DataFrame.
+    
+    Args:
+        name: Nome da função RPC
+        params: Parâmetros para a função RPC (opcional)
+    
+    Returns:
+        DataFrame com os resultados da RPC (vazio se erro ou sem dados)
+    """
+    try:
+        supabase = get_supabase()
+        result = supabase.rpc(name, params or {}).execute()
+        data = result.data or []
+        # Garante que data é uma lista antes de converter
+        if not isinstance(data, list):
+            data = []
+        return pd.DataFrame(data)
+    except Exception as e:
+        st.error(f"Erro na RPC {name}: {e}")
+        return pd.DataFrame()
+
 # =========================================================
 # INIT DB
 # =========================================================
@@ -94,27 +116,15 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         where_clause: Ignorado no Supabase (para compatibilidade com SQLite)
         params: Ignorado no Supabase (para compatibilidade com SQLite)
     """
-    try:
-        supabase = get_supabase()
-        result = supabase.rpc('listar_clientes_rpc').execute()
-        data = result.data or []
-        
-        # Garante que data é uma lista antes de converter
-        if not isinstance(data, list):
-            data = []
-        
-        df = pd.DataFrame(data)
-        
-        # Se há filtros, aplica no DataFrame
-        if where_clause and params:
-            # Parse simples do where_clause para filtrar DataFrame
-            # Ex: "nome LIKE ?" -> df[df['nome'].str.contains(params[0], case=False, na=False)]
-            pass
-        
-        return df
-    except Exception as e:
-        st.error(f"Erro listando clientes: {e}")
-        return pd.DataFrame()
+    df = rpc_df('listar_clientes_rpc')
+    
+    # Se há filtros, aplica no DataFrame
+    if where_clause and params:
+        # Parse simples do where_clause para filtrar DataFrame
+        # Ex: "nome LIKE ?" -> df[df['nome'].str.contains(params[0], case=False, na=False)]
+        pass
+    
+    return df
 
 def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
     """Busca cliente por chassi via RPC."""
