@@ -1,5 +1,6 @@
 # =========================================================
 # DATABASE - Auto-detecta SQLite (local) ou Supabase (nuvem)
+# v2 - Corrigido para Streamlit Cloud
 # =========================================================
 
 import os
