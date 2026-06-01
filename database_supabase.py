@@ -124,8 +124,12 @@ def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
         result = supabase.rpc('buscar_cliente_por_chassi_rpc', {
             'p_chassi': chassi_clean
         }).execute()
-        if result.data and len(result.data) > 0:
-            return result.data[0]
+        data = result.data or []
+        # Garante que data é uma lista
+        if not isinstance(data, list):
+            data = []
+        if len(data) > 0:
+            return data[0]
         return None
     except Exception as e:
         st.error(f"Erro buscando cliente: {e}")
@@ -193,10 +197,14 @@ def desfazer_ultima_acao() -> bool:
         
         # Busca última ação via RPC
         result = supabase.rpc('obter_ultima_acao_rpc').execute()
-        if not result.data or len(result.data) == 0:
+        data = result.data or []
+        # Garante que data é uma lista
+        if not isinstance(data, list):
+            data = []
+        if not data or len(data) == 0:
             return False
         
-        acao = result.data[0]
+        acao = data[0]
         
         # Restaura dados
         if acao["acao"] == "atualizar":
