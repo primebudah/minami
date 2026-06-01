@@ -100,6 +100,12 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         data = result.data or []
         df = pd.DataFrame(data)
         
+        # Debug: mostra colunas retornadas
+        if not df.empty:
+            st.write(f"DEBUG - Colunas retornadas: {list(df.columns)}")
+        else:
+            st.write("DEBUG - DataFrame vazio")
+        
         # Se há filtros, aplica no DataFrame
         if where_clause and params:
             # Parse simples do where_clause para filtrar DataFrame
