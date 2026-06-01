@@ -918,8 +918,11 @@ def formatar_data_exibicao(s):
         return f"{partes[2]}/{partes[1]}/{partes[0]}"
     return s
 
-df["shaken_vencimento"] = df["shaken_vencimento"].apply(formatar_data_exibicao)
-df["data_registro"] = df["data_registro"].apply(formatar_data_exibicao)
+# Verifica se as colunas existem antes de acessá-las
+if "shaken_vencimento" in df.columns:
+    df["shaken_vencimento"] = df["shaken_vencimento"].apply(formatar_data_exibicao)
+if "data_registro" in df.columns:
+    df["data_registro"] = df["data_registro"].apply(formatar_data_exibicao)
 
 # =========================================================
 # BARRA DE AÇÃO (colapsável)
