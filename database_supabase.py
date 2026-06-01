@@ -5,6 +5,7 @@
 import os
 from datetime import date
 from typing import Optional, List, Dict, Any
+import pandas as pd
 
 try:
     from supabase import create_client, Client
@@ -94,7 +95,6 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         params: Ignorado no Supabase (para compatibilidade com SQLite)
     """
     try:
-        import pandas as pd
         supabase = get_supabase()
         result = supabase.rpc('listar_clientes_rpc').execute()
         data = result.data or []
