@@ -5,6 +5,12 @@ gatherUsageStats = false
 headless = true
 enableCORS = false
 enableXsrfProtection = false
+fileWatcherType = "none"
+maxUploadSize = 10
+
+[runner]
+fastReruns = false
+enforceSerializableSessionState = false
 
 [client]
 toolbarMode = "minimal"
