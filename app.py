@@ -281,7 +281,11 @@ if st.session_state.get("_celebrar") and st.session_state.get("_celebration_enab
 # INIT
 # =========================================================
 
-inicializar_banco()
+try:
+    inicializar_banco()
+except NameError:
+    # Supabase ativo - não precisa inicializar SQLite
+    pass
 
 if "delete_mode" not in st.session_state:
     st.session_state.delete_mode = False

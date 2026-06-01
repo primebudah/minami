@@ -8,14 +8,21 @@ import json
 import re
 
 from PIL import Image
-from openai import OpenAI
 import streamlit as st
 
 # =========================================================
-# OPENAI CLIENT
+# OPENAI CLIENT (com proteção de import)
 # =========================================================
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], timeout=45.0, max_retries=1)
+try:
+    from openai import OpenAI
+    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], timeout=45.0, max_retries=1)
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OpenAI = None
+    client = None
+    OPENAI_AVAILABLE = False
+    st.warning("⚠️ OpenAI não disponível. OCR desativado.")
 
 # =========================================================
 # TRADUÇÃO DE VEÍCULOS JAPONÊS → INGLÊS
@@ -288,6 +295,10 @@ def extrair_dados_do_documento(f):
     Extrai dados de documento usando OpenAI GPT-4o-mini.
     Retorna dicionário com: nome, veiculo, chassi, contato, shaken_vencimento, data_registro
     """
+    if not OPENAI_AVAILABLE:
+        st.warning("⚠️ OpenAI não disponível. OCR desativado.")
+        return {}
+    
     img = Image.open(f).convert("RGB")
     img.thumbnail((1600, 1600))
 

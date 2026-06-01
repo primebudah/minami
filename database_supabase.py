@@ -41,12 +41,18 @@ def get_supabase() -> Client:
 def inicializar_banco():
     """Tabelas já devem existir no Supabase (criadas via SQL Editor)."""
     try:
-        # Testa conexão
+        # Testa conexão via RPC
         supabase = get_supabase()
-        supabase.table("clientes").select("count", count="exact").limit(1).execute()
+        result = supabase.rpc('listar_clientes_rpc').execute()
         return True
     except Exception as e:
-        st.error(f"Erro conectando ao Supabase: {e}")
+        error_msg = str(e)
+        if "Could not find the function" in error_msg or "PGRST" in error_msg:
+            st.error("❌ Funções RPC não encontradas. Execute o SQL em supabase_rpc_functions.sql no Supabase.")
+        elif "clientes" in error_msg.lower():
+            st.error("❌ Tabela 'clientes' não encontrada. Crie as tabelas no Supabase primeiro.")
+        else:
+            st.error(f"Erro conectando ao Supabase: {e}")
         return False
 
 # =========================================================
@@ -54,48 +60,51 @@ def inicializar_banco():
 # =========================================================
 
 def salvar_cliente(dados: Dict[str, Any]) -> bool:
-    """Salva novo cliente no Supabase."""
+    """Salva novo cliente no Supabase via RPC."""
     try:
         supabase = get_supabase()
         
-        # Prepara dados
-        registro = {
-            "nome": dados.get("nome", ""),
-            "contato": dados.get("contato", ""),
-            "shaken_vencimento": dados.get("shaken_vencimento"),
-            "veiculo": dados.get("veiculo", ""),
-            "placa": dados.get("placa", ""),
-            "chassi": str(dados.get("chassi", "")).strip().upper(),
-            "data_registro": dados.get("data_registro", str(date.today())),
-            "status": dados.get("status", "Pendente")
-        }
+        # Chama a função RPC
+        result = supabase.rpc('salvar_cliente_rpc', {
+            'p_nome': dados.get("nome", ""),
+            'p_contato': dados.get("contato") or None,
+            'p_shaken_vencimento': dados.get("shaken_vencimento") or None,
+            'p_veiculo': dados.get("veiculo") or None,
+            'p_placa': dados.get("placa") or None,
+            'p_chassi': str(dados.get("chassi", "")).strip().upper() if dados.get("chassi") else None,
+            'p_fabricante': dados.get("fabricante") or None,
+            'p_modelo_katashiki': dados.get("modelo_katashiki") or None,
+            'p_chassi_completo': dados.get("chassi_completo") or None,
+            'p_data_registro': dados.get("data_registro") or str(date.today()),
+            'p_data_conclusao': dados.get("data_conclusao") or None,
+            'p_status': dados.get("status", "Pendente"),
+            'p_observacao': dados.get("observacao") or None
+        }).execute()
         
-        # Remove campos vazios
-        registro = {k: v for k, v in registro.items() if v is not None and v != ""}
-        
-        result = supabase.table("clientes").insert(registro).execute()
-        return len(result.data) > 0
+        return result.data is not None
     except Exception as e:
         st.error(f"Erro salvando cliente: {e}")
         return False
 
 def listar_clientes() -> List[Dict]:
-    """Retorna todos os clientes."""
+    """Retorna todos os clientes via RPC."""
     try:
         supabase = get_supabase()
-        result = supabase.table("clientes").select("*").order("criado_em", desc=True).execute()
+        result = supabase.rpc('listar_clientes_rpc').execute()
         return result.data or []
     except Exception as e:
         st.error(f"Erro listando clientes: {e}")
         return []
 
 def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
-    """Busca cliente por chassi."""
+    """Busca cliente por chassi via RPC."""
     try:
         supabase = get_supabase()
         chassi_clean = str(chassi).strip().upper()
-        result = supabase.table("clientes").select("*").eq("chassi", chassi_clean).execute()
-        if result.data:
+        result = supabase.rpc('buscar_cliente_por_chassi_rpc', {
+            'p_chassi': chassi_clean
+        }).execute()
+        if result.data and len(result.data) > 0:
             return result.data[0]
         return None
     except Exception as e:
@@ -103,71 +112,89 @@ def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
         return None
 
 def atualizar_cliente(cliente_id: int, dados: Dict[str, Any]) -> bool:
-    """Atualiza cliente existente."""
+    """Atualiza cliente existente via RPC."""
     try:
         supabase = get_supabase()
         
-        # Prepara dados (remove id e campos internos)
-        update_data = {
-            k: v for k, v in dados.items() 
-            if k not in ["id", "criado_em", "atualizado_em"] and v is not None
-        }
+        # Chama a função RPC
+        result = supabase.rpc('atualizar_cliente_rpc', {
+            'p_id': cliente_id,
+            'p_nome': dados.get("nome", ""),
+            'p_contato': dados.get("contato") or None,
+            'p_shaken_vencimento': dados.get("shaken_vencimento") or None,
+            'p_veiculo': dados.get("veiculo") or None,
+            'p_placa': dados.get("placa") or None,
+            'p_chassi': str(dados.get("chassi", "")).strip().upper() if dados.get("chassi") else None,
+            'p_fabricante': dados.get("fabricante") or None,
+            'p_modelo_katashiki': dados.get("modelo_katashiki") or None,
+            'p_chassi_completo': dados.get("chassi_completo") or None,
+            'p_data_registro': dados.get("data_registro") or None,
+            'p_data_conclusao': dados.get("data_conclusao") or None,
+            'p_status': dados.get("status", "Pendente"),
+            'p_observacao': dados.get("observacao") or None
+        }).execute()
         
-        # Normaliza chassi
-        if "chassi" in update_data:
-            update_data["chassi"] = str(update_data["chassi"]).strip().upper()
-        
-        result = supabase.table("clientes").update(update_data).eq("id", cliente_id).execute()
-        return len(result.data) > 0
+        return result.data is True
     except Exception as e:
         st.error(f"Erro atualizando cliente: {e}")
         return False
 
 def deletar_cliente(cliente_id: int) -> bool:
-    """Remove cliente do banco."""
+    """Remove cliente do banco via RPC."""
     try:
         supabase = get_supabase()
-        result = supabase.table("clientes").delete().eq("id", cliente_id).execute()
-        return len(result.data) > 0
+        result = supabase.rpc('deletar_cliente_rpc', {
+            'p_id': cliente_id
+        }).execute()
+        return result.data is True
     except Exception as e:
         st.error(f"Erro deletando cliente: {e}")
         return False
 
 def salvar_historico(cliente_id: int, acao: str, dados_anteriores: Dict) -> bool:
-    """Salva ação no histórico."""
+    """Salva ação no histórico via RPC."""
     try:
+        import json
         supabase = get_supabase()
-        registro = {
-            "cliente_id": cliente_id,
-            "acao": acao,
-            "dados_anteriores": dados_anteriores
-        }
-        result = supabase.table("historico_acoes").insert(registro).execute()
-        return len(result.data) > 0
+        result = supabase.rpc('salvar_historico_rpc', {
+            'p_cliente_id': cliente_id,
+            'p_acao': acao,
+            'p_dados_anteriores': json.dumps(dados_anteriores) if dados_anteriores else None
+        }).execute()
+        return True
     except Exception:
         return False
 
 def desfazer_ultima_acao() -> bool:
-    """Desfaz última ação (se possível)."""
+    """Desfaz última ação (se possível) via RPC."""
     try:
+        import json
         supabase = get_supabase()
-        # Busca última ação
-        result = supabase.table("historico_acoes").select("*").order("criado_em", desc=True).limit(1).execute()
-        if not result.data:
+        
+        # Busca última ação via RPC
+        result = supabase.rpc('obter_ultima_acao_rpc').execute()
+        if not result.data or len(result.data) == 0:
             return False
         
         acao = result.data[0]
         
-        # Restaura dados (implementação básica)
+        # Restaura dados
         if acao["acao"] == "atualizar":
-            cliente_id = acao["cliente_id"]
-            dados_old = acao["dados_anteriores"]
-            supabase.table("clientes").update(dados_old).eq("id", cliente_id).execute()
+            # Atualiza o cliente com dados antigos via RPC
+            supabase.rpc('atualizar_cliente_rpc', {
+                'p_id': acao["cliente_id"],
+                **acao["dados_anteriores"]
+            }).execute()
+            # Deleta do histórico
+            supabase.rpc('deletar_historico_rpc', {'p_id': acao["id"]}).execute()
             return True
         elif acao["acao"] == "deletar":
-            # Recria registro deletado
-            dados_old = acao["dados_anteriores"]
-            supabase.table("clientes").insert(dados_old).execute()
+            # Restaura cliente excluído via RPC
+            supabase.rpc('restaurar_cliente_excluido_rpc', {
+                'p_historico_id': acao.get("historico_id") or acao["id"]
+            }).execute()
+            # Deleta do histórico
+            supabase.rpc('deletar_historico_rpc', {'p_id': acao["id"]}).execute()
             return True
         return False
     except Exception as e:
