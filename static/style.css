@@ -1,0 +1,6 @@
+/* Oculta sidebar nav nativa do Streamlit imediatamente */
+[data-testid="stSidebarNav"],
+[data-testid="collapsedControl"] {
+    display: none !important;
+    visibility: hidden !important;
+}
