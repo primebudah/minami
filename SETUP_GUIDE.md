@@ -62,7 +62,7 @@ Para usar Supabase como backend, siga estes passos:
 
 1. Acesse [https://streamlit.io/cloud](https://streamlit.io/cloud)
 2. Clique em "New app"
-3. Conecte seu repositório GitHub: `primebudah/Minami-service`
+3. Conecte seu repositório GitHub: `primebudah/minami`
 4. Selecione o branch: `main`
 5. Em "Advanced settings", clique em "Secrets"
 6. Adicione os seguintes secrets:
