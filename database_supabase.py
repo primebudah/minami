@@ -98,6 +98,11 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         supabase = get_supabase()
         result = supabase.rpc('listar_clientes_rpc').execute()
         data = result.data or []
+        
+        # Garante que data é uma lista antes de converter
+        if not isinstance(data, list):
+            data = []
+        
         df = pd.DataFrame(data)
         
         # Se há filtros, aplica no DataFrame
