@@ -1,6 +1,6 @@
 # =========================================================
 # DATABASE - Auto-detecta SQLite (local) ou Supabase (nuvem)
-# v2 - Corrigido para Streamlit Cloud
+# v3 - FIX: SQLite functions wrapped in conditional block
 # =========================================================
 
 import os
