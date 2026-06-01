@@ -54,7 +54,9 @@ Para usar Supabase como backend, siga estes passos:
 2. Clique em **API**
 3. Copie:
    - **Project URL** (será usado como SUPABASE_URL)
-   - **anon public** key (será usado como SUPABASE_KEY)
+   - **Publishable key** (nova chave, equivalente à antiga anon key - será usado como SUPABASE_KEY)
+   
+   Nota: O Supabase atualizou recentemente seu sistema de chaves. Use a nova **Publishable key** em vez da antiga `anon public` key.
 
 ### Passo 5: Configurar Streamlit Cloud
 
