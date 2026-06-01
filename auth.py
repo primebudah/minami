@@ -131,7 +131,7 @@ def can(permission: str) -> bool:
 def logout_button():
     logo_b64 = _get_logo_b64()
     logo_html = (
-        f'<img src="data:image/png;base64,{logo_b64}" style="width:72px;height:72px;object-fit:contain;border-radius:14px;" />'
+        f'<img src="data:image/png;base64,{logo_b64}" style="width:120px;height:120px;object-fit:contain;border-radius:14px;" />'
     ) if logo_b64 else ""
 
     nome       = st.session_state.get("nome", "")
