@@ -72,6 +72,18 @@ st.markdown("""
         var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"]');
         if(btn){ btn.click(); }
     };
+
+    // Remove botões Fork e GitHub do header
+    function removeGitHubButtons(){
+        var buttons = document.querySelectorAll('button');
+        buttons.forEach(function(btn){
+            var title = btn.getAttribute('title') || '';
+            if(title.includes('Fork') || title.includes('GitHub') || title.includes('git')){
+                btn.style.display = 'none';
+            }
+        });
+    }
+    setInterval(removeGitHubButtons, 500);
 })();
 </script>
 """, unsafe_allow_html=True)
