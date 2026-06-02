@@ -99,6 +99,9 @@ def login_page():
                 st.session_state.lembrar    = lembrar
                 if lembrar:
                     _save_session(usuario, users[usuario]["role"], users[usuario]["nome"])
+                else:
+                    # Limpa sessao anterior se nao quiser permanecer conectado
+                    _clear_session()
                 st.rerun()
             else:
                 st.error("Usuário ou senha incorretos.")
