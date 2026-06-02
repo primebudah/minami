@@ -29,34 +29,6 @@ st.set_page_config("Minami Service Shaken", layout="wide", initial_sidebar_state
 inject_base_css()
 require_login()
 
-# Botão para reabrir sidebar (caso feche)
-st.markdown("""
-<button id="reopen-sidebar-btn" style="position:fixed;top:10px;left:10px;z-index:10000;padding:8px 12px;background:#1a6fba;color:white;border:none;border-radius:4px;cursor:pointer;display:none;">☰ Sidebar</button>
-<script>
-document.getElementById('reopen-sidebar-btn').addEventListener('click', function() {
-    // Tenta reabrir sidebar via JavaScript
-    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) {
-        sidebar.style.display = 'block';
-        sidebar.style.visibility = 'visible';
-    }
-});
-// Mostra botão se sidebar estiver oculta
-function checkSidebar() {
-    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-    const btn = document.getElementById('reopen-sidebar-btn');
-    if (sidebar && btn) {
-        if (sidebar.style.display === 'none' || sidebar.style.visibility === 'hidden' || !sidebar.offsetParent) {
-            btn.style.display = 'block';
-        } else {
-            btn.style.display = 'none';
-        }
-    }
-}
-setInterval(checkSidebar, 1000);
-</script>
-""", unsafe_allow_html=True)
-
 # ── JS global: killMenu ──────────────────────────────────
 st.markdown("""
 <script>
