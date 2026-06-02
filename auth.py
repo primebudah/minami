@@ -20,10 +20,10 @@ def _load_config():
     except Exception:
         return {"dark_mode": False, "celebration_enabled": True}
 
-def _save_session(usuario, role, nome):
+def _save_session(usuario, role, nome, lembrar=True):
     try:
         with open(_SESSION_FILE, "w") as f:
-            json.dump({"usuario": usuario, "role": role, "nome": nome}, f)
+            json.dump({"usuario": usuario, "role": role, "nome": nome, "lembrar": lembrar}, f)
     except Exception:
         pass
 
@@ -98,9 +98,9 @@ def login_page():
                 st.session_state.nome       = users[usuario]["nome"]
                 st.session_state.lembrar    = lembrar
                 if lembrar:
-                    _save_session(usuario, users[usuario]["role"], users[usuario]["nome"])
+                    _save_session(usuario, users[usuario]["role"], users[usuario]["nome"], True)
                 else:
-                    # Limpa sessao anterior se nao quiser permanecer conectado
+                    # Limpa sessao se nao quiser permanecer conectado
                     _clear_session()
                 st.rerun()
             else:
@@ -114,10 +114,10 @@ def require_login():
         for k in ["logged_in", "usuario", "role", "nome", "lembrar"]:
             st.session_state.pop(k, None)
 
-    # Se nao estiver logado, tenta restaurar sessao salva (se marcou "Permanecer conectado")
+    # Se nao estiver logado, tenta restaurar sessao salva (soh se marcou "Permanecer conectado")
     if not st.session_state.get("logged_in"):
         saved = _load_session()
-        if saved:
+        if saved and saved.get("lembrar", False):
             st.session_state.logged_in = True
             st.session_state.usuario   = saved["usuario"]
             st.session_state.role      = saved["role"]
