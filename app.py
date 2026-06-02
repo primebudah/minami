@@ -853,21 +853,11 @@ div[data-testid="stColumns"] > div:nth-child(2) button {
 </style>
 """, unsafe_allow_html=True)
 
-_nav_cols = st.columns([1, 0.4, 0.4, 0.4, 1]) if can("registrar") else st.columns([1, 0.4, 0.4, 1])
+_nav_cols = st.columns([1, 0.5, 0.5, 1]) if can("registrar") else st.columns([1, 0.7, 1])
 with _nav_cols[1]:
     st.button("🔍 Central Shaken", key="nav_home", use_container_width=True, disabled=True)
-with _nav_cols[2]:
-    st.markdown("""
-    <button onclick="
-        const sidebar = document.querySelector('[data-testid=\\'stSidebar\\']');
-        if (sidebar) {
-            sidebar.style.display = 'block';
-            sidebar.style.visibility = 'visible';
-        }
-    " style="width:100%;padding:0.5rem;background:#1a6fba;color:white;border:none;border-radius:0.5rem;cursor:pointer;">☰ Sidebar</button>
-    """, unsafe_allow_html=True)
 if can("registrar"):
-    with _nav_cols[3]:
+    with _nav_cols[2]:
         if st.button("📋 Registrar", key="nav_reg", use_container_width=True):
             st.switch_page("pages/1_Registros.py")
 
