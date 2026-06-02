@@ -1764,6 +1764,9 @@ if not df.empty:
                                         st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
                             atualizar_cliente(ids[i], row_dict)
+                            # Recalcula coluna WhatsApp se contato foi editado
+                            if col == "contato":
+                                df_view.at[i, "📱"] = _get_wa_url(val_salvar)
                         celula_mudou = True
                         break
                 if celula_mudou:
