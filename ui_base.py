@@ -127,5 +127,18 @@ def inject_base_css():
     [data-testid="stException"]                { display: none !important; }
     ._profileContainer                         { display: none !important; }
     ._profilePreview                           { display: none !important; }
+
+    /* Fix tablet - garante que conteudo principal ocupe altura total */
+    .block-container {
+        max-width: 100% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Tabela com scroll interno se necessario */
+    [data-testid="stDataFrame"] {
+        max-height: 70vh !important;
+        overflow: auto !important;
+    }
     </style>
     """, unsafe_allow_html=True)
