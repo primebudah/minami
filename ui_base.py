@@ -5,22 +5,6 @@ import streamlit.components.v1 as components
 def inject_base_css():
     st.markdown("""
     <style>
-    /* Fix para tablet - garante altura total e largura correta */
-    .stApp {
-        width: 100vw !important;
-        min-height: 100vh !important;
-        height: auto !important;
-        overflow-x: hidden !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        width: 100vw !important;
-        min-height: 100vh !important;
-    }
-    section.main {
-        width: 100% !important;
-        min-height: 100vh !important;
-    }
-
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
@@ -127,18 +111,5 @@ def inject_base_css():
     [data-testid="stException"]                { display: none !important; }
     ._profileContainer                         { display: none !important; }
     ._profilePreview                           { display: none !important; }
-
-    /* Fix tablet - garante que conteudo principal ocupe altura total */
-    .block-container {
-        max-width: 100% !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    /* Tabela com scroll interno se necessario */
-    [data-testid="stDataFrame"] {
-        max-height: 70vh !important;
-        overflow: auto !important;
-    }
     </style>
     """, unsafe_allow_html=True)
