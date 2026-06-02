@@ -45,6 +45,14 @@ def inject_base_css():
         color: #ffffff !important;
     }
 
+    /* Oculta botões Fork e GitHub do header */
+    button[title="Fork repository"],
+    button[title*="GitHub"],
+    [data-testid="stHeader"] button[title*="Fork"],
+    [data-testid="stHeader"] button[title*="GitHub"] {
+        display: none !important;
+    }
+
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
