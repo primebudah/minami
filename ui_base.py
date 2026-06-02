@@ -112,25 +112,6 @@ def inject_base_css():
     ._profileContainer                         { display: none !important; }
     ._profilePreview                           { display: none !important; }
 
-    /* ========== CORREÇÃO RESPONSIVA (Mobile/Savana/iPhone) ========== */
-    /* Altura mínima sem travar layout */
-    .stApp {
-        min-height: 100vh !important;
-    }
-
-    /* Container principal sem corte */
-    [data-testid="stAppViewContainer"] {
-        overflow: visible !important;
-    }
-
-    /* Sidebar visível sem interferir */
-    [data-testid="stSidebar"] {
-        opacity: 1 !important;
-    }
-
-    /* Tabela responsiva */
-    [data-testid="stDataFrame"] {
-        width: 100% !important;
-    }
+    /* Streamlit puro - sem CSS de layout */
     </style>
     """, unsafe_allow_html=True)
