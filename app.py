@@ -858,8 +858,38 @@ _nav_cols = st.columns([1, 0.4, 0.4, 0.4, 1]) if can("registrar") else st.column
 with _nav_cols[1]:
     st.button("🔍 Central Shaken", key="nav_home", use_container_width=True, disabled=True)
 with _nav_cols[2]:
-    if st.button("☰ Sidebar", key="nav_sidebar", use_container_width=True):
-        st.rerun()
+    # Botão HTML com JavaScript para forçar sidebar visível
+    st.markdown("""
+    <button onclick="
+        const sidebar = document.querySelector('[data-testid=\\'stSidebar\\']');
+        const sidebarContent = document.querySelector('[data-testid=\\'stSidebarContent\\']');
+        if (sidebar) {
+            sidebar.style.display = 'block';
+            sidebar.style.visibility = 'visible';
+            sidebar.style.opacity = '1';
+            sidebar.style.transform = 'translateX(0)';
+            sidebar.setAttribute('aria-expanded', 'true');
+        }
+        if (sidebarContent) {
+            sidebarContent.style.display = 'block';
+            sidebarContent.style.visibility = 'visible';
+            sidebarContent.style.opacity = '1';
+        }
+        // Força classe do Streamlit
+        document.body.classList.add('show-sidebar');
+        document.body.classList.remove('hide-sidebar');
+    " style="
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background-color: #1a6fba;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        font-weight: 500;
+    " onmouseover="this.style.backgroundColor='#155a96'" onmouseout="this.style.backgroundColor='#1a6fba'">☰ Sidebar</button>
+    """, unsafe_allow_html=True)
 if can("registrar"):
     with _nav_cols[3]:
         if st.button("📋 Registrar", key="nav_reg", use_container_width=True):
