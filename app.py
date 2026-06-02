@@ -25,7 +25,18 @@ from auth import require_login, can, logout_button, _load_config, _save_config
 # CONFIG
 # =========================================================
 
-st.set_page_config("Minami Service Shaken", layout="wide", initial_sidebar_state="expanded")
+# Carrega ícone da logo
+_icon_path = os.path.join(os.path.dirname(__file__), ".streamlit", "icon_b64.txt")
+_page_icon = "🚗"
+try:
+    with open(_icon_path, "r") as f:
+        _icon_data = f.read().strip()
+        if _icon_data:
+            _page_icon = f"data:image/png;base64,{_icon_data}"
+except:
+    pass
+
+st.set_page_config("Minami Service Shaken", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()
 
 require_login()
