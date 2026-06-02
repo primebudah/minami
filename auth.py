@@ -107,6 +107,8 @@ def login_page():
             else:
                 # Limpa sessao se nao quiser permanecer conectado
                 _clear_session()
+            # Limpa query params para garantir que sempre vá para página principal
+            st.query_params.clear()
             st.rerun()
         else:
             st.error("Usuário ou senha incorretos.")

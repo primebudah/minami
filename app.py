@@ -1264,6 +1264,7 @@ if not df.empty:
     _drop_cols = [c for c in ["id", "fabricante", "modelo_katashiki", "chassi_completo", "observacao", "criado_em", "atualizado_em"] if c in _df_display.columns]
     df_view = _df_display.drop(columns=_drop_cols).copy()
     df_view.insert(0, "observacao", _df_display["observacao"].fillna("").values)
+    df_view.index = range(1, len(df_view) + 1)
     
     # Adiciona coluna de seleção WhatsApp (✅ quando tem número válido)
     if "contato" in df_view.columns:

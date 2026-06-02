@@ -279,8 +279,8 @@ def _validar_chassi_form(valor, df_existente=None):
     return True, "", True
 
 if not can("registrar"):
-    st.error("🚫 Acesso negado. Seu perfil não tem permissão para registrar clientes.")
-    st.stop()
+    st.warning("⚠️ Esta página é apenas para admin/secretaria. Redirecionando para a página principal...")
+    st.switch_page("app.py")
 
 st.markdown("""
 <style>
