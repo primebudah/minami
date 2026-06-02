@@ -780,9 +780,8 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                     if st.button("✅ Concluir", key=f"concluir_{r['id']}"):
                         row_dict = r.drop(["dt", "status_norm"], errors='ignore').to_dict()
                         row_dict["status"] = "🟢 Concluido"
-                        # Preenche data_conclusao automaticamente se a coluna existir
-                        if "data_conclusao" in st.session_state.df.columns:
-                            row_dict["data_conclusao"] = str(date.today())
+                        # Preenche data_conclusao automaticamente
+                        row_dict["data_conclusao"] = str(date.today())
                         atualizar_cliente(r["id"], row_dict)
                         st.session_state.df = carregar_clientes()
                         st.session_state._celebrar = True
@@ -1609,9 +1608,8 @@ if not df.empty:
                             val_salvar = {"🔵":"🔵 Em processamento","🟢":"🟢 Concluido","⚪":"⚪"}.get(val_salvar, val_salvar)
                             if val_salvar == "🟢 Concluido":
                                 st.session_state._celebrar = True
-                                # Preenche data_conclusao automaticamente se a coluna existir
-                                if "data_conclusao" in st.session_state.df.columns:
-                                    row_dict["data_conclusao"] = str(date.today())
+                                # Preenche data_conclusao automaticamente
+                                row_dict["data_conclusao"] = str(date.today())
                             elif val_salvar == "🔵 Em processamento":
                                 _status_anterior = str(row_dict.get("status",""))
                                 if "Concluido" in _status_anterior:
