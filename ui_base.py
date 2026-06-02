@@ -8,16 +8,6 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
-    /* Garante que botão de reabrir sidebar seja visível */
-    [data-testid="stSidebar"] button[aria-label*="sidebar"],
-    [data-testid="stSidebar"] button[aria-label*="menu"],
-    button[aria-label="sidebar"],
-    button[aria-label="menu"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
