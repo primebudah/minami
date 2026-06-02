@@ -21,6 +21,19 @@ def inject_base_css():
         z-index: 999999 !important;
     }
 
+    /* Botão de abrir sidebar com flecha azul */
+    button[aria-label="Open sidebar"] {
+        background: #1a6fba !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 8px 12px !important;
+        font-size: 18px !important;
+    }
+    button[aria-label="Open sidebar"]::before {
+        content: "◀ " !important;
+    }
+
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
