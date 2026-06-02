@@ -28,9 +28,15 @@ def inject_base_css():
         background-size: 400% 400% !important;
     }
 
-    /* Oculta todos os botões do header exceto Open sidebar */
-    header button:not([aria-label*="Open sidebar"]):not([aria-label*="sidebar"]),
-    [data-testid="stHeader"] button:not([aria-label*="Open sidebar"]):not([aria-label*="sidebar"]) {
+    /* Oculta especificamente botão Fork */
+    button[title="Fork repository"],
+    [data-testid="stHeader"] button[title="Fork repository"] {
+        display: none !important;
+    }
+
+    /* Oculta especificamente botão GitHub */
+    button[title="View on GitHub"],
+    [data-testid="stHeader"] button[title="View on GitHub"] {
         display: none !important;
     }
 
