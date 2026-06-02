@@ -85,3 +85,4 @@ valida_*.py
 add_*.py
 *.txt
 !requirements.txt
+!.streamlit/icon_b64.txt
