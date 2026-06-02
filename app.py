@@ -77,7 +77,13 @@ st.markdown("""
     function removeGitHubButtons(){
         var buttons = document.querySelectorAll('button');
         buttons.forEach(function(btn){
+            var ariaLabel = btn.getAttribute('aria-label') || '';
             var title = btn.getAttribute('title') || '';
+            // Preserva botão de abrir sidebar
+            if(ariaLabel.includes('Open sidebar') || ariaLabel.includes('sidebar')){
+                return;
+            }
+            // Remove botões Fork/GitHub
             if(title.includes('Fork') || title.includes('GitHub') || title.includes('git')){
                 btn.style.display = 'none';
             }
