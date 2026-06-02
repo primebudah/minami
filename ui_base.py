@@ -112,5 +112,29 @@ def inject_base_css():
     ._profileContainer                         { display: none !important; }
     ._profilePreview                           { display: none !important; }
 
+    /* ========== CORREÇÃO TELA CORTADA (Mobile/Savana/iPhone) ========== */
+    /* NÃO travar altura do app */
+    .stApp {
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+
+    /* Garantir scroll normal da página */
+    html, body {
+        height: auto !important;
+        overflow: auto !important;
+    }
+
+    /* Container principal sem corte */
+    [data-testid="stAppViewContainer"] {
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Sidebar não interfere no layout */
+    [data-testid="stSidebar"] {
+        height: auto !important;
+        overflow: visible !important;
+    }
     </style>
     """, unsafe_allow_html=True)
