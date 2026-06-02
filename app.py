@@ -1447,7 +1447,7 @@ if not df.empty:
 
             # data_editor com só as colunas visíveis
             _cols_dados_col = [c for c in _cols_display if c not in ("status", "Apagar")]
-            _disabled_col = _cols_dados_col if not can("editar") else False
+            _disabled_col = [c for c in _cols_dados_col if c != "observacao"] if not can("editar") else False
 
             if st.session_state.delete_mode:
                 _df_col = df_view[_cols_display].copy()
@@ -1585,7 +1585,7 @@ if not df.empty:
         # ── Modo Tabela (padrão) ─────────────────────────
         # Operador pode editar status; colunas de dados só admin/secretaria
         _cols_dados = [c for c in df_view.columns if c not in ("status", "Apagar")]
-        _disabled = _cols_dados if not can("editar") else False
+        _disabled = [c for c in _cols_dados if c != "observacao"] if not can("editar") else False
 
         # ── st.data_editor (edição principal) ────────────
         _order = ["observacao", "status"] + [c for c in df_view.columns if c not in ("status", "observacao", "data_conclusao")] + ["data_conclusao"]
