@@ -5,6 +5,17 @@ import streamlit.components.v1 as components
 def inject_base_css():
     st.markdown("""
     <style>
+    /* Força container principal a nao ultrapassar largura da tela (fix tablet) */
+    .stApp {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    [data-testid="stAppViewContainer"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
