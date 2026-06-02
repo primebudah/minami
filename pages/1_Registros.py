@@ -541,51 +541,54 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
-        st.caption("📱 No iPhone/Android: selecione em lotes e processe várias vezes — todas vão para a fila.")
+        st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
         files = st.file_uploader(
-            "Selecione as fotos",
+            "Selecione até 5 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
             key=f"uploader_{st.session_state.uploader_key}"
         )
 
         if files:
-            st.write(f"**{len(files)} foto(s) selecionada(s):**")
-            for f in files:
-                st.write(f"📄 {f.name}")
+            if len(files) > 5:
+                st.warning(f"⚠️ Selecione no máximo **5 fotos por vez** ({len(files)} selecionadas). Divida em lotes menores.")
+            else:
+                st.write(f"**{len(files)} foto(s) selecionada(s):**")
+                for f in files:
+                    st.write(f"📄 {f.name}")
 
-            if st.button("🔍 Processar Fotos"):
-                ok, err = 0, 0
-                progress = st.progress(0)
-                status = st.empty()
-                total = len(files)
-                with st.spinner("Processando fotos..."):
-                    for idx, f in enumerate(files, start=1):
-                        status.info(f"Processando {idx}/{total}: {f.name}")
-                        try:
-                            d = extrair_dados_do_documento(f)
-                            if d.get("data_registro"):
-                                dr = d["data_registro"]
-                                if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
-                                    if not (2020 <= int(dr[:4]) <= 2035):
-                                        d["data_registro"] = str(date.today())
-                            d["_origem"] = f"foto:{f.name}"
-                            st.session_state.fila_registros.append(d)
-                            ok += 1
-                            status.success(f"✅ {idx}/{total}: {f.name} processada")
-                        except Exception as e:
-                            st.error(f"Erro em {f.name}: {e}")
-                            err += 1
-                        progress.progress(idx / total)
-                status.empty()
-                if ok:
-                    st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
-                if err:
-                    st.warning(f"{err} erro(s).")
-                if ok:
-                    st.session_state._fila_editor_v += 1
-                st.session_state.uploader_key += 1
-                st.rerun()
+                if st.button("🔍 Processar Fotos"):
+                    ok, err = 0, 0
+                    progress = st.progress(0)
+                    status = st.empty()
+                    total = len(files)
+                    with st.spinner("Processando fotos..."):
+                        for idx, f in enumerate(files, start=1):
+                            status.info(f"Processando {idx}/{total}: {f.name}")
+                            try:
+                                d = extrair_dados_do_documento(f)
+                                if d.get("data_registro"):
+                                    dr = d["data_registro"]
+                                    if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
+                                        if not (2020 <= int(dr[:4]) <= 2035):
+                                            d["data_registro"] = str(date.today())
+                                d["_origem"] = f"foto:{f.name}"
+                                st.session_state.fila_registros.append(d)
+                                ok += 1
+                                status.success(f"✅ {idx}/{total}: {f.name} processada")
+                            except Exception as e:
+                                st.error(f"Erro em {f.name}: {e}")
+                                err += 1
+                            progress.progress(idx / total)
+                    status.empty()
+                    if ok:
+                        st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
+                    if err:
+                        st.warning(f"{err} erro(s).")
+                    if ok:
+                        st.session_state._fila_editor_v += 1
+                    st.session_state.uploader_key += 1
+                    st.rerun()
 
 # =========================================================
 # FILA DE REGISTROS PENDENTES
