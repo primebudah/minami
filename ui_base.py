@@ -8,6 +8,14 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
+    /* Oculta botão de fechar sidebar */
+    [data-testid="stSidebar"] button[aria-label*="sidebar"],
+    [data-testid="stSidebar"] button[aria-label*="menu"],
+    button[aria-label="sidebar"],
+    button[aria-label="menu"] {
+        display: none !important;
+    }
+
     /* Fixa sidebar para impedir que seja ocultada */
     [data-testid="stSidebar"] {
         position: fixed !important;
