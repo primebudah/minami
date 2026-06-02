@@ -73,19 +73,32 @@ st.markdown("""
         if(btn){ btn.click(); }
     };
 
-    // Remove botões Fork e GitHub do header
+    // Remove botões Fork e GitHub do header por texto
     function removeGitHubButtons(){
         var buttons = document.querySelectorAll('button');
         buttons.forEach(function(btn){
-            var ariaLabel = btn.getAttribute('aria-label') || '';
+            var text = btn.innerText || btn.textContent || '';
             var title = btn.getAttribute('title') || '';
-            // Preserva botão de abrir sidebar
-            if(ariaLabel.includes('Open sidebar') || ariaLabel.includes('sidebar')){
+            var ariaLabel = btn.getAttribute('aria-label') || '';
+
+            // Preserva botão de abrir sidebar (»)
+            if(ariaLabel.includes('Open sidebar') || ariaLabel.includes('sidebar') || text.includes('»') || text.includes('▶')){
                 return;
             }
-            // Remove botões Fork/GitHub
-            if(title.includes('Fork') || title.includes('GitHub') || title.includes('git')){
-                btn.style.display = 'none';
+
+            // Remove apenas Fork e GitHub
+            if(text.includes('Fork') || title.includes('Fork') || text.includes('GitHub') || title.includes('GitHub') || title.includes('git')){
+                btn.remove();
+            }
+        });
+
+        // Também procura links do GitHub
+        var links = document.querySelectorAll('a');
+        links.forEach(function(link){
+            var href = link.getAttribute('href') || '';
+            var text = link.innerText || link.textContent || '';
+            if(href.includes('github.com') && (text.includes('Fork') || text.includes('GitHub'))){
+                link.remove();
             }
         });
     }

@@ -28,16 +28,6 @@ def inject_base_css():
         background-size: 400% 400% !important;
     }
 
-    /* Move botões Fork e GitHub para fora da tela */
-    button[title="Fork repository"],
-    button[title="View on GitHub"],
-    [data-testid="stHeader"] button[title="Fork repository"],
-    [data-testid="stHeader"] button[title="View on GitHub"] {
-        position: absolute !important;
-        left: -9999px !important;
-        visibility: hidden !important;
-    }
-
     /* Garante que botão Open sidebar continue visível */
     button[aria-label="Open sidebar"] {
         display: flex !important;
