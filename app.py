@@ -738,7 +738,12 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
             data_fmt = r["dt"].strftime("%d/%m/%Y") if pd.notna(r["dt"]) else "—"
             with st.expander(f"{r['nome']}  ·  {data_fmt}"):
                 st.write(f"**Veículo:** {r['veiculo'] or '—'}")
-                st.write(f"**Contato:** {r['contato'] or '—'}")
+                contato = r['contato'] or '—'
+                wa_url = _get_wa_url(contato)
+                if wa_url:
+                    st.markdown(f"**Contato:** {contato} [💬 WhatsApp]({wa_url})")
+                else:
+                    st.write(f"**Contato:** {contato}")
                 st.write(f"**Chassi:** {r['chassi'] or '—'}")
 
     with st.sidebar.expander(f"\U0001f534 Em 30 dias  ({len(prox_30)})"):
