@@ -28,16 +28,14 @@ def inject_base_css():
         background-size: 400% 400% !important;
     }
 
-    /* Oculta especificamente botão Fork */
+    /* Move botões Fork e GitHub para fora da tela */
     button[title="Fork repository"],
-    [data-testid="stHeader"] button[title="Fork repository"] {
-        display: none !important;
-    }
-
-    /* Oculta especificamente botão GitHub */
     button[title="View on GitHub"],
+    [data-testid="stHeader"] button[title="Fork repository"],
     [data-testid="stHeader"] button[title="View on GitHub"] {
-        display: none !important;
+        position: absolute !important;
+        left: -9999px !important;
+        visibility: hidden !important;
     }
 
     /* Garante que botão Open sidebar continue visível */
