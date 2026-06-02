@@ -37,8 +37,16 @@ try:
 except:
     pass
 
-st.set_page_config("Minami Service Shaken", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
+st.set_page_config("Central Shaken", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()
+
+# Meta tags para PWA - melhor aparência ao salvar na área de trabalho
+st.markdown(f"""
+<meta name="application-name" content="Central Shaken">
+<meta name="apple-mobile-web-app-title" content="Central Shaken">
+<meta name="theme-color" content="#0d2a6e">
+<link rel="shortcut icon" href="{_page_icon}" type="image/png">
+""", unsafe_allow_html=True)
 
 require_login()
 
