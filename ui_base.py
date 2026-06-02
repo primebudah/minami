@@ -8,24 +8,6 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
-    /* Impede sidebar de fechar automaticamente */
-    [data-testid="stSidebar"] {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        height: 100vh !important;
-        z-index: 999 !important;
-    }
-
-    /* Garante botão de reabrir sidebar sempre visível */
-    button[aria-label*="sidebar"],
-    button[aria-label*="menu"],
-    [data-testid="stSidebar"] button {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
