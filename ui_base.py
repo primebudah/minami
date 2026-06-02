@@ -28,11 +28,6 @@ def inject_base_css():
         background-size: 400% 400% !important;
     }
 
-    /* Oculta stToolbar (contém Fork, GitHub, etc.) exceto botão de sidebar */
-    [data-testid="stToolbar"] {
-        display: none !important;
-    }
-
     /* Garante que botão Open sidebar continue visível */
     button[aria-label="Open sidebar"] {
         display: flex !important;
