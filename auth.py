@@ -65,46 +65,51 @@ def login_page():
 
     st.markdown("""
     <style>
-    [data-testid="stSidebarNav"] { display: none !important; }
+    [data-testid="stSidebarNav"]   { display: none !important; }
     [data-testid="collapsedControl"] { display: none !important; }
-    [data-testid="stSidebar"] { display: none !important; }
+    [data-testid="stSidebar"]      { display: none !important; }
     [data-testid="stTextInput"] input {
         background-color: #FFFFFF !important;
         color: #000000 !important;
     }
+    /* Centraliza o bloco de login e limita largura máxima */
+    [data-testid="stAppViewContainer"] > section.main > div.block-container {
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-top: clamp(1rem, 8vh, 4rem) !important;
+        padding-bottom: 2rem !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    col = st.columns([1, 1.2, 1])[1]
-    with col:
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown(
-            f'<div style="text-align:center;margin-bottom:12px;">{logo_html}</div>',
-            unsafe_allow_html=True
-        )
-        st.markdown("---")
-        with st.form("login_form"):
-            usuario    = st.text_input("Usuário", autocomplete="off")
-            senha      = st.text_input("Senha", type="password", autocomplete="off")
-            lembrar    = st.checkbox("Permanecer conectado neste dispositivo", value=False)
-            entrar     = st.form_submit_button("Entrar", use_container_width=True)
+    st.markdown(
+        f'<div style="text-align:center;margin-bottom:12px;">{logo_html}</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown("---")
+    with st.form("login_form"):
+        usuario    = st.text_input("Usuário", autocomplete="off")
+        senha      = st.text_input("Senha", type="password", autocomplete="off")
+        lembrar    = st.checkbox("Permanecer conectado neste dispositivo", value=False)
+        entrar     = st.form_submit_button("Entrar", use_container_width=True)
 
-        if entrar:
-            users = st.secrets.get("users", {})
-            if usuario in users and users[usuario]["password"] == senha:
-                st.session_state.logged_in  = True
-                st.session_state.usuario    = usuario
-                st.session_state.role       = users[usuario]["role"]
-                st.session_state.nome       = users[usuario]["nome"]
-                st.session_state.lembrar    = lembrar
-                if lembrar:
-                    _save_session(usuario, users[usuario]["role"], users[usuario]["nome"], True)
-                else:
-                    # Limpa sessao se nao quiser permanecer conectado
-                    _clear_session()
-                st.rerun()
+    if entrar:
+        users = st.secrets.get("users", {})
+        if usuario in users and users[usuario]["password"] == senha:
+            st.session_state.logged_in  = True
+            st.session_state.usuario    = usuario
+            st.session_state.role       = users[usuario]["role"]
+            st.session_state.nome       = users[usuario]["nome"]
+            st.session_state.lembrar    = lembrar
+            if lembrar:
+                _save_session(usuario, users[usuario]["role"], users[usuario]["nome"], True)
             else:
-                st.error("Usuário ou senha incorretos.")
+                # Limpa sessao se nao quiser permanecer conectado
+                _clear_session()
+            st.rerun()
+        else:
+            st.error("Usuário ou senha incorretos.")
 
 def require_login():
     # Processa logout via query param

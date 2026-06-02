@@ -67,51 +67,11 @@ st.markdown("""
         window._killMenuObs.observe(document.body,{childList:true,subtree:true});
     }
     
-    // Função global para abrir sidebar
+    // Função global para abrir sidebar (apenas clica no botão nativo)
     window.openSidebar = function(){
-        var sidebar = document.querySelector('[data-testid="stSidebar"]');
-        var content = document.querySelector('[data-testid="stSidebarContent"]');
-        var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"], button[aria-label*="Close sidebar"]');
-        
-        // Tenta clicar no botão nativo primeiro
-        if(btn){
-            btn.click();
-            return;
-        }
-        
-        // Se não achou botão, força via CSS
-        if(sidebar){
-            sidebar.style.display = 'block';
-            sidebar.style.visibility = 'visible';
-            sidebar.style.opacity = '1';
-            sidebar.style.width = '21rem';
-            sidebar.style.transform = 'translateX(0)';
-            sidebar.setAttribute('aria-expanded', 'true');
-        }
-        if(content){
-            content.style.display = 'block';
-            content.style.visibility = 'visible';
-            content.style.opacity = '1';
-        }
-        
-        // Notifica o Streamlit que a sidebar deve estar aberta
-        window.parent.postMessage({type: 'streamlit:setSessionState', data: {_sidebar: 'expanded'}}, '*');
+        var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"]');
+        if(btn){ btn.click(); }
     };
-    
-    // Observa mudanças na sidebar para garantir que fique visível
-    if(!window._sidebarObs){
-        window._sidebarObs = new MutationObserver(function(mutations){
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            if(sidebar && sidebar.getAttribute('aria-expanded') === 'false'){
-                // Se foi fechada, reabre
-                setTimeout(window.openSidebar, 100);
-            }
-        });
-        var sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if(sidebar){
-            window._sidebarObs.observe(sidebar, {attributes: true, attributeFilter: ['aria-expanded']});
-        }
-    }
 })();
 </script>
 """, unsafe_allow_html=True)

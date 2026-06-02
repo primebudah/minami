@@ -38,7 +38,6 @@ def inject_base_css():
     [data-testid="stDataFrame"] {
         margin-left: auto !important;
         margin-right: auto !important;
-        display: block !important;
     }
 
     /* Oculta apenas menu principal e footer (não afetam sidebar) */
