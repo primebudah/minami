@@ -114,8 +114,15 @@ def require_login():
         for k in ["logged_in", "usuario", "role", "nome", "lembrar"]:
             st.session_state.pop(k, None)
 
-    # SEMPRE pede login - nao carrega sessao automaticamente
-    # Sessao soh eh restaurada quando usuario marca "Permanecer conectado"
+    # Se nao estiver logado, tenta restaurar sessao salva (se marcou "Permanecer conectado")
+    if not st.session_state.get("logged_in"):
+        saved = _load_session()
+        if saved:
+            st.session_state.logged_in = True
+            st.session_state.usuario   = saved["usuario"]
+            st.session_state.role      = saved["role"]
+            st.session_state.nome      = saved["nome"]
+            st.session_state.lembrar   = True
 
     if not st.session_state.get("logged_in"):
         login_page()
