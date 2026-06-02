@@ -644,6 +644,9 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
         border: 1px solid rgba(255,255,255,0.25) !important;
         color: #FFFFFF !important;
         border-radius: 6px !important;
+        white-space: nowrap !important;
+        padding: 0.25rem 1.5rem !important;
+        text-align: left !important;
     }
     [data-testid="stSidebar"] button:hover,
     [data-testid="stSidebar"] button:focus,
@@ -651,6 +654,9 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
         background: rgba(255,255,255,0.12) !important;
         border: 1px solid rgba(255,255,255,0.25) !important;
         color: #FFFFFF !important;
+        white-space: nowrap !important;
+        padding: 0.25rem 1.5rem !important;
+        text-align: left !important;
     }
     .sb-title {
         font-size: 1.25rem;
@@ -767,7 +773,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
             st.write("Nenhum cliente")
         else:
             for _, r in df_processamento.iterrows():
-                col_nome, col_btn = st.columns([2, 1])
+                col_nome, col_btn = st.columns([1, 1.5])
                 with col_nome:
                     st.write(f"**{r['nome']}**")
                 with col_btn:
@@ -817,7 +823,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                 st.caption(f"{len(df_conc_filtrado)} cliente(s)")
                 for _, r in df_conc_filtrado.sort_values("dt_conc", ascending=False).iterrows():
                     _dt_fmt = r["dt_conc"].strftime("%d/%m/%Y") if pd.notna(r["dt_conc"]) else "—"
-                    col_nome, col_btn = st.columns([2, 1])
+                    col_nome, col_btn = st.columns([1, 1.5])
                     with col_nome:
                         st.markdown(f"**{r['nome']}**  \n<span style='font-size:0.78rem;color:rgba(255,255,255,0.55)'>Concluído: {_dt_fmt}</span>", unsafe_allow_html=True)
                     with col_btn:
@@ -1391,7 +1397,7 @@ if not df.empty:
     
     # Adiciona coluna WhatsApp com URL clicável ao lado de contato
     if "contato" in df_view.columns:
-        df_view["📱"] = _df_display["contato"].apply(_get_wa_url)
+        df_view["📱"] = df_view["contato"].apply(_get_wa_url)
         # Reordena: coloca 📱 logo após contato
         _cols = list(df_view.columns)
         if "📱" in _cols and "contato" in _cols:
@@ -1764,9 +1770,6 @@ if not df.empty:
                                         st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
                             atualizar_cliente(ids[i], row_dict)
-                            # Recalcula coluna WhatsApp se contato foi editado
-                            if col == "contato":
-                                df_view.at[i, "📱"] = _get_wa_url(val_salvar)
                         celula_mudou = True
                         break
                 if celula_mudou:
