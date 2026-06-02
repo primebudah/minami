@@ -149,25 +149,31 @@ def atualizar_cliente(cliente_id: int, dados: Dict[str, Any]) -> bool:
     """Atualiza cliente existente via RPC."""
     try:
         supabase = get_supabase()
-        
+
+        # Função auxiliar para converter NaN para None
+        def clean_value(v):
+            if isinstance(v, float) and pd.isna(v):
+                return None
+            return v or None
+
         # Chama a função RPC
         result = supabase.rpc('atualizar_cliente_rpc', {
             'p_id': cliente_id,
             'p_nome': dados.get("nome", ""),
-            'p_contato': dados.get("contato") or None,
-            'p_shaken_vencimento': dados.get("shaken_vencimento") or None,
-            'p_veiculo': dados.get("veiculo") or None,
-            'p_placa': dados.get("placa") or None,
+            'p_contato': clean_value(dados.get("contato")),
+            'p_shaken_vencimento': clean_value(dados.get("shaken_vencimento")),
+            'p_veiculo': clean_value(dados.get("veiculo")),
+            'p_placa': clean_value(dados.get("placa")),
             'p_chassi': str(dados.get("chassi", "")).strip().upper() if dados.get("chassi") else None,
-            'p_fabricante': dados.get("fabricante") or None,
-            'p_modelo_katashiki': dados.get("modelo_katashiki") or None,
-            'p_chassi_completo': dados.get("chassi_completo") or None,
-            'p_data_registro': dados.get("data_registro") or None,
-            'p_data_conclusao': dados.get("data_conclusao") or None,
+            'p_fabricante': clean_value(dados.get("fabricante")),
+            'p_modelo_katashiki': clean_value(dados.get("modelo_katashiki")),
+            'p_chassi_completo': clean_value(dados.get("chassi_completo")),
+            'p_data_registro': clean_value(dados.get("data_registro")),
+            'p_data_conclusao': clean_value(dados.get("data_conclusao")),
             'p_status': dados.get("status", "Pendente"),
-            'p_observacao': dados.get("observacao") or None
+            'p_observacao': clean_value(dados.get("observacao"))
         }).execute()
-        
+
         return result.data is True
     except Exception as e:
         st.error(f"Erro atualizando cliente: {e}")
