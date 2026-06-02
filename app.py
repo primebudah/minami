@@ -1499,7 +1499,7 @@ if not df.empty:
 
             editor_col = st.data_editor(
                 _df_col,
-                use_container_width=False,
+                use_container_width=True,
                 num_rows="fixed",
                 key=f"editor_col_{st.session_state._editor_v}",
                 column_config=_col_cfg_col,
@@ -1630,7 +1630,7 @@ if not df.empty:
         _order = ["observacao", "status"] + [c for c in df_view.columns if c not in ("status", "observacao", "data_conclusao")] + ["data_conclusao"]
         editor = st.data_editor(
             df_view,
-            use_container_width=False,
+            use_container_width=True,
             num_rows="fixed",
             key=f"editor_{st.session_state._editor_v}",
             column_config=column_config,
