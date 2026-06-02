@@ -901,35 +901,11 @@ div[data-testid="stColumns"] > div:nth-child(2) button {
 </style>
 """, unsafe_allow_html=True)
 
-_nav_cols = st.columns([1, 0.4, 0.4, 0.4, 1]) if can("registrar") else st.columns([1, 0.4, 0.4, 1])
+_nav_cols = st.columns([1, 0.5, 0.5, 1]) if can("registrar") else st.columns([1, 0.7, 1])
 with _nav_cols[1]:
     st.button("🔍 Central Shaken", key="nav_home", use_container_width=True, disabled=True)
-with _nav_cols[2]:
-    # Botão Streamlit que triggera JavaScript para abrir sidebar
-    if st.button("☰ Sidebar", key="nav_sidebar", use_container_width=True):
-        # Injeta JavaScript para chamar a função global openSidebar
-        _stc.html("""
-        <script>
-        if(window.openSidebar){
-            window.openSidebar();
-        } else {
-            // Fallback se a função não estiver disponível
-            var sidebar = document.querySelector('[data-testid="stSidebar"]');
-            var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"]');
-            if(btn) btn.click();
-            else if(sidebar) {
-                sidebar.style.display = 'block';
-                sidebar.style.visibility = 'visible';
-                sidebar.style.opacity = '1';
-                sidebar.style.width = '21rem';
-                sidebar.setAttribute('aria-expanded', 'true');
-            }
-        }
-        </script>
-        """, height=0)
-        st.toast("Sidebar reaberta!", icon="☰")
 if can("registrar"):
-    with _nav_cols[3]:
+    with _nav_cols[2]:
         if st.button("📋 Registrar", key="nav_reg", use_container_width=True):
             st.switch_page("pages/1_Registros.py")
 
