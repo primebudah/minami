@@ -591,7 +591,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
     ]
     prox_mais = df_all[
         df_all["dt"] > hoje + pd.Timedelta(days=60)
-    ]
+    ].dropna(subset=["dt"]).sort_values("dt").head(5)
 
     def normalizar_status_sidebar(v):
         if v is None or (isinstance(v, float) and pd.isna(v)) or str(v).strip() in ("", "⚪"):
