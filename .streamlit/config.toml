@@ -6,7 +6,7 @@ headless = true
 enableCORS = false
 enableXsrfProtection = false
 fileWatcherType = "none"
-maxUploadSize = 10
+maxUploadSize = 50
 
 [runner]
 fastReruns = false

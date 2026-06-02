@@ -541,8 +541,9 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
+        st.caption("📱 No iPhone/Android: selecione em lotes e processe várias vezes — todas vão para a fila.")
         files = st.file_uploader(
-            "Até 10 fotos por vez",
+            "Selecione as fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
             key=f"uploader_{st.session_state.uploader_key}"
