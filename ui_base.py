@@ -28,13 +28,9 @@ def inject_base_css():
         background-size: 400% 400% !important;
     }
 
-    /* Oculta botões específicos do GitHub/Fork no header */
-    [data-testid="stHeader"] button[title*="Fork"],
-    [data-testid="stHeader"] button[title*="GitHub"],
-    [data-testid="stHeader"] button[title*="git"],
-    header button[title*="Fork"],
-    header button[title*="GitHub"],
-    header button[title*="git"] {
+    /* Oculta todos os botões do header exceto Open sidebar */
+    header button:not([aria-label*="Open sidebar"]):not([aria-label*="sidebar"]),
+    [data-testid="stHeader"] button:not([aria-label*="Open sidebar"]):not([aria-label*="sidebar"]) {
         display: none !important;
     }
 
