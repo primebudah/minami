@@ -8,26 +8,6 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
-    /* Correção segura para sidebar - não interferir no sistema de abrir/fechar do Streamlit */
-    [data-testid="stSidebar"] {
-        opacity: 1 !important;
-    }
-
-    /* Garantir visibilidade apenas quando Streamlit controla o estado */
-    [data-testid="stSidebar"][aria-expanded="true"] {
-        opacity: 1 !important;
-    }
-
-    /* Conteúdo interno normal */
-    [data-testid="stSidebarContent"] {
-        opacity: 1 !important;
-    }
-
-    /* Manter app estável sem quebrar layout */
-    [data-testid="stAppViewContainer"] {
-        opacity: 1 !important;
-    }
-
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
