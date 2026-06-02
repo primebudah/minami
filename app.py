@@ -778,7 +778,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                     st.write(f"**{r['nome']}**")
                 with col_btn:
                     if st.button("✅ Concluir", key=f"concluir_{r['id']}"):
-                        row_dict = r.drop(["dt", "status_norm"]).to_dict()
+                        row_dict = r.drop(["dt", "status_norm"], errors='ignore').to_dict()
                         row_dict["status"] = "🟢 Concluido"
                         atualizar_cliente(r["id"], row_dict)
                         st.session_state.df = carregar_clientes()
@@ -828,7 +828,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                         st.markdown(f"**{r['nome']}**  \n<span style='font-size:0.78rem;color:rgba(255,255,255,0.55)'>Concluído: {_dt_fmt}</span>", unsafe_allow_html=True)
                     with col_btn:
                         if st.button("🔵 Reabrir", key=f"reabrir_{r['id']}"):
-                            row_dict = r.drop(["dt", "status_norm", "dt_conc"]).to_dict()
+                            row_dict = r.drop(["dt", "status_norm", "dt_conc"], errors='ignore').to_dict()
                             row_dict["status"] = "🔵 Em processamento"
                             atualizar_cliente(r["id"], row_dict)
                             st.session_state.df = carregar_clientes()
