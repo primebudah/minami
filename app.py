@@ -1261,7 +1261,8 @@ if not df.empty:
     original = _df_display.copy()
 
     # Monta df_view para exibir na tabela
-    df_view = _df_display.drop(columns=["id", "fabricante", "modelo_katashiki", "chassi_completo", "observacao"]).copy()
+    _drop_cols = [c for c in ["id", "fabricante", "modelo_katashiki", "chassi_completo", "observacao", "criado_em", "atualizado_em"] if c in _df_display.columns]
+    df_view = _df_display.drop(columns=_drop_cols).copy()
     df_view.insert(0, "observacao", _df_display["observacao"].fillna("").values)
     
     # Adiciona coluna de seleção WhatsApp (✅ quando tem número válido)
