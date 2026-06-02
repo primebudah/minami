@@ -8,6 +8,19 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
+    /* GARANTE que botão de toggle da sidebar esteja sempre visível */
+    button[kind="header"],
+    button[aria-label="sidebar"],
+    button[aria-label="Close sidebar"],
+    button[aria-label="Open sidebar"],
+    [data-testid="stToolbar"] button,
+    header button {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 999999 !important;
+    }
+
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
