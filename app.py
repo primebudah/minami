@@ -858,15 +858,7 @@ with _nav_cols[1]:
     st.button("🔍 Central Shaken", key="nav_home", use_container_width=True, disabled=True)
 with _nav_cols[2]:
     if st.button("☰ Sidebar", key="nav_sidebar", use_container_width=True):
-        st.markdown("""
-        <script>
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.style.display = 'block';
-            sidebar.style.visibility = 'visible';
-        }
-        </script>
-        """, unsafe_allow_html=True)
+        st.rerun()
 if can("registrar"):
     with _nav_cols[3]:
         if st.button("📋 Registrar", key="nav_reg", use_container_width=True):
