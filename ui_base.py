@@ -31,7 +31,7 @@ def inject_base_css():
         font-size: 18px !important;
     }
     button[aria-label="Open sidebar"]::before {
-        content: "◀ " !important;
+        content: "▶ " !important;
     }
 
     /* Remove espaço vazio no topo da sidebar */
