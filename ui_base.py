@@ -21,8 +21,23 @@ def inject_base_css():
         z-index: 999999 !important;
     }
 
-    /* Botão de abrir sidebar com flecha azul */
+    /* Header com cor azul da sidebar */
+    header,
+    [data-testid="stHeader"] {
+        background: linear-gradient(270deg, #1044b5, #64c8ff, #0d2a6e, #64c8ff) !important;
+        background-size: 400% 400% !important;
+    }
+
+    /* Oculta stToolbar (contém Fork, GitHub, etc.) exceto botão de sidebar */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+
+    /* Garante que botão Open sidebar continue visível */
     button[aria-label="Open sidebar"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         background: #1a6fba !important;
         color: #ffffff !important;
         border: none !important;
@@ -32,25 +47,6 @@ def inject_base_css():
     }
     button[aria-label="Open sidebar"]::before {
         content: "▶ " !important;
-    }
-
-    /* Header com cor azul da sidebar */
-    header,
-    [data-testid="stHeader"] {
-        background: linear-gradient(270deg, #1044b5, #64c8ff, #0d2a6e, #64c8ff) !important;
-        background-size: 400% 400% !important;
-    }
-    header button,
-    [data-testid="stHeader"] button {
-        color: #ffffff !important;
-    }
-
-    /* Oculta botões Fork e GitHub do header */
-    button[title="Fork repository"],
-    button[title*="GitHub"],
-    [data-testid="stHeader"] button[title*="Fork"],
-    [data-testid="stHeader"] button[title*="GitHub"] {
-        display: none !important;
     }
 
     /* Remove espaço vazio no topo da sidebar */
