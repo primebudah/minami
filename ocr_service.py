@@ -407,6 +407,7 @@ RETORNE APENAS JSON com estes campos:
     modelo_katashiki = d.get("modelo_katashiki", "")
     if fabricante and modelo_katashiki:
         d["veiculo"] = f"{fabricante} {modelo_katashiki}"
+    d["veiculo"] = traduzir_veiculo(d.get("veiculo", ""))
     
     # Formata chassi como {chassi_completo}
     chassi_completo = d.get("chassi_completo", "")
