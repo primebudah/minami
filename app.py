@@ -25,14 +25,8 @@ from auth import require_login, can, logout_button, _load_config, _save_config
 # CONFIG
 # =========================================================
 
-st.set_page_config("Minami Service Shaken", layout="wide")
+st.set_page_config("Minami Service Shaken", layout="wide", initial_sidebar_state="expanded")
 inject_base_css()
-
-# FORÇA RESET DO ESTADO DA SIDEBAR NA PRIMEIRA EXECUÇÃO
-if "sidebar_state_fixed" not in st.session_state:
-    st.session_state.sidebar_state_fixed = True
-    # força comportamento inicial consistente
-    st.session_state["_sidebar"] = "expanded"
 
 require_login()
 

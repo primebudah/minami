@@ -8,14 +8,6 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
-    /* Oculta botão de fechar barra lateral */
-    [data-testid="stSidebar"] button[aria-label*="sidebar"],
-    [data-testid="stSidebar"] button[aria-label*="menu"],
-    button[aria-label="sidebar"],
-    button[aria-label="menu"] {
-        display: none !important;
-    }
-
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
@@ -40,7 +32,7 @@ def inject_base_css():
     [data-testid="stToolbar"]         { display: none !important; }
     #MainMenu                          { display: none !important; }
     footer                             { display: none !important; }
-    header                             { display: none !important; }
+    header                             { visibility: hidden !important; }
 
     /* Toolbar flutuante e todos os botões nativos */
     [data-testid="stDataFrameToolbar"]         { display: none !important; }
@@ -51,8 +43,6 @@ def inject_base_css():
     [data-testid="stDecoration"]               { display: none !important; }
     [class*="stElementToolbar"]                { display: none !important; }
     [class*="stToolbar"]                       { display: none !important; }
-    [class*="toolbar"]                         { display: none !important; }
-    [class*="Toolbar"]                         { display: none !important; }
     button[title="Send element"]               { display: none !important; }
     button[title="Send console errors"]        { display: none !important; }
     button[aria-label="Send element"]          { display: none !important; }

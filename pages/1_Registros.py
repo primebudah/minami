@@ -17,7 +17,7 @@ from auth import require_login, can, logout_button, _load_config
 # CONFIG
 # =========================================================
 
-st.set_page_config("Registros — Minami Service", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config("Registros — Minami Service", layout="wide", initial_sidebar_state="expanded")
 inject_base_css()
 require_login()
 
