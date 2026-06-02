@@ -34,6 +34,17 @@ def inject_base_css():
         content: "▶ " !important;
     }
 
+    /* Header com cor azul da sidebar */
+    header,
+    [data-testid="stHeader"] {
+        background: linear-gradient(270deg, #1044b5, #64c8ff, #0d2a6e, #64c8ff) !important;
+        background-size: 400% 400% !important;
+    }
+    header button,
+    [data-testid="stHeader"] button {
+        color: #ffffff !important;
+    }
+
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
