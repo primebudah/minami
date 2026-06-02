@@ -101,10 +101,9 @@ BEGIN
     data_registro = p_data_registro,
     data_conclusao = p_data_conclusao,
     status = p_status,
-    observacao = p_observacao,
-    atualizado_em = NOW()
+    observacao = p_observacao
   WHERE id = p_id;
-  
+
   RETURN FOUND;
 END;
 $$;
