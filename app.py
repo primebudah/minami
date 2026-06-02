@@ -801,9 +801,15 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
 
             df_concluido_dt = df_concluido.copy()
             # Usa data_conclusao; se NULL (registros antigos), usa data_registro como fallback
-            df_concluido_dt["dt_conc"] = pd.to_datetime(df_concluido_dt["data_conclusao"], errors="coerce")
-            _fallback = pd.to_datetime(df_concluido_dt["data_registro"], errors="coerce")
-            df_concluido_dt["dt_conc"] = df_concluido_dt["dt_conc"].fillna(_fallback)
+            if "data_conclusao" in df_concluido_dt.columns:
+                df_concluido_dt["dt_conc"] = pd.to_datetime(df_concluido_dt["data_conclusao"], errors="coerce")
+                if "data_registro" in df_concluido_dt.columns:
+                    _fallback = pd.to_datetime(df_concluido_dt["data_registro"], errors="coerce")
+                    df_concluido_dt["dt_conc"] = df_concluido_dt["dt_conc"].fillna(_fallback)
+            elif "data_registro" in df_concluido_dt.columns:
+                df_concluido_dt["dt_conc"] = pd.to_datetime(df_concluido_dt["data_registro"], errors="coerce")
+            else:
+                df_concluido_dt["dt_conc"] = pd.NaT
 
             if periodo_conc == "Este mês":
                 df_conc_filtrado = df_concluido_dt[
@@ -1324,7 +1330,7 @@ if not df.empty:
         st.session_state._conc_ciclos = set()
 
     def _fmt_conc(row):
-        raw = row.get("data_conclusao")
+        raw = row.get("data_conclusao") if "data_conclusao" in row.index else None
         # Descarta NaN, None, string vazia, "nan", "None"
         if raw is None or (isinstance(raw, float) and pd.isna(raw)):
             return ""
@@ -1384,8 +1390,6 @@ if not df.empty:
         "placa": st.column_config.TextColumn("Placa", width=_col_width("placa", "Placa")),
         "contato": st.column_config.TextColumn("Contato", width=_col_width("contato", "Contato")),
         "shaken_vencimento": st.column_config.TextColumn("Shaken", width=_col_width("shaken_vencimento", "Shaken")),
-        "data_registro": st.column_config.TextColumn("Inspeção", width=_col_width("data_registro", "Inspeção")),
-        "data_conclusao": st.column_config.TextColumn("Conclusão", width=_col_width("data_conclusao", "Conclusão")),
         "observacao": st.column_config.TextColumn("Obs", width=_col_width("", "Obs")),
 
     }
@@ -1394,6 +1398,12 @@ if not df.empty:
     if st.session_state.delete_mode:
         df_view.insert(0, "Apagar", [False] * len(df_view))
         column_config["Apagar"] = st.column_config.CheckboxColumn("🗑️", default=False)
+
+    # Adiciona colunas de data condicionalmente se existirem
+    if "data_registro" in df_view.columns:
+        column_config["data_registro"] = st.column_config.TextColumn("Inspeção", width=_col_width("data_registro", "Inspeção"))
+    if "data_conclusao" in df_view.columns:
+        column_config["data_conclusao"] = st.column_config.TextColumn("Conclusão", width=_col_width("data_conclusao", "Conclusão"))
     
     # Adiciona coluna WhatsApp com URL clicável ao lado de contato
     if "contato" in df_view.columns:
