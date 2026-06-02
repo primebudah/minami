@@ -8,6 +8,14 @@ def inject_base_css():
     /* Nav e controles nativos */
     [data-testid="stSidebarNav"]      { display: none !important; }
 
+    /* Oculta botão de fechar barra lateral */
+    [data-testid="stSidebar"] button[aria-label*="sidebar"],
+    [data-testid="stSidebar"] button[aria-label*="menu"],
+    button[aria-label="sidebar"],
+    button[aria-label="menu"] {
+        display: none !important;
+    }
+
     /* Remove espaço vazio no topo da sidebar */
     [data-testid="stSidebar"] > div:first-child { padding-top: 0.5rem !important; }
     [data-testid="stSidebarContent"]            { padding-top: 0 !important; }
