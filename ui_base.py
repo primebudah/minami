@@ -111,5 +111,32 @@ def inject_base_css():
     [data-testid="stException"]                { display: none !important; }
     ._profileContainer                         { display: none !important; }
     ._profilePreview                           { display: none !important; }
+
+    /* ========== RESPONSIVO - Tablets e Mobiles ========== */
+    @media screen and (max-width: 1024px) {
+        /* Garante que o app ocupe toda a tela */
+        .stApp {
+            height: 100% !important;
+            min-height: 100% !important;
+        }
+        
+        /* Container principal sem restrições de altura */
+        [data-testid="stAppViewContainer"] {
+            height: auto !important;
+            min-height: 100% !important;
+        }
+        
+        /* Conteúdo principal sem limitações */
+        section.main {
+            height: auto !important;
+            min-height: 100vh !important;
+        }
+        
+        /* Tabela com scroll próprio */
+        [data-testid="stDataFrame"] {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
