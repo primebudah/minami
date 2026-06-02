@@ -30,10 +30,11 @@ inject_base_css()
 
 require_login()
 
-# ── JS global: killMenu ──────────────────────────────────
+# ── JS global: killMenu + openSidebar ──────────────────────────────────
 st.markdown("""
 <script>
 (function(){
+    // Função para esconder menus indesejados
     function killMenu(){
         document.querySelectorAll('[data-testid="stDataFrameColumnMenu"]').forEach(function(el){el.style.display='none';});
         document.querySelectorAll('[role="menu"]').forEach(function(el){
@@ -44,6 +45,52 @@ st.markdown("""
     if(!window._killMenuObs){
         window._killMenuObs=new MutationObserver(killMenu);
         window._killMenuObs.observe(document.body,{childList:true,subtree:true});
+    }
+    
+    // Função global para abrir sidebar
+    window.openSidebar = function(){
+        var sidebar = document.querySelector('[data-testid="stSidebar"]');
+        var content = document.querySelector('[data-testid="stSidebarContent"]');
+        var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"], button[aria-label*="Close sidebar"]');
+        
+        // Tenta clicar no botão nativo primeiro
+        if(btn){
+            btn.click();
+            return;
+        }
+        
+        // Se não achou botão, força via CSS
+        if(sidebar){
+            sidebar.style.display = 'block';
+            sidebar.style.visibility = 'visible';
+            sidebar.style.opacity = '1';
+            sidebar.style.width = '21rem';
+            sidebar.style.transform = 'translateX(0)';
+            sidebar.setAttribute('aria-expanded', 'true');
+        }
+        if(content){
+            content.style.display = 'block';
+            content.style.visibility = 'visible';
+            content.style.opacity = '1';
+        }
+        
+        // Notifica o Streamlit que a sidebar deve estar aberta
+        window.parent.postMessage({type: 'streamlit:setSessionState', data: {_sidebar: 'expanded'}}, '*');
+    };
+    
+    // Observa mudanças na sidebar para garantir que fique visível
+    if(!window._sidebarObs){
+        window._sidebarObs = new MutationObserver(function(mutations){
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            if(sidebar && sidebar.getAttribute('aria-expanded') === 'false'){
+                // Se foi fechada, reabre
+                setTimeout(window.openSidebar, 100);
+            }
+        });
+        var sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if(sidebar){
+            window._sidebarObs.observe(sidebar, {attributes: true, attributeFilter: ['aria-expanded']});
+        }
     }
 })();
 </script>
@@ -858,38 +905,29 @@ _nav_cols = st.columns([1, 0.4, 0.4, 0.4, 1]) if can("registrar") else st.column
 with _nav_cols[1]:
     st.button("🔍 Central Shaken", key="nav_home", use_container_width=True, disabled=True)
 with _nav_cols[2]:
-    # Botão HTML com JavaScript para forçar sidebar visível
-    st.markdown("""
-    <button onclick="
-        const sidebar = document.querySelector('[data-testid=\\'stSidebar\\']');
-        const sidebarContent = document.querySelector('[data-testid=\\'stSidebarContent\\']');
-        if (sidebar) {
-            sidebar.style.display = 'block';
-            sidebar.style.visibility = 'visible';
-            sidebar.style.opacity = '1';
-            sidebar.style.transform = 'translateX(0)';
-            sidebar.setAttribute('aria-expanded', 'true');
+    # Botão Streamlit que triggera JavaScript para abrir sidebar
+    if st.button("☰ Sidebar", key="nav_sidebar", use_container_width=True):
+        # Injeta JavaScript para chamar a função global openSidebar
+        _stc.html("""
+        <script>
+        if(window.openSidebar){
+            window.openSidebar();
+        } else {
+            // Fallback se a função não estiver disponível
+            var sidebar = document.querySelector('[data-testid="stSidebar"]');
+            var btn = document.querySelector('button[aria-label*="sidebar"], button[aria-label*="Open sidebar"]');
+            if(btn) btn.click();
+            else if(sidebar) {
+                sidebar.style.display = 'block';
+                sidebar.style.visibility = 'visible';
+                sidebar.style.opacity = '1';
+                sidebar.style.width = '21rem';
+                sidebar.setAttribute('aria-expanded', 'true');
+            }
         }
-        if (sidebarContent) {
-            sidebarContent.style.display = 'block';
-            sidebarContent.style.visibility = 'visible';
-            sidebarContent.style.opacity = '1';
-        }
-        // Força classe do Streamlit
-        document.body.classList.add('show-sidebar');
-        document.body.classList.remove('hide-sidebar');
-    " style="
-        width: 100%;
-        padding: 0.5rem 1rem;
-        background-color: #1a6fba;
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        font-size: 0.9rem;
-        cursor: pointer;
-        font-weight: 500;
-    " onmouseover="this.style.backgroundColor='#155a96'" onmouseout="this.style.backgroundColor='#1a6fba'">☰ Sidebar</button>
-    """, unsafe_allow_html=True)
+        </script>
+        """, height=0)
+        st.toast("Sidebar reaberta!", icon="☰")
 if can("registrar"):
     with _nav_cols[3]:
         if st.button("📋 Registrar", key="nav_reg", use_container_width=True):
