@@ -28,13 +28,11 @@ def inject_base_css():
         display: block !important;
     }
 
-    /* Barra de ferramentas superior (Deploy, star, etc.) */
-    [data-testid="stToolbar"]         { display: none !important; }
+    /* Oculta apenas menu principal e footer (não afetam sidebar) */
     #MainMenu                          { display: none !important; }
     footer                             { display: none !important; }
-    header                             { visibility: hidden !important; }
 
-    /* Toolbar flutuante e todos os botões nativos */
+    /* Oculta apenas elementos de toolbar específicos (não afetam sidebar) */
     [data-testid="stDataFrameToolbar"]         { display: none !important; }
     [data-testid="stElementToolbar"]           { display: none !important; }
     [data-testid="stElementToolbarButton"]     { display: none !important; }
@@ -42,7 +40,8 @@ def inject_base_css():
     [data-testid="stShareButton"]              { display: none !important; }
     [data-testid="stDecoration"]               { display: none !important; }
     [class*="stElementToolbar"]                { display: none !important; }
-    [class*="stToolbar"]                       { display: none !important; }
+    /* NÃO ocultar stToolbar - contém botão da sidebar */
+    /* [class*="stToolbar"]                       { display: none !important; } */
     button[title="Send element"]               { display: none !important; }
     button[title="Send console errors"]        { display: none !important; }
     button[aria-label="Send element"]          { display: none !important; }
