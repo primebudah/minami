@@ -86,7 +86,7 @@ def login_page():
         with st.form("login_form"):
             usuario    = st.text_input("Usuário", autocomplete="off")
             senha      = st.text_input("Senha", type="password", autocomplete="off")
-            lembrar    = st.checkbox("Permanecer conectado", value=True)
+            lembrar    = st.checkbox("Permanecer conectado neste dispositivo", value=False)
             entrar     = st.form_submit_button("Entrar", use_container_width=True)
 
         if entrar:
