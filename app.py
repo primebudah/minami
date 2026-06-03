@@ -782,7 +782,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                         row_dict["status"] = "🟢 Concluido"
                         # Preenche data_conclusao automaticamente
                         row_dict["data_conclusao"] = str(date.today())
-                        print(f"DEBUG botao Concluir: row_dict['data_conclusao'] = {row_dict['data_conclusao']}")
+                        st.error(f"DEBUG: data_conclusao = {row_dict['data_conclusao']}")
                         atualizar_cliente(r["id"], row_dict)
                         st.session_state.df = carregar_clientes()
                         st.session_state._celebrar = True
