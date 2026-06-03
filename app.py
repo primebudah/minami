@@ -1318,9 +1318,6 @@ if not df.empty:
     # Mantém índice 0-based para evitar desalinhamento com editor
     df_view.reset_index(drop=True, inplace=True)
     
-    # Adiciona coluna de seleção WhatsApp (✅ quando tem número válido)
-    if "contato" in df_view.columns:
-        df_view["✅"] = _df_display["contato"].apply(lambda x: "�" if _get_wa_url(x) else "")
 
     # data_conclusao: inclui no df_view, marcando ciclos com prefixo especial
     if "data_conclusao" not in df_view.columns:
@@ -1750,6 +1747,19 @@ if not df.empty:
                                 if _v and not _ok_chassi:
                                     _rejeitar_aviso(
                                         f"<b>Chassi</b>: '{_v}' está fora do padrão esperado (letras, números e hífen). Verifique o documento.",
+                                        pode_salvar=True
+                                    )
+                                    _rejeitar = True
+
+                            # ── Placa: padrão japonês ──
+                            if col == "placa" and not _rejeitar:
+                                _v = val_salvar.strip()
+                                # Padrão JP: ex: 品川-500, 大阪-123-456
+                                # Aceita: caracteres japoneses + hífen + números, mín 3 chars
+                                _ok_placa = bool(re.match(r"^.{3,}$", _v)) if _v else True
+                                if _v and not _ok_placa:
+                                    _rejeitar_aviso(
+                                        f"<b>Placa</b>: '{_v}' está fora do padrão esperado. Verifique o documento.",
                                         pode_salvar=True
                                     )
                                     _rejeitar = True
