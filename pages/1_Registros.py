@@ -546,7 +546,8 @@ with col_foto:
             "Selecione até 10 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
-            key="uploader_fotos"
+            key="uploader_fotos",
+            max_size_mb=50  # Aumenta limite para 50MB por arquivo (padrão Streamlit é 200MB total)
         )
 
         if files:
