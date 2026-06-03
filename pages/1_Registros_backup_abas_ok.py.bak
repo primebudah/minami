@@ -1,0 +1,255 @@
+# =========================================================
+# IMPORTS
+# =========================================================
+
+from datetime import date
+import re
+
+import pandas as pd
+import streamlit as st
+
+from database import inicializar_banco, salvar_cliente, listar_clientes
+from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
+from ui_base import inject_base_css
+
+# =========================================================
+# CONFIG
+# =========================================================
+
+st.set_page_config("Registros — Minami Service", layout="wide", initial_sidebar_state="collapsed")
+inject_base_css()
+
+inicializar_banco()
+
+st.markdown("""
+<style>
+[data-testid="stSidebar"] { display: none !important; }
+[data-testid="stSidebar"] {
+    background: linear-gradient(160deg, #0d2a6e 0%, #1044b5 60%, #0a1f5c 100%) !important;
+}
+[data-testid="stSidebar"] * { color: #FFFFFF !important; }
+[data-testid="stSidebar"] details summary {
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+[data-testid="stSidebar"] details summary:hover,
+[data-testid="stSidebar"] details summary:focus,
+[data-testid="stSidebar"] details[open] summary {
+    background: rgba(255,255,255,0.08) !important;
+    color: #FFFFFF !important;
+}
+[data-testid="stSidebar"] details > div {
+    background: rgba(255,255,255,0.04) !important;
+    border-radius: 0 0 8px 8px !important;
+}
+[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button:hover,
+[data-testid="stSidebar"] button:focus,
+[data-testid="stSidebar"] button:active {
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    color: #FFFFFF !important;
+    border-radius: 6px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# SESSION STATE
+# =========================================================
+
+if "fila_registros" not in st.session_state:
+    st.session_state.fila_registros = []
+
+if "uploader_key" not in st.session_state:
+    st.session_state.uploader_key = 0
+
+# =========================================================
+# HEADER
+# =========================================================
+
+st.markdown("""
+<style>
+.nav-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 1.2rem;
+    margin-top: 0.2rem;
+}
+.nav-btn {
+    display: inline-block;
+    padding: 10px 36px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    cursor: pointer;
+    border: none;
+    transition: filter 0.15s;
+}
+.nav-btn-active {
+    background: linear-gradient(135deg, #1044b5, #0d2a6e);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(16,68,181,0.35);
+}
+.nav-btn-inactive {
+    background: rgba(16,68,181,0.12);
+    color: #1044b5 !important;
+    border: 2px solid #1044b5;
+}
+.nav-btn:hover { filter: brightness(1.12); }
+</style>
+<div class="nav-container">
+    <a href="/" target="_self" class="nav-btn nav-btn-inactive">🔍 Central Shaken</a>
+    <span class="nav-btn nav-btn-active">📋 Registrar</span>
+</div>
+""", unsafe_allow_html=True)
+
+st.caption("Adicione registros manualmente ou via foto. Confira a fila e clique em **Salvar Registros** para enviar à tabela principal.")
+st.divider()
+
+# =========================================================
+# FORMULÁRIOS LADO A LADO
+# =========================================================
+
+col_manual, col_foto = st.columns(2)
+
+# ---------- REGISTRO MANUAL ----------
+with col_manual:
+    with st.expander("📝 Registro Manual", expanded=False):
+        with st.form("manual", clear_on_submit=True):
+            nome    = st.text_input("Nome", autocomplete="off")
+            veiculo = st.text_input("Veículo", autocomplete="off")
+            chassi  = st.text_input("Chassi", autocomplete="off")
+            contato = st.text_input("Contato", autocomplete="off")
+            shaken  = st.date_input(
+                "Vencimento Shaken",
+                value=date.today().replace(year=date.today().year + 2)
+            )
+            data_reg_raw = st.text_input(
+                "Data de Registro (ex: 20260530)",
+                value=date.today().strftime("%Y%m%d"),
+                autocomplete="off"
+            )
+
+            if st.form_submit_button("➕ Adicionar à fila"):
+                raw = data_reg_raw.strip().replace("-", "").replace("/", "")
+                data_reg = f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}" if (len(raw) == 8 and raw.isdigit()) else str(date.today())
+                registro = {
+                    "nome": nome,
+                    "contato": contato,
+                    "shaken_vencimento": str(shaken),
+                    "veiculo": traduzir_veiculo(veiculo),
+                    "chassi": chassi,
+                    "data_registro": data_reg,
+                    "_origem": "manual"
+                }
+                st.session_state.fila_registros.append(registro)
+                st.success(f"'{nome}' adicionado à fila.")
+
+# ---------- REGISTRO POR FOTO ----------
+with col_foto:
+    with st.expander("📸 Registro por Foto", expanded=False):
+        files = st.file_uploader(
+            "Até 10 fotos por vez",
+            accept_multiple_files=True,
+            type=["jpg", "jpeg", "png"],
+            key=f"uploader_{st.session_state.uploader_key}"
+        )
+
+        if files:
+            st.write(f"**{len(files)} foto(s) selecionada(s):**")
+            for f in files:
+                st.write(f"📄 {f.name}")
+
+            if st.button("🔍 Processar Fotos"):
+                ok, err = 0, 0
+                with st.spinner("Processando..."):
+                    for f in files:
+                        try:
+                            d = extrair_dados_do_documento(f)
+                            if d.get("data_registro"):
+                                dr = d["data_registro"]
+                                if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
+                                    if not (2020 <= int(dr[:4]) <= 2035):
+                                        d["data_registro"] = str(date.today())
+                            d["_origem"] = f"foto:{f.name}"
+                            st.session_state.fila_registros.append(d)
+                            ok += 1
+                        except Exception as e:
+                            st.error(f"Erro em {f.name}: {e}")
+                            err += 1
+                if ok:
+                    st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
+                if err:
+                    st.warning(f"{err} erro(s).")
+                st.session_state.uploader_key += 1
+                st.rerun()
+
+# =========================================================
+# FILA DE REGISTROS PENDENTES
+# =========================================================
+
+st.divider()
+st.subheader(f"🗂️ Fila de Registros Pendentes  ({len(st.session_state.fila_registros)})")
+
+if not st.session_state.fila_registros:
+    st.info("Nenhum registro na fila. Adicione manualmente ou via foto acima.")
+else:
+    # Exibe a fila como tabela editável
+    df_fila = pd.DataFrame(st.session_state.fila_registros)
+    colunas_exibir = ["nome", "veiculo", "chassi", "contato", "shaken_vencimento", "data_registro"]
+    colunas_presentes = [c for c in colunas_exibir if c in df_fila.columns]
+
+    df_fila_view = df_fila[colunas_presentes].copy()
+
+    editor_fila = st.data_editor(
+        df_fila_view,
+        use_container_width=True,
+        num_rows="fixed",
+        key="editor_fila",
+        column_config={
+            "nome":              st.column_config.TextColumn("Nome"),
+            "veiculo":           st.column_config.TextColumn("Veículo"),
+            "chassi":            st.column_config.TextColumn("Chassi"),
+            "contato":           st.column_config.TextColumn("Contato"),
+            "shaken_vencimento": st.column_config.TextColumn("Venc. Shaken"),
+            "data_registro":     st.column_config.TextColumn("Data Registro"),
+        }
+    )
+
+    col_salvar, col_limpar = st.columns([2, 1])
+
+    with col_salvar:
+        if st.button("💾 Salvar Registros", type="primary", use_container_width=True):
+            salvos = 0
+            for i, row in editor_fila.iterrows():
+                registro = st.session_state.fila_registros[i].copy()
+                for col in colunas_presentes:
+                    val = row[col]
+                    if col in ("data_registro", "shaken_vencimento"):
+                        raw = str(val).strip().replace("-", "").replace("/", "")
+                        if len(raw) == 8 and raw.isdigit():
+                            val = f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
+                    if col == "veiculo":
+                        val = traduzir_veiculo(str(val))
+                    registro[col] = val
+                # Remove chave interna antes de salvar
+                registro.pop("_origem", None)
+                salvar_cliente(registro)
+                salvos += 1
+
+            st.session_state.fila_registros = []
+            # Força recarregamento da tabela na página principal
+            if "df" in st.session_state:
+                del st.session_state["df"]
+            st.success(f"✅ {salvos} registro(s) salvo(s) com sucesso na tabela principal!")
+            st.rerun()
+
+    with col_limpar:
+        if st.button("🗑️ Limpar Fila", use_container_width=True):
+            st.session_state.fila_registros = []
+            st.rerun()

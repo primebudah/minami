@@ -1,0 +1,403 @@
+# =========================================================
+# IMPORTS
+# =========================================================
+
+from datetime import date
+import re
+
+import pandas as pd
+import streamlit as st
+
+from database import inicializar_banco, salvar_cliente, listar_clientes, atualizar_cliente, deletar_cliente, desfazer_ultima_acao
+from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
+from ui_base import inject_base_css
+from auth import require_login, can, logout_button
+
+# =========================================================
+# CONFIG
+# =========================================================
+
+st.set_page_config("Registros — Minami Service", layout="wide", initial_sidebar_state="collapsed")
+inject_base_css()
+require_login()
+
+inicializar_banco()
+
+if not can("registrar"):
+    st.error("🚫 Acesso negado. Seu perfil não tem permissão para registrar clientes.")
+    st.stop()
+
+st.markdown("""
+<style>
+[data-testid="stSidebar"] { display: none !important; }
+[data-testid="stSidebar"] {
+    background: linear-gradient(160deg, #0d2a6e 0%, #1044b5 60%, #0a1f5c 100%) !important;
+}
+[data-testid="stSidebar"] * { color: #FFFFFF !important; }
+[data-testid="stSidebar"] details summary {
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+[data-testid="stSidebar"] details summary:hover,
+[data-testid="stSidebar"] details summary:focus,
+[data-testid="stSidebar"] details[open] summary {
+    background: rgba(255,255,255,0.08) !important;
+    color: #FFFFFF !important;
+}
+[data-testid="stSidebar"] details > div {
+    background: rgba(255,255,255,0.04) !important;
+    border-radius: 0 0 8px 8px !important;
+}
+[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button:hover,
+[data-testid="stSidebar"] button:focus,
+[data-testid="stSidebar"] button:active {
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    color: #FFFFFF !important;
+    border-radius: 6px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# SESSION STATE
+# =========================================================
+
+if "fila_registros" not in st.session_state:
+    st.session_state.fila_registros = []
+
+if "uploader_key" not in st.session_state:
+    st.session_state.uploader_key = 0
+
+if "fila_delete_mode" not in st.session_state:
+    st.session_state.fila_delete_mode = False
+
+if "fila_linhas_excluidas" not in st.session_state:
+    st.session_state.fila_linhas_excluidas = []
+
+if "fila_ultima_edicao" not in st.session_state:
+    st.session_state.fila_ultima_edicao = None
+
+if "_reg_duplicados_persistente" not in st.session_state:
+    st.session_state._reg_duplicados_persistente = []
+
+if "_reg_salvos_count" not in st.session_state:
+    st.session_state._reg_salvos_count = 0
+
+# =========================================================
+# HEADER
+# =========================================================
+
+st.markdown("""
+<style>
+.nav-btn-active {
+    background: linear-gradient(135deg, #1044b5, #0d2a6e) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(16,68,181,0.35) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    cursor: default !important;
+}
+div[data-testid="stColumns"] > div:nth-child(3) button {
+    background: linear-gradient(135deg, #1044b5, #0d2a6e) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    cursor: default !important;
+}
+[data-testid="stTextInput"] input {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+_nav_cols = st.columns([1, 0.5, 0.5, 1])
+with _nav_cols[1]:
+    if st.button("🔍 Central Shaken", key="nav_home", use_container_width=True):
+        st.switch_page("app.py")
+with _nav_cols[2]:
+    st.button("📋 Registrar", key="nav_reg", disabled=True, use_container_width=True)
+
+st.caption("Adicione registros manualmente ou via foto. Confira a fila e clique em **Salvar Registros** para enviar à tabela principal.")
+st.divider()
+
+# =========================================================
+# FORMULÁRIOS LADO A LADO
+# =========================================================
+
+col_manual, col_foto = st.columns(2)
+
+# ---------- REGISTRO MANUAL ----------
+with col_manual:
+    with st.expander("📝 Registro Manual", expanded=False):
+        with st.form("manual", clear_on_submit=True):
+            nome    = st.text_input("Nome", autocomplete="off")
+            veiculo = st.text_input("Veículo", autocomplete="off")
+            chassi  = st.text_input("Chassi", autocomplete="off")
+            contato = st.text_input("Contato", autocomplete="off")
+            shaken  = st.date_input(
+                "Vencimento Shaken",
+                value=date.today().replace(year=date.today().year + 2)
+            )
+            data_reg_raw = st.text_input(
+                "Data de Registro",
+                value=date.today().strftime("%d/%m/%Y"),
+                autocomplete="off"
+            )
+
+            if st.form_submit_button("➕ Adicionar à fila"):
+                _dr = data_reg_raw.strip()
+                _dr_clean = _dr.replace("/", "").replace("-", "")
+                if len(_dr_clean) == 8 and _dr_clean.isdigit():
+                    # aceita tanto 31/05/2026 (ddmmyyyy) quanto 20260531 (yyyymmdd)
+                    if int(_dr_clean[:4]) > 1900:  # formato yyyymmdd
+                        data_reg = f"{_dr_clean[:4]}-{_dr_clean[4:6]}-{_dr_clean[6:8]}"
+                    else:  # formato ddmmyyyy
+                        data_reg = f"{_dr_clean[4:8]}-{_dr_clean[2:4]}-{_dr_clean[:2]}"
+                else:
+                    data_reg = str(date.today())
+                registro = {
+                    "nome": nome,
+                    "contato": contato,
+                    "shaken_vencimento": str(shaken),
+                    "veiculo": traduzir_veiculo(veiculo),
+                    "chassi": chassi,
+                    "data_registro": data_reg,
+                    "_origem": "manual"
+                }
+                st.session_state.fila_registros.append(registro)
+                st.success(f"'{nome}' adicionado à fila.")
+
+# ---------- REGISTRO POR FOTO ----------
+with col_foto:
+    with st.expander("📸 Registro por Foto", expanded=False):
+        files = st.file_uploader(
+            "Até 10 fotos por vez",
+            accept_multiple_files=True,
+            type=["jpg", "jpeg", "png"],
+            key=f"uploader_{st.session_state.uploader_key}"
+        )
+
+        if files:
+            st.write(f"**{len(files)} foto(s) selecionada(s):**")
+            for f in files:
+                st.write(f"📄 {f.name}")
+
+            if st.button("🔍 Processar Fotos"):
+                ok, err = 0, 0
+                with st.spinner("Processando..."):
+                    for f in files:
+                        try:
+                            d = extrair_dados_do_documento(f)
+                            if d.get("data_registro"):
+                                dr = d["data_registro"]
+                                if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
+                                    if not (2020 <= int(dr[:4]) <= 2035):
+                                        d["data_registro"] = str(date.today())
+                            d["_origem"] = f"foto:{f.name}"
+                            st.session_state.fila_registros.append(d)
+                            ok += 1
+                        except Exception as e:
+                            st.error(f"Erro em {f.name}: {e}")
+                            err += 1
+                if ok:
+                    st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
+                if err:
+                    st.warning(f"{err} erro(s).")
+                st.session_state.uploader_key += 1
+                st.rerun()
+
+# =========================================================
+# FILA DE REGISTROS PENDENTES
+# =========================================================
+
+st.divider()
+
+# ── Notificações pós-salvamento ──────────────────────────
+_salvos_count = st.session_state.get("_reg_salvos_count", 0)
+_dups_persist = st.session_state.get("_reg_duplicados_persistente", [])
+
+# Sincroniza: remove duplicados que já foram excluídos da fila
+if _dups_persist:
+    _chassi_fila = {str(r.get("chassi","")).strip().lower() for r in st.session_state.fila_registros}
+    _dups_persist = [d for d in _dups_persist if str(d.get("chassi","")).strip().lower() in _chassi_fila]
+    st.session_state._reg_duplicados_persistente = _dups_persist
+
+if _salvos_count > 0:
+    _sc1, _sc2 = st.columns([10, 1])
+    with _sc1:
+        st.success(f"✅ {_salvos_count} registro(s) salvo(s) com sucesso na tabela principal!")
+    with _sc2:
+        if st.button("OK", key="ok_salvos"):
+            st.session_state._reg_salvos_count = 0
+            st.rerun()
+
+if _dups_persist:
+    _msgs = "".join(
+        f"<li><b>{d.get('nome','—')}</b> — chassi <b>{d.get('chassi','—')}</b></li>"
+        for d in _dups_persist
+    )
+    st.markdown(f"""
+    <div style='padding:10px 14px;margin-bottom:4px;background:#fff3cd;
+                border-left:4px solid #dc7800;border-radius:8px;font-size:0.85rem;color:#7a4500;'>
+      <b>⚠️ {len(_dups_persist)} registro(s) já constam na tabela principal e não foram salvos:</b>
+      <ul style='margin:6px 0 0 0;padding-left:18px;color:#7a4500'>{_msgs}</ul>
+      <span style='color:#a05800;font-size:0.78rem;'>
+        As linhas duplicadas permanecem na fila abaixo para exclusão manual.
+      </span>
+    </div>""", unsafe_allow_html=True)
+    if st.button("OK — entendido", key="ok_dups"):
+        st.session_state._reg_duplicados_persistente = []
+        st.rerun()
+
+st.subheader(f"🗂️ Fila de Registros Pendentes  ({len(st.session_state.fila_registros)})")
+
+if not st.session_state.fila_registros:
+    st.info("Nenhum registro na fila. Adicione manualmente ou via foto acima.")
+else:
+    # ── Botões de ação fixos ──────────────────────────────
+    _ac1, _ac2, _ac3, _ac4, _ac5 = st.columns([1, 1, 1, 1, 2])
+
+    with _ac1:
+        _lbl_del = "✅ Modo Exclusão ON" if st.session_state.fila_delete_mode else "🗑️ Modo Exclusão"
+        if st.button(_lbl_del, use_container_width=True):
+            st.session_state.fila_delete_mode = not st.session_state.fila_delete_mode
+            st.rerun()
+
+    with _ac2:
+        if st.session_state.fila_delete_mode:
+            st.session_state._fila_excluir_btn = st.button("❌ Excluir Selecionados", type="primary", use_container_width=True)
+
+    with _ac3:
+        if st.button("↩️ Desfazer Excluir", use_container_width=True):
+            if st.session_state.fila_linhas_excluidas:
+                st.session_state.fila_registros.extend(st.session_state.fila_linhas_excluidas.pop())
+                st.rerun()
+            else:
+                st.warning("Nenhuma exclusão para desfazer")
+
+    with _ac4:
+        if st.button("↩️ Desfazer Edição", use_container_width=True):
+            info = st.session_state.fila_ultima_edicao
+            if info:
+                i, col_ed, val_ant = info["idx"], info["col"], info["val"]
+                if i < len(st.session_state.fila_registros):
+                    st.session_state.fila_registros[i][col_ed] = val_ant
+                st.session_state.fila_ultima_edicao = None
+                st.rerun()
+            else:
+                st.warning("Nenhuma edição para desfazer")
+
+    # ── Tabela editável da fila ───────────────────────────
+    df_fila = pd.DataFrame(st.session_state.fila_registros)
+    colunas_exibir = ["nome", "veiculo", "chassi", "contato", "shaken_vencimento", "data_registro"]
+    colunas_presentes = [c for c in colunas_exibir if c in df_fila.columns]
+    df_fila_view = df_fila[colunas_presentes].copy()
+
+    if st.session_state.fila_delete_mode:
+        df_fila_view.insert(0, "Apagar", [False] * len(df_fila_view))
+
+    _col_cfg = {
+        "nome":              st.column_config.TextColumn("Nome"),
+        "veiculo":           st.column_config.TextColumn("Veículo"),
+        "chassi":            st.column_config.TextColumn("Chassi"),
+        "contato":           st.column_config.TextColumn("Contato"),
+        "shaken_vencimento": st.column_config.TextColumn("Venc. Shaken"),
+        "data_registro":     st.column_config.TextColumn("Data Registro"),
+    }
+    if st.session_state.fila_delete_mode:
+        _col_cfg["Apagar"] = st.column_config.CheckboxColumn("🗑️", default=False)
+
+    editor_fila = st.data_editor(
+        df_fila_view,
+        use_container_width=True,
+        num_rows="fixed",
+        key="editor_fila",
+        column_config=_col_cfg
+    )
+
+    # Detecta edições e guarda para desfazer
+    for i, row in editor_fila.iterrows():
+        orig = st.session_state.fila_registros[i]
+        for col in colunas_presentes:
+            v_new = str(row.get(col, "") or "")
+            v_old = str(orig.get(col, "") or "")
+            if v_new != v_old:
+                st.session_state.fila_ultima_edicao = {"idx": i, "col": col, "val": v_old}
+                st.session_state.fila_registros[i][col] = v_new
+                break
+
+    # Processa exclusão selecionada
+    if st.session_state.fila_delete_mode and st.session_state.get("_fila_excluir_btn"):
+        excluidos = []
+        mantidos = []
+        for i, row in editor_fila.iterrows():
+            if row.get("Apagar", False):
+                excluidos.append(st.session_state.fila_registros[i])
+            else:
+                mantidos.append(st.session_state.fila_registros[i])
+        if excluidos:
+            st.session_state.fila_linhas_excluidas.append(excluidos)
+        st.session_state.fila_registros = mantidos
+        st.session_state.fila_delete_mode = False
+        st.session_state._fila_excluir_btn = False
+        st.rerun()
+
+    # ── Salvar / Limpar ───────────────────────────────────
+    col_salvar, col_limpar = st.columns([2, 1])
+
+    with col_salvar:
+        if st.button("💾 Salvar Registros", type="primary", use_container_width=True):
+            # Carrega chassis já existentes no banco
+            _df_existente = listar_clientes()
+            _chassis_existentes = set(
+                str(c).strip().lower()
+                for c in _df_existente["chassi"].dropna()
+                if str(c).strip()
+            )
+
+            salvos = 0
+            duplicados = []
+            fila_restante = []
+            _chassis_ja_vistos = set()  # acumula chassis salvos no próprio loop
+
+            for i, row in editor_fila.iterrows():
+                registro = st.session_state.fila_registros[i].copy()
+                for col in colunas_presentes:
+                    val = row[col]
+                    if col in ("data_registro", "shaken_vencimento"):
+                        raw = str(val).strip().replace("-", "").replace("/", "")
+                        if len(raw) == 8 and raw.isdigit():
+                            val = f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
+                    if col == "veiculo":
+                        val = traduzir_veiculo(str(val))
+                    registro[col] = val
+
+                _chassi_novo = str(registro.get("chassi","")).strip().lower()
+                if _chassi_novo and (_chassi_novo in _chassis_existentes or _chassi_novo in _chassis_ja_vistos):
+                    duplicados.append(registro)
+                    fila_restante.append(st.session_state.fila_registros[i])
+                else:
+                    registro.pop("_origem", None)
+                    salvar_cliente(registro)
+                    salvos += 1
+                    if _chassi_novo:
+                        _chassis_ja_vistos.add(_chassi_novo)
+
+            st.session_state.fila_registros = fila_restante
+            if "df" in st.session_state:
+                del st.session_state["df"]
+
+            st.session_state._reg_salvos_count = salvos
+            st.session_state._reg_duplicados_persistente = duplicados
+
+            st.rerun()
+
+    with col_limpar:
+        if st.button("🗑️ Limpar Fila", use_container_width=True):
+            st.session_state.fila_registros = []
+            st.rerun()
