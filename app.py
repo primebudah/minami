@@ -1644,8 +1644,8 @@ if not df.empty:
     else:
         # ── Modo Tabela (padrão) ─────────────────────────
         # Operador pode editar status; colunas de dados só admin/secretaria
-        _cols_dados = [c for c in df_view.columns if c not in ("status", "Apagar")]
-        _disabled = [c for c in _cols_dados if c != "observacao"] if not can("editar") else False
+        _cols_dados = [c for c in df_view.columns if c not in ("status", "Apagar", "_data_conclusao_original")]
+        _disabled = [c for c in _cols_dados if c not in ("observacao", "data_conclusao")] if not can("editar") else False
 
         # ── st.data_editor (edição principal) ────────────
         _order = ["observacao", "status"] + [c for c in df_view.columns if c not in ("status", "observacao", "data_conclusao")] + ["data_conclusao"]
@@ -1782,12 +1782,16 @@ if not df.empty:
                                     st.session_state._celebrar = True
                                     # Preenche data_conclusao automaticamente
                                     row_dict["data_conclusao"] = str(date.today())
-                                elif val_salvar == "🔵 Em processamento":
+                                else:
+                                    # Se mudou de Concluido para outro status, limpa data_conclusao
                                     _status_anterior = str(row_dict.get("status",""))
                                     if "Concluido" in _status_anterior:
-                                        if "_conc_ciclos" not in st.session_state:
-                                            st.session_state._conc_ciclos = set()
-                                        st.session_state._conc_ciclos.add(ids[i])
+                                        row_dict["data_conclusao"] = ""
+                                    if val_salvar == "🔵 Em processamento":
+                                        if "Concluido" in _status_anterior:
+                                            if "_conc_ciclos" not in st.session_state:
+                                                st.session_state._conc_ciclos = set()
+                                            st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
                             atualizar_cliente(ids[i], row_dict)
                         celula_mudou = True
