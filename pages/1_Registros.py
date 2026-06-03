@@ -2,12 +2,15 @@
 # IMPORTS
 # =========================================================
 
+import logging
 import os
 from datetime import date
 import re
 
 import pandas as pd
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 from database import inicializar_banco, salvar_cliente, listar_clientes, atualizar_cliente, deletar_cliente, desfazer_ultima_acao
 from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
@@ -26,8 +29,10 @@ try:
         _icon_data = f.read().strip()
         if _icon_data:
             _page_icon = f"data:image/png;base64,{_icon_data}"
-except:
+except FileNotFoundError:
     pass
+except Exception as e:
+    logger.warning("Failed to load page icon: %s", e)
 
 st.set_page_config("Central Shaken - Registros", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()

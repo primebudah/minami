@@ -2,10 +2,13 @@
 # DATABASE COM SUPABASE (PostgreSQL)
 # =========================================================
 
+import logging
 import os
 from datetime import date
 from typing import Optional, List, Dict, Any
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 try:
     from supabase import create_client, Client
@@ -207,7 +210,8 @@ def salvar_historico(cliente_id: int, acao: str, dados_anteriores: Dict) -> bool
             'p_dados_anteriores': json.dumps(dados_anteriores) if dados_anteriores else None
         }).execute()
         return True
-    except Exception:
+    except Exception as e:
+        logger.error("Failed to save history for client %s (action=%s): %s", cliente_id, acao, e)
         return False
 
 def desfazer_ultima_acao() -> bool:
@@ -255,7 +259,11 @@ def desfazer_ultima_acao() -> bool:
 # =========================================================
 
 def migrar_dados_sqlite(supabase_client, sqlite_path: str = "minami_service.db"):
-    """Migra dados do SQLite local para Supabase."""
+    """Migra dados do SQLite local para Supabase.
+    
+    Returns:
+        Number of successfully migrated records, or -1 on connection/setup error.
+    """
     import sqlite3
     try:
         conn = sqlite3.connect(sqlite_path)
@@ -267,6 +275,7 @@ def migrar_dados_sqlite(supabase_client, sqlite_path: str = "minami_service.db")
         rows = cur.fetchall()
         
         migrados = 0
+        erros = 0
         for row in rows:
             dados = dict(row)
             # Remove ID para novo insert
@@ -276,10 +285,13 @@ def migrar_dados_sqlite(supabase_client, sqlite_path: str = "minami_service.db")
                 supabase_client.table("clientes").insert(dados).execute()
                 migrados += 1
             except Exception as e:
-                print(f"Erro migrando cliente {dados.get('nome')}: {e}")
+                erros += 1
+                logger.error("Failed to migrate client '%s': %s", dados.get('nome'), e)
         
         conn.close()
+        if erros:
+            logger.warning("Migration completed with %d errors out of %d records", erros, len(rows))
         return migrados
     except Exception as e:
-        print(f"Erro na migração: {e}")
-        return 0
+        logger.error("Migration setup failed: %s", e)
+        return -1
