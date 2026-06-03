@@ -154,7 +154,9 @@ def atualizar_cliente(cliente_id: int, dados: Dict[str, Any]) -> bool:
         def clean_value(v):
             if isinstance(v, float) and pd.isna(v):
                 return None
-            return v or None
+            if v is None or str(v).strip() == "":
+                return None
+            return v
 
         # Chama a função RPC
         result = supabase.rpc('atualizar_cliente_rpc', {
