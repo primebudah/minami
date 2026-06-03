@@ -1754,12 +1754,13 @@ if not df.empty:
                             # ── Placa: padrão japonês ──
                             if col == "placa" and not _rejeitar:
                                 _v = val_salvar.strip()
-                                # Padrão JP: ex: 品川-500, 大阪-123-456
-                                # Aceita: caracteres japoneses + hífen + números, mín 3 chars
-                                _ok_placa = bool(re.match(r"^.{3,}$", _v)) if _v else True
+                                # Padrão JP: ex: 品川-500, 大阪-123-456, 300-か-1234
+                                # Aceita: caracteres japoneses/kanji + hífen + números, ou apenas números com hífen
+                                # Mínimo 3 caracteres
+                                _ok_placa = bool(re.match(r"^[\w\u4e00-\u9faf\-]{3,}$", _v)) if _v else True
                                 if _v and not _ok_placa:
                                     _rejeitar_aviso(
-                                        f"<b>Placa</b>: '{_v}' está fora do padrão esperado. Verifique o documento.",
+                                        f"<b>Placa</b>: '{_v}' está fora do padrão esperado (caracteres, números e hífen). Verifique o documento.",
                                         pode_salvar=True
                                     )
                                     _rejeitar = True
