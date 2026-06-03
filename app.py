@@ -1725,8 +1725,12 @@ if not df.empty:
                                     elif re.match(r"^\d{4}-\d{2}-\d{2}$", _v):
                                         pass  # já no formato correto
                                     else:
-                                        _rejeitar_aviso(f"<b>{_lbl}</b>: '{_v}' não é uma data válida. Use DD/MM/AAAA ou AAAAMMDD.")
-                                        _rejeitar = True
+                                        # Aceita qualquer formato para data_conclusao (mais flexível)
+                                        if col == "data_conclusao":
+                                            pass  # aceita qualquer valor para data_conclusao
+                                        else:
+                                            _rejeitar_aviso(f"<b>{_lbl}</b>: '{_v}' não é uma data válida. Use DD/MM/AAAA ou AAAAMMDD.")
+                                            _rejeitar = True
 
 
                             # ── Chassi: padrão japonês (letras+hífen+números) ──
