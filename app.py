@@ -392,12 +392,6 @@ def carregar_clientes():
     df = listar_clientes()
     if "veiculo" in df.columns:
         df["veiculo"] = df["veiculo"].apply(traduzir_veiculo)
-    # Debug: verifica se data_conclusao está no dataframe
-    print(f"DEBUG: Colunas no dataframe: {df.columns.tolist()}")
-    if "data_conclusao" in df.columns:
-        print(f"DEBUG: data_conclusao está presente, exemplo de valor: {df['data_conclusao'].iloc[0] if len(df) > 0 else 'N/A'}")
-    else:
-        print(f"DEBUG: data_conclusao NÃO está no dataframe!")
     return df
 
 
@@ -1350,7 +1344,11 @@ if not df.empty:
         if rid in st.session_state._conc_ciclos:
             return f"↺ {v}"
         return v
-    df_view["data_conclusao"] = _df_display.apply(_fmt_conc, axis=1)
+    # Aplica _fmt_conc em _df_display, mas se data_conclusao não existe, usa valor vazio
+    if "data_conclusao" in _df_display.columns:
+        df_view["data_conclusao"] = _df_display.apply(_fmt_conc, axis=1)
+    else:
+        df_view["data_conclusao"] = ""
 
     # Normaliza status
     def normalizar_status(v):
@@ -1703,11 +1701,6 @@ if not df.empty:
                             row_dict = st.session_state.df.iloc[i].to_dict()
                             val_salvar = str(v_new)
                             _rejeitar = False  # se True: não salva, reseta editor
-                            # Debug: verifica se data_conclusao está no row_dict
-                            if "data_conclusao" in row_dict:
-                                print(f"DEBUG: data_conclusao no row_dict antes de salvar: {row_dict['data_conclusao']}")
-                            else:
-                                print(f"DEBUG: data_conclusao NÃO está no row_dict antes de salvar")
 
                             # ── Helper: rejeita e exibe aviso (sem salvar) ──
                             def _rejeitar_aviso(msg, pode_salvar=False):
@@ -1777,6 +1770,8 @@ if not df.empty:
                                 val_salvar = {"🔵":"🔵 Em processamento","🟢":"🟢 Concluido","⚪":"⚪"}.get(val_salvar, val_salvar)
                                 if val_salvar == "🟢 Concluido":
                                     st.session_state._celebrar = True
+                                    # Preenche data_conclusao automaticamente
+                                    row_dict["data_conclusao"] = str(date.today())
                                 elif val_salvar == "🔵 Em processamento":
                                     _status_anterior = str(row_dict.get("status",""))
                                     if "Concluido" in _status_anterior:
@@ -1784,8 +1779,6 @@ if not df.empty:
                                             st.session_state._conc_ciclos = set()
                                         st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
-                            # Debug: verifica data_conclusao antes de salvar
-                            print(f"DEBUG: Salvando cliente {ids[i]}, col={col}, data_conclusao={row_dict.get('data_conclusao')}")
                             atualizar_cliente(ids[i], row_dict)
                         celula_mudou = True
                         break
