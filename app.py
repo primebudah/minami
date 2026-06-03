@@ -1702,7 +1702,9 @@ if not df.empty:
                         if col != "status":
                             st.session_state.ultima_edicao = {"cliente_id": ids[i], "coluna": col, "valor_antigo": str(v_old)}
                         if col in st.session_state.df.columns:
-                            row_dict = st.session_state.df.iloc[i].to_dict()
+                            # Busca o cliente correto pelo ID, não pelo índice
+                            cliente_id = ids[i]
+                            row_dict = st.session_state.df[st.session_state.df["id"] == cliente_id].iloc[0].to_dict()
                             val_salvar = str(v_new)
                             _rejeitar = False  # se True: não salva, reseta editor
 
