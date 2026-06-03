@@ -542,12 +542,11 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
         st.caption("📱 Selecione até **10 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
-        st.caption("⚠️ No tablet, o limite pode ser menor (aprox. 4 fotos) devido ao navegador.")
         files = st.file_uploader(
             "Selecione até 10 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
-            key="uploader_fotos"
+            key=f"uploader_{st.session_state.get('uploader_key', 0)}"
         )
 
         if files:
@@ -589,6 +588,7 @@ with col_foto:
                     st.warning(f"{err} erro(s).")
                 if ok:
                     st.session_state._fila_editor_v += 1
+                    st.session_state.uploader_key = st.session_state.get('uploader_key', 0) + 1
                 st.rerun()
 
 # =========================================================
