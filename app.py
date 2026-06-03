@@ -1568,12 +1568,6 @@ if not df.empty:
                                     _rejeitar_aviso_col(f"<b>{_lbl}</b>: '{_v}' não é uma data válida. Use DD/MM/AAAA ou AAAAMMDD.")
                                     _rejeitar = True
 
-                        # ── data_conclusao: exige status concluído ──
-                        if col == "data_conclusao" and not _rejeitar:
-                            _status_atual = str(row_dict.get("status","")).strip()
-                            if val_salvar.strip() and _status_atual != "🟢 Concluido":
-                                st.session_state._aviso_data_conc = True
-                                _rejeitar = True
 
                         # ── Chassi ──
                         if col == "chassi" and not _rejeitar:
@@ -1730,13 +1724,6 @@ if not df.empty:
                                         _rejeitar_aviso(f"<b>{_lbl}</b>: '{_v}' não é uma data válida. Use DD/MM/AAAA ou AAAAMMDD.")
                                         _rejeitar = True
 
-                            # ── data_conclusao: exige status concluído ──
-                            if col == "data_conclusao" and not _rejeitar:
-                                _status_atual = str(row_dict.get("status","")).strip()
-                                if val_salvar.strip() and _status_atual != "🟢 Concluido":
-                                    st.session_state._aviso_data_conc = True
-                                    # Não reseta editor aqui — reset acontece ao clicar OK
-                                    _rejeitar = True
 
                             # ── Chassi: padrão japonês (letras+hífen+números) ──
                             if col == "chassi" and not _rejeitar:
