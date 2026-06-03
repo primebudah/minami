@@ -1349,6 +1349,10 @@ if not df.empty:
         df_view["data_conclusao"] = _df_display.apply(_fmt_conc, axis=1)
     else:
         df_view["data_conclusao"] = ""
+    
+    # Salva o valor original de data_conclusao para comparação correta na edição
+    if "data_conclusao" in _df_display.columns:
+        df_view["_data_conclusao_original"] = _df_display["data_conclusao"].fillna("")
 
     # Normaliza status
     def normalizar_status(v):
