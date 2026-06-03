@@ -377,15 +377,10 @@ RETORNE APENAS JSON com estes campos:
 
     d = json.loads(r.choices[0].message.content)
 
-    # Debug: mostra dados brutos do OCR
-    print(f"[DEBUG] Dados brutos do OCR: {d}")
-
     # Validação e conversão rígida de datas (STRICT VALIDATION)
     for campo in ["shaken_vencimento", "data_registro"]:
         if d.get(campo):
             data_bruta = d[campo]
-            print(f"[DEBUG] Validando campo {campo}: {data_bruta}")
-            
             # Se for "NÃO IDENTIFICADO", marca para verificação manual
             if "NÃO IDENTIFICADO" in data_bruta or data_bruta == "NÃO IDENTIFICADO":
                 d[campo] = "VERIFICAR"
@@ -397,10 +392,9 @@ RETORNE APENAS JSON com estes campos:
             # Se a conversão foi bem-sucedida, usa a data convertida
             if data_convertida and re.match(r"^\d{4}-\d{2}-\d{2}$", data_convertida):
                 d[campo] = data_convertida
-                print(f"[DEBUG] Data convertida com sucesso: {data_convertida}")
             else:
                 d[campo] = "VERIFICAR"
-                print(f"[DEBUG] Data não pôde ser convertida, marcando para verificação manual")
+
 
     # Formata veículo como {fabricante} {modelo_katashiki}
     fabricante = d.get("fabricante", "")
@@ -421,5 +415,4 @@ RETORNE APENAS JSON com estes campos:
         # Remove espaços extras e normaliza
         d["placa"] = str(d["placa"]).strip().replace("  ", " ").replace("  ", " ")
 
-    print(f"[DEBUG] Dados finais: {d}")
     return d

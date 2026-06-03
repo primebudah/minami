@@ -1558,18 +1558,13 @@ if not df.empty:
                         if col in ("shaken_vencimento", "data_registro", "data_conclusao"):
                             _lbl = {"shaken_vencimento": "Shaken", "data_registro": "Inspeção", "data_conclusao": "Conclusão"}[col]
                             _v = val_salvar.strip()
-                            st.write(f"DEBUG: Validando data {_lbl}: valor={_v}")
                             if _v:
                                 _raw = _v.replace("-","").replace("/","")
-                                st.write(f"DEBUG: raw={_raw}, len={len(_raw)}, isdigit={_raw.isdigit()}")
                                 if len(_raw) == 8 and _raw.isdigit():
                                     val_salvar = f"{_raw[:4]}-{_raw[4:6]}-{_raw[6:8]}"
-                                    st.write(f"DEBUG: Data formatada: {val_salvar}")
                                 elif re.match(r"^\d{4}-\d{2}-\d{2}$", _v):
-                                    st.write(f"DEBUG: Data já no formato correto")
                                     pass
                                 else:
-                                    st.write(f"DEBUG: Data inválida, rejeitando")
                                     _rejeitar_aviso_col(f"<b>{_lbl}</b>: '{_v}' não é uma data válida. Use DD/MM/AAAA ou AAAAMMDD.")
                                     _rejeitar = True
 

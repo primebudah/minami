@@ -159,17 +159,13 @@ if not USE_SUPABASE:
         """Lista todos os clientes como DataFrame.
         
         Args:
-            where_clause: Cláusula WHERE SQL opcional
-            params: Parâmetros para a cláusula WHERE
+            where_clause: Ignored (kept for API compatibility). Use params dict for filtering.
+            params: Ignored (kept for API compatibility).
         """
         import pandas as pd
         with get_db_connection() as conn:
             cur = conn.cursor()
-            if where_clause and params:
-                sql = f"SELECT * FROM clientes WHERE {where_clause} ORDER BY id DESC"
-                cur.execute(sql, params)
-            else:
-                cur.execute("SELECT * FROM clientes ORDER BY id DESC")
+            cur.execute("SELECT * FROM clientes ORDER BY id DESC")
             data = [dict(row) for row in cur.fetchall()]
             return pd.DataFrame(data)
 
@@ -181,6 +177,12 @@ if not USE_SUPABASE:
             row = cur.fetchone()
             return dict(row) if row else None
 
+    ALLOWED_COLUMNS = frozenset({
+        "nome", "contato", "shaken_vencimento", "veiculo", "placa",
+        "chassi", "fabricante", "modelo_katashiki", "chassi_completo",
+        "data_registro", "status", "observacao", "data_conclusao",
+    })
+
     def atualizar_cliente(cliente_id, dados):
         """Atualiza cliente existente."""
         with get_db_connection() as conn:
@@ -188,9 +190,11 @@ if not USE_SUPABASE:
             campos = []
             valores = []
             for k, v in dados.items():
-                if k != "id":
+                if k != "id" and k in ALLOWED_COLUMNS:
                     campos.append(f"{k} = ?")
                     valores.append(v)
+            if not campos:
+                return
             valores.append(cliente_id)
             sql = f"UPDATE clientes SET {', '.join(campos)} WHERE id = ?"
             cur.execute(sql, valores)

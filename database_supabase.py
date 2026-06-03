@@ -158,9 +158,6 @@ def atualizar_cliente(cliente_id: int, dados: Dict[str, Any]) -> bool:
                 return None
             return v
 
-        # Log para debug
-        print(f"DEBUG atualizar_cliente: dados['data_conclusao'] = {dados.get('data_conclusao')}")
-
         # Chama a função RPC
         result = supabase.rpc('atualizar_cliente_rpc', {
             'p_id': cliente_id,
