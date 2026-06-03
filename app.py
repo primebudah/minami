@@ -1090,7 +1090,7 @@ if st.session_state.get("_aviso_formato"):
     with _af1:
         st.markdown(f"""
         <div style='padding:9px 14px;background:#fff3cd;border-left:4px solid #dc7800;
-                    border-radius:8px;font-size:0.85rem;color:#7a4500;'>
+                    border-radius:8px;font-size:0.85rem;color:#333333;'>
           <b>⚠️ {_af['msg']}</b>
         </div>""", unsafe_allow_html=True)
     with _af2:
