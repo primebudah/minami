@@ -458,15 +458,30 @@ if st.session_state.get("usuario") == "Kaori":
         st.markdown("---")
         st.markdown("<div style='font-size:0.75rem;color:#666;'>Backup BD</div>", unsafe_allow_html=True)
         try:
-            with open("minami_service.db", "rb") as f:
-                db_bytes = f.read()
-            st.download_button(
-                label="💾 Download BD",
-                data=db_bytes,
-                file_name=f"minami_service_backup_{date.today().strftime('%Y%m%d')}.db",
-                mime="application/octet-stream",
-                use_container_width=True
-            )
+            # Verifica se está usando Supabase ou SQLite
+            from database import USE_SUPABASE
+            if USE_SUPABASE:
+                # Exporta dados do Supabase para CSV
+                df = listar_clientes()
+                csv_bytes = df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="💾 Download CSV",
+                    data=csv_bytes,
+                    file_name=f"minami_backup_{date.today().strftime('%Y%m%d')}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            else:
+                # SQLite: faz download do arquivo .db
+                with open("minami_service.db", "rb") as f:
+                    db_bytes = f.read()
+                st.download_button(
+                    label="💾 Download BD",
+                    data=db_bytes,
+                    file_name=f"minami_service_backup_{date.today().strftime('%Y%m%d')}.db",
+                    mime="application/octet-stream",
+                    use_container_width=True
+                )
         except Exception as e:
             st.sidebar.caption("BD não disponível")
 
