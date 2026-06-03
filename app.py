@@ -392,6 +392,12 @@ def carregar_clientes():
     df = listar_clientes()
     if "veiculo" in df.columns:
         df["veiculo"] = df["veiculo"].apply(traduzir_veiculo)
+    # Debug: verifica se data_conclusao está no dataframe
+    print(f"DEBUG: Colunas no dataframe: {df.columns.tolist()}")
+    if "data_conclusao" in df.columns:
+        print(f"DEBUG: data_conclusao está presente, exemplo de valor: {df['data_conclusao'].iloc[0] if len(df) > 0 else 'N/A'}")
+    else:
+        print(f"DEBUG: data_conclusao NÃO está no dataframe!")
     return df
 
 
