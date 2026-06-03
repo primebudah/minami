@@ -2,6 +2,7 @@
 # IMPORTS
 # =========================================================
 
+import logging
 import os
 from datetime import date, timedelta
 import re
@@ -10,6 +11,8 @@ import pandas as pd
 import streamlit as st
 
 import streamlit.components.v1 as _stc
+
+logger = logging.getLogger(__name__)
 from database import (
     inicializar_banco,
     salvar_cliente,
@@ -34,8 +37,10 @@ try:
         _icon_data = f.read().strip()
         if _icon_data:
             _page_icon = f"data:image/png;base64,{_icon_data}"
-except:
+except FileNotFoundError:
     pass
+except Exception as e:
+    logger.warning("Failed to load page icon: %s", e)
 
 st.set_page_config("Central Shaken", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()
@@ -343,8 +348,10 @@ if st.session_state.get("_celebrar") and st.session_state.get("_celebration_enab
 try:
     inicializar_banco()
 except NameError:
-    # Supabase ativo - não precisa inicializar SQLite
-    pass
+    logger.warning("inicializar_banco not defined — Supabase mode may be active")
+except Exception as e:
+    logger.error("Database initialization failed: %s", e)
+    st.error(f"Erro ao inicializar banco de dados: {e}")
 
 if "delete_mode" not in st.session_state:
     st.session_state.delete_mode = False
@@ -468,6 +475,7 @@ if st.session_state.get("usuario") == "Kaori":
                 use_container_width=True
             )
         except Exception as e:
+            logger.warning("Database backup not available: %s", e)
             st.sidebar.caption("BD não disponível")
 
 # Modal de configurações
@@ -1375,7 +1383,7 @@ if not df.empty:
                 max_data = int(lengths.max()) if not lengths.empty else 0
             else:
                 max_data = 0
-        except Exception:
+        except (KeyError, TypeError, ValueError):
             max_data = 0
         return max(50, int(max(max_data, len(label)) * 7) + 16)
 

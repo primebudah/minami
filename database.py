@@ -3,11 +3,14 @@
 # v3 - FIX: SQLite functions wrapped in conditional block
 # =========================================================
 
+import logging
 import os
 import sqlite3
 from contextlib import contextmanager
 from datetime import date
 from typing import Optional, Dict, Any, List
+
+logger = logging.getLogger(__name__)
 
 # Detecta se Supabase está configurado
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
@@ -18,8 +21,10 @@ try:
     import streamlit as st
     SUPABASE_URL = st.secrets.get("SUPABASE_URL", SUPABASE_URL)
     SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", SUPABASE_KEY)
-except:
+except ImportError:
     pass
+except Exception as e:
+    logger.warning("Failed to load Supabase secrets from Streamlit: %s", e)
 
 # Flag: True = usar Supabase, False = usar SQLite local
 USE_SUPABASE = bool(SUPABASE_URL and SUPABASE_KEY)
@@ -131,8 +136,10 @@ if not USE_SUPABASE:
             for col in ["data_registro", "fabricante", "modelo_katashiki", "chassi_completo", "status", "observacao", "data_conclusao", "placa"]:
                 try:
                     cur.execute(f"ALTER TABLE clientes ADD COLUMN {col} TEXT")
-                except:
-                    pass
+                except sqlite3.OperationalError:
+                    pass  # Column already exists
+                except Exception as e:
+                    logger.error("Failed to add column '%s' to clientes: %s", col, e)
 
     def salvar_cliente(d):
         """Salva um novo cliente no banco."""

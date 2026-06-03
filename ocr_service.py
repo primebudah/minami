@@ -5,10 +5,13 @@
 import io
 import base64
 import json
+import logging
 import re
 
 from PIL import Image
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 # =========================================================
 # OPENAI CLIENT (com proteção de import)
@@ -283,7 +286,11 @@ def converter_data_japonesa(s):
 
         return None
 
-    except:
+    except (ValueError, TypeError, IndexError) as e:
+        logger.debug("Date conversion failed for '%s': %s", s, e)
+        return None
+    except Exception as e:
+        logger.warning("Unexpected error converting date '%s': %s", s, e)
         return None
 
 # =========================================================

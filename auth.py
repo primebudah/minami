@@ -1,7 +1,10 @@
+import logging
 import os
 import json
 import base64
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 _SESSION_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "session.json")
 _CONFIG_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "config.json")
@@ -10,43 +13,52 @@ def _save_config(dark_mode, celebration_enabled):
     try:
         with open(_CONFIG_FILE, "w") as f:
             json.dump({"dark_mode": dark_mode, "celebration_enabled": celebration_enabled}, f)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Failed to save config to %s: %s", _CONFIG_FILE, e)
 
 def _load_config():
     try:
         with open(_CONFIG_FILE, "r") as f:
             return json.load(f)
-    except Exception:
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"dark_mode": False, "celebration_enabled": True}
+    except Exception as e:
+        logger.warning("Unexpected error loading config from %s: %s", _CONFIG_FILE, e)
         return {"dark_mode": False, "celebration_enabled": True}
 
 def _save_session(usuario, role, nome, lembrar=True):
     try:
         with open(_SESSION_FILE, "w") as f:
             json.dump({"usuario": usuario, "role": role, "nome": nome, "lembrar": lembrar}, f)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Failed to save session to %s: %s", _SESSION_FILE, e)
 
 def _load_session():
     try:
         with open(_SESSION_FILE, "r") as f:
             return json.load(f)
-    except Exception:
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+    except Exception as e:
+        logger.warning("Unexpected error loading session from %s: %s", _SESSION_FILE, e)
         return None
 
 def _clear_session():
     try:
         if os.path.exists(_SESSION_FILE):
             os.remove(_SESSION_FILE)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Failed to clear session file %s: %s", _SESSION_FILE, e)
 
 def _get_logo_b64():
     path = os.path.join(os.path.dirname(__file__), ".streamlit", "icon_b64.txt")
     try:
         with open(path, "r") as f:
             return f.read().strip()
-    except Exception:
+    except FileNotFoundError:
+        return ""
+    except Exception as e:
+        logger.warning("Failed to load logo from %s: %s", path, e)
         return ""
 
 PERMISSIONS = {
