@@ -3,9 +3,7 @@ import pytesseract
 import numpy as np
 import os
 
-# Configuração do Tesseract
-TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-TESSDATA_PREFIX = r"C:\Program Files\Tesseract-OCR\tessdata"
+from tesseract_config import TESSERACT_PATH, TESSDATA_PREFIX
 
 def find_registration_field_bbox(image):
     """

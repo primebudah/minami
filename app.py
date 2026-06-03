@@ -21,33 +21,23 @@ from database import (
 from ocr_service import converter_data_japonesa, traduzir_veiculo
 from ui_base import inject_base_css
 from auth import require_login, can, logout_button, _load_config, _save_config
+from shared_utils import (
+    load_page_icon,
+    inject_pwa_meta,
+    inject_dark_mode_css,
+    clean_phone_number,
+    get_whatsapp_url,
+    format_whatsapp_link,
+)
 
 # =========================================================
 # CONFIG
 # =========================================================
 
-# Carrega ícone da logo
-_icon_path = os.path.join(os.path.dirname(__file__), ".streamlit", "icon_b64.txt")
-_page_icon = "🚗"
-try:
-    with open(_icon_path, "r") as f:
-        _icon_data = f.read().strip()
-        if _icon_data:
-            _page_icon = f"data:image/png;base64,{_icon_data}"
-except:
-    pass
-
+_page_icon = load_page_icon()
 st.set_page_config("Central Shaken", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()
-
-# Meta tags para PWA - melhor aparência ao salvar na área de trabalho
-st.markdown(f"""
-<meta name="application-name" content="Central Shaken">
-<meta name="apple-mobile-web-app-title" content="Central Shaken">
-<meta name="theme-color" content="#0d2a6e">
-<link rel="shortcut icon" href="{_page_icon}" type="image/png">
-""", unsafe_allow_html=True)
-
+inject_pwa_meta(_page_icon)
 require_login()
 
 # ── JS global: killMenu + openSidebar ──────────────────────────────────
@@ -396,27 +386,11 @@ def carregar_clientes():
 
 
 def _fmt_contato_wa(numero):
-    """Converte número japonês para link WhatsApp clicável."""
-    if not numero or pd.isna(numero):
-        return ""
-    # Remove espaços, hífens, parênteses
-    clean = re.sub(r"[\s\-\(\)]", "", str(numero))
-    # Remove 0 inicial e adiciona 81 (código do Japão)
-    if clean.startswith("0") and len(clean) >= 10:
-        intl = "81" + clean[1:]
-        wa_url = f"https://wa.me/{intl}"
-        return f'<a href="{wa_url}" target="_blank">{numero}</a>'
-    return numero
+    return format_whatsapp_link(numero)
 
 
 def _get_wa_url(numero):
-    """Retorna URL do WhatsApp ou None se inválido."""
-    if not numero or pd.isna(numero):
-        return None
-    clean = re.sub(r"[\s\-\(\)]", "", str(numero))
-    if clean.startswith("0") and len(clean) >= 10:
-        return f"https://wa.me/81{clean[1:]}"
-    return None
+    return get_whatsapp_url(numero)
 
 if "df" not in st.session_state:
     st.session_state.df = carregar_clientes()
@@ -507,71 +481,7 @@ if st.session_state._show_config:
 
 # Aplica CSS para modo escuro (sidebar continua azul)
 if st.session_state._dark_mode:
-    st.markdown("""
-    <style>
-    /* Modo escuro - apenas conteúdo principal, sidebar continua azul */
-    .stApp {
-        background-color: #1a1a2e !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        background-color: #1a1a2e !important;
-    }
-    [data-testid="stMain"] {
-        background-color: #1a1a2e !important;
-    }
-    /* Tabelas em modo escuro */
-    .stDataFrame {
-        background-color: #16213e !important;
-        color: #eaeaea !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] {
-        background-color: #16213e !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] thead th {
-        background-color: #0f3460 !important;
-        color: #eaeaea !important;
-        border-bottom: 2px solid #e94560 !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] tbody tr {
-        background-color: #16213e !important;
-        color: #eaeaea !important;
-        border-bottom: 1px solid #0f3460 !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] tbody tr:hover {
-        background-color: #1a1a2e !important;
-    }
-    /* Inputs e campos de texto */
-    .stTextInput > div > div > input,
-    .stTextArea > div > div > textarea {
-        background-color: #87ceeb !important;
-        color: #1a1a2e !important;
-    }
-    /* Botões */
-    .stButton > button {
-        background-color: #1044b5 !important;
-        color: #ffffff !important;
-    }
-    .stButton > button:hover {
-        background-color: #0d2a6e !important;
-    }
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: #0f3460 !important;
-        color: #eaeaea !important;
-    }
-    /* Texto geral */
-    h1, h2, h3, h4, h5, h6, p, span, div {
-        color: #eaeaea !important;
-    }
-    /* Sidebar mantém azul (sobrescreve modo escuro) */
-    [data-testid="stSidebar"] {
-        background-color: #1044b5 !important;
-    }
-    [data-testid="stSidebar"] > div:first-child {
-        background-color: #1044b5 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    inject_dark_mode_css()
 
 df_all = carregar_clientes()
 hoje = pd.to_datetime(date.today())

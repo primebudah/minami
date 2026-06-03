@@ -10,6 +10,12 @@ import re
 from PIL import Image
 import streamlit as st
 
+from japanese_calendar import (
+    convert_era_year,
+    extract_reiwa_year_regex,
+    convert_japanese_date,
+)
+
 # =========================================================
 # OPENAI CLIENT (com proteção de import)
 # =========================================================
@@ -138,20 +144,14 @@ def traduzir_veiculo(nome: str) -> str:
 
 def calcular_ano_reiwa(numero_ano_era):
     """Regra de ferro: Reiwa 1 = 2019. Logo, Reiwa N = 2018 + N"""
-    return 2018 + int(numero_ano_era)
+    return convert_era_year("\u4ee4\u548c", numero_ano_era)
 
 def extrair_ano_reiwa_regex(texto):
     """
-    Usa regex forçada para capturar o número após '令和' (Reiwa).
-    Retorna o ano gregoriano calculado ou None se não encontrar.
+    Usa regex for\u00e7ada para capturar o n\u00famero ap\u00f3s '\u4ee4\u548c' (Reiwa).
+    Retorna o ano gregoriano calculado ou None se n\u00e3o encontrar.
     """
-    # Regex forçada para capturar o número após 令和
-    match = re.search(r'令和\s*(\d+)年', texto)
-    if match:
-        ano_num = int(match.group(1))
-        ano_gregoriano = calcular_ano_reiwa(ano_num)
-        return ano_gregoriano
-    return None
+    return extract_reiwa_year_regex(texto)
 
 def extrair_placa(texto):
     """Extrai placa japonesa do texto OCR."""
@@ -180,111 +180,9 @@ def extrair_placa(texto):
     return ""
 
 def converter_data_japonesa(s):
-    """
-    Converte datas no formato japonês (Nengo) para YYYY-MM-DD (Gregoriano).
-    
-    Lógica de Conversão de Eras Japonesas (Nengo):
-    Para converter um ano da era japonesa para o ano gregoriano, utilize a fórmula:
-    Ano_Gregoriano = Ano_Base_da_Era + Ano_da_Era
-    
-    Nota: O Ano_Base_da_Era é o ano anterior ao início da era, permitindo o cálculo direto sem precisar subtrair 1.
-    
-    Tabela de Referência para Programação:
-    Guia de Conversão de Eras Japonesas (Nengo para Gregoriano):
-    Para realizar a conversão de forma precisa em sistemas, utilize a constante de ajuste (ano base) somada ao ano indicado no documento.
-    A fórmula base é: Ano Gregoriano = Constante de Ajuste + Ano da Era.
-    
-    - Era Reiwa (令和): Inicia-se em 2019. A constante de ajuste é 2018. Portanto, o cálculo para qualquer ano desta era é: 2018 + Ano_da_Era. (Exemplo: Reiwa 8 = 2026).
-    - Era Heisei (平成): Inicia-se em 1989. A constante de ajuste é 1988. Portanto, o cálculo para qualquer ano desta era é: 1988 + Ano_da_Era. (Exemplo: Heisei 30 = 2018).
-    - Era Showa (昭和): Inicia-se em 1926. A constante de ajuste é 1925. Portanto, o cálculo para qualquer ano desta era é: 1925 + Ano_da_Era. (Exemplo: Showa 64 = 1989).
-    - Era Taisho (大正): Inicia-se em 1912. A constante de ajuste é 1911. Portanto, o cálculo para qualquer ano desta era é: 1911 + Ano_da_Era.
-    - Era Meiji (明治): Inicia-se em 1868. A constante de ajuste é 1867. Portanto, o cálculo para qualquer ano desta era é: 1867 + Ano_da_Era.
-    
-    Esta lógica garante que o sistema execute a soma matemática correta, eliminando erros de interpretação humana e assegurando que o ano de vencimento seja sempre processado no formato gregoriano (YYYY).
-    """
-    try:
-        if not s:
-            return None
+    """Converte datas Nengo para YYYY-MM-DD. Delegates to japanese_calendar module."""
+    return convert_japanese_date(s)
 
-        s = str(s).strip()
-
-        # Já está no formato correto
-        if re.match(r"\d{4}-\d{2}-\d{2}", s):
-            return s
-
-        # Era Reiwa (令和 ou R) - Usa regex forçada para capturar o número
-        if "令和" in s or s.startswith("R"):
-            # Tenta regex forçada primeiro
-            ano_reiwa = extrair_ano_reiwa_regex(s)
-            if ano_reiwa:
-                # Extrai mês e dia
-                mes_match = re.search(r'(\d+)月', s)
-                dia_match = re.search(r'(\d+)日', s)
-                
-                mes = mes_match.group(1) if mes_match else "01"
-                dia = dia_match.group(1) if dia_match else "01"
-                
-                return f"{ano_reiwa}-{mes.zfill(2)}-{dia.zfill(2)}"
-            
-            # Se regex falhar, usa método antigo como fallback
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = calcular_ano_reiwa(int(n[0]))
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = calcular_ano_reiwa(int(n[0]))
-                return f"{ano}-01-01"
-
-        # Era Heisei (平成 ou H) - Constante de ajuste: 1988
-        if "平成" in s or s.startswith("H"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1988 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = 1988 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Showa (昭和 ou S) - Constante de ajuste: 1925
-        if "昭和" in s or s.startswith("S"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1925 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = 1925 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Taisho (大正 ou T) - Constante de ajuste: 1911
-        if "大正" in s or s.startswith("T"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1911 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = 1911 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Meiji (明治 ou M) - Constante de ajuste: 1867
-        if "明治" in s or s.startswith("M"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1867 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = 1867 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Formato japonês padrão (年月日)
-        if "年" in s and "月" in s and "日" in s:
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                return f"{int(n[0]):04d}-{int(n[1]):02d}-{int(n[2]):02d}"
-
-        return None
-
-    except:
-        return None
 
 # =========================================================
 # OCR SERVICE
