@@ -1315,8 +1315,8 @@ if not df.empty:
     _drop_cols = [c for c in ["id", "fabricante", "modelo_katashiki", "chassi_completo", "observacao", "criado_em", "atualizado_em"] if c in _df_display.columns]
     df_view = _df_display.drop(columns=_drop_cols).copy()
     df_view.insert(0, "observacao", _df_display["observacao"].fillna("").values)
-    # Mantém índice 0-based para evitar desalinhamento com editor
-    df_view.index = range(len(df_view))
+    # Índice 1-based para exibição (primeira linha = registro 1)
+    df_view.index = range(1, len(df_view) + 1)
     
     # Adiciona coluna de seleção WhatsApp (✅ quando tem número válido)
     if "contato" in df_view.columns:
@@ -1694,6 +1694,7 @@ if not df.empty:
                 if col == "Apagar":
                     continue
                 for i in range(len(df_view)):
+                    # iloc usa posição 0-based, independente do índice do dataframe
                     v_old = df_view.iloc[i][col]; v_new = editor.iloc[i][col]
                     if v_old is None or (isinstance(v_old, float) and pd.isna(v_old)): v_old = ""
                     if v_new is None or (isinstance(v_new, float) and pd.isna(v_new)): v_new = ""
@@ -1724,6 +1725,9 @@ if not df.empty:
                                 _lbl = {"shaken_vencimento": "Shaken", "data_registro": "Inspeção", "data_conclusao": "Conclusão"}[col]
                                 _v = val_salvar.strip()
                                 if _v == "":
+                                    # Se data_conclusao está vazio, define explicitamente como None para salvar como NULL
+                                    if col == "data_conclusao":
+                                        row_dict["data_conclusao"] = None
                                     pass  # vazio: aceita
                                 else:
                                     _raw = _v.replace("-","").replace("/","")
