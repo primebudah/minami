@@ -546,7 +546,7 @@ with col_foto:
             "Selecione até 10 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
-            key=f"uploader_{st.session_state.uploader_key}"
+            key="uploader_fotos"
         )
 
         if files:
@@ -588,7 +588,6 @@ with col_foto:
                     st.warning(f"{err} erro(s).")
                 if ok:
                     st.session_state._fila_editor_v += 1
-                st.session_state.uploader_key += 1
                 st.rerun()
 
 # =========================================================
