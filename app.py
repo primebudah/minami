@@ -1697,6 +1697,11 @@ if not df.empty:
                             row_dict = st.session_state.df.iloc[i].to_dict()
                             val_salvar = str(v_new)
                             _rejeitar = False  # se True: não salva, reseta editor
+                            # Debug: verifica se data_conclusao está no row_dict
+                            if "data_conclusao" in row_dict:
+                                print(f"DEBUG: data_conclusao no row_dict antes de salvar: {row_dict['data_conclusao']}")
+                            else:
+                                print(f"DEBUG: data_conclusao NÃO está no row_dict antes de salvar")
 
                             # ── Helper: rejeita e exibe aviso (sem salvar) ──
                             def _rejeitar_aviso(msg, pode_salvar=False):
@@ -1773,6 +1778,8 @@ if not df.empty:
                                             st.session_state._conc_ciclos = set()
                                         st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
+                            # Debug: verifica data_conclusao antes de salvar
+                            print(f"DEBUG: Salvando cliente {ids[i]}, col={col}, data_conclusao={row_dict.get('data_conclusao')}")
                             atualizar_cliente(ids[i], row_dict)
                         celula_mudou = True
                         break
