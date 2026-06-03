@@ -238,7 +238,7 @@ def logout_button():
             <label class="sb-user-name" for="sb-logout-toggle">{label}{nome} ▾</label>
             <div class="sb-user-role">{role_label}</div>
             <div class="sb-logout-popup">
-                <a href="?logout=1">⏻ Sair</a>
+                <a href="?logout=1" target="_self">⏻ Sair</a>
                 <br>
                 <a href="?config=1" target="_self" class="sb-config-btn">⚙️ Configurações</a>
             </div>
