@@ -13,33 +13,16 @@ from database import inicializar_banco, salvar_cliente, listar_clientes, atualiz
 from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
 from ui_base import inject_base_css
 from auth import require_login, can, logout_button, _load_config
+from shared_utils import load_page_icon, inject_pwa_meta, inject_dark_mode_css
 
 # =========================================================
 # CONFIG
 # =========================================================
 
-# Carrega ícone da logo
-_icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".streamlit", "icon_b64.txt")
-_page_icon = "🚗"
-try:
-    with open(_icon_path, "r") as f:
-        _icon_data = f.read().strip()
-        if _icon_data:
-            _page_icon = f"data:image/png;base64,{_icon_data}"
-except:
-    pass
-
+_page_icon = load_page_icon(os.path.dirname(os.path.dirname(__file__)))
 st.set_page_config("Central Shaken - Registros", layout="wide", initial_sidebar_state="expanded", page_icon=_page_icon)
 inject_base_css()
-
-# Meta tags para PWA
-st.markdown(f"""
-<meta name="application-name" content="Central Shaken">
-<meta name="apple-mobile-web-app-title" content="Central Shaken">
-<meta name="theme-color" content="#0d2a6e">
-<link rel="shortcut icon" href="{_page_icon}" type="image/png">
-""", unsafe_allow_html=True)
-
+inject_pwa_meta(_page_icon)
 require_login()
 
 inicializar_banco()
@@ -99,50 +82,10 @@ dark_mode = config.get("dark_mode", False)
 
 # Aplica CSS para modo escuro (sidebar continua azul)
 if dark_mode:
+    inject_dark_mode_css()
+    # Page-specific dark-mode overrides (form buttons, file uploader, alerts)
     st.markdown("""
     <style>
-    /* Modo escuro - apenas conteúdo principal, sidebar continua azul */
-    .stApp {
-        background-color: #1a1a2e !important;
-    }
-    [data-testid="stAppViewContainer"] {
-        background-color: #1a1a2e !important;
-    }
-    [data-testid="stMain"] {
-        background-color: #1a1a2e !important;
-    }
-    /* Tabelas em modo escuro */
-    .stDataFrame {
-        background-color: #16213e !important;
-        color: #eaeaea !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] {
-        background-color: #16213e !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] thead th {
-        background-color: #0f3460 !important;
-        color: #eaeaea !important;
-        border-bottom: 2px solid #e94560 !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] tbody tr {
-        background-color: #16213e !important;
-        color: #eaeaea !important;
-        border-bottom: 1px solid #0f3460 !important;
-    }
-    .stDataFrame [data-testid="stDataFrame"] tbody tr:hover {
-        background-color: #1a1a2e !important;
-    }
-    /* Inputs e campos de texto */
-    .stTextInput > div > div > input,
-    .stTextArea > div > div > textarea {
-        background-color: #87ceeb !important;
-        color: #1a1a2e !important;
-    }
-    /* Botões */
-    .stButton > button {
-        background-color: #1044b5 !important;
-        color: #ffffff !important;
-    }
     .stButton > button *,
     div[data-testid="stFormSubmitButton"] button,
     div[data-testid="stFormSubmitButton"] button * {
@@ -210,22 +153,6 @@ if dark_mode:
         background: #0f3460 !important;
         border-left: 4px solid #87ceeb !important;
         border-radius: 8px !important;
-    }
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: #0f3460 !important;
-        color: #eaeaea !important;
-    }
-    /* Texto geral */
-    h1, h2, h3, h4, h5, h6, p, span, div {
-        color: #eaeaea !important;
-    }
-    /* Sidebar mantém azul (sobrescreve modo escuro) */
-    [data-testid="stSidebar"] {
-        background-color: #1044b5 !important;
-    }
-    [data-testid="stSidebar"] > div:first-child {
-        background-color: #1044b5 !important;
     }
     </style>
     """, unsafe_allow_html=True)

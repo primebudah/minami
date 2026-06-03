@@ -5,6 +5,9 @@ import pytesseract
 from datetime import datetime
 import os
 
+from japanese_calendar import convert_era_year
+from tesseract_config import TESSERACT_PATH, TESSDATA_PREFIX
+
 # =========================================================
 # CONFIG
 # =========================================================
@@ -31,9 +34,7 @@ HEISEI_REGEX = r'平成\s*([1-9]|[1-2][0-9]|3[0-1])\s*年\s*(\d{1,2})\s*月'
 # Regex Showa
 SHOWA_REGEX = r'昭和\s*([1-9]|[1-5][0-9]|6[0-4])\s*年\s*(\d{1,2})\s*月'
 
-# Configuração do Tesseract (ajuste conforme sua instalação)
-TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-TESSDATA_PREFIX = r"C:\Program Files\Tesseract-OCR\tessdata"
+# Tesseract paths imported from tesseract_config
 
 # =========================================================
 # HELPERS
@@ -85,16 +86,7 @@ def preprocess_for_ocr(image):
 # =========================================================
 
 def convert_japanese_year(era, year):
-    year = int(year)
-    
-    if era == "令和":
-        return 2018 + year
-    elif era == "平成":
-        return 1988 + year
-    elif era == "昭和":
-        return 1925 + year
-    else:
-        raise ValueError(f"Era japonesa desconhecida: {era}")
+    return convert_era_year(era, year)
 
 # =========================================================
 # ROI
