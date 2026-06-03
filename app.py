@@ -1350,10 +1350,6 @@ if not df.empty:
         df_view["data_conclusao"] = _df_display.apply(_fmt_conc, axis=1)
     else:
         df_view["data_conclusao"] = ""
-    
-    # Salva o valor original de data_conclusao para comparação correta na edição
-    if "data_conclusao" in _df_display.columns:
-        df_view["_data_conclusao_original"] = _df_display["data_conclusao"].fillna("")
 
     # Normaliza status
     def normalizar_status(v):
@@ -1645,7 +1641,7 @@ if not df.empty:
     else:
         # ── Modo Tabela (padrão) ─────────────────────────
         # Operador pode editar status; colunas de dados só admin/secretaria
-        _cols_dados = [c for c in df_view.columns if c not in ("status", "Apagar", "_data_conclusao_original")]
+        _cols_dados = [c for c in df_view.columns if c not in ("status", "Apagar")]
         _disabled = [c for c in _cols_dados if c not in ("observacao", "data_conclusao")] if not can("editar") else False
 
         # ── st.data_editor (edição principal) ────────────
