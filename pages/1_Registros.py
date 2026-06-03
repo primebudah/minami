@@ -550,6 +550,10 @@ with col_foto:
         )
 
         if files:
+            # Limita a 10 fotos
+            if len(files) > 10:
+                st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 10 fotos por vez. Processando apenas as 10 primeiras.")
+                files = files[:10]
             st.write(f"**{len(files)} foto(s) selecionada(s):**")
             for f in files:
                 st.write(f"📄 {f.name}")
