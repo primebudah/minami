@@ -23,6 +23,11 @@ except ImportError:
     client = None
     OPENAI_AVAILABLE = False
     st.warning("⚠️ OpenAI não disponível. OCR desativado.")
+except Exception as e:
+    OpenAI = None
+    client = None
+    OPENAI_AVAILABLE = False
+    st.warning(f"⚠️ OpenAI não configurado: {e}. OCR desativado.")
 
 # =========================================================
 # TRADUÇÃO DE VEÍCULOS JAPONÊS → INGLÊS
@@ -146,7 +151,7 @@ def extrair_ano_reiwa_regex(texto):
     Retorna o ano gregoriano calculado ou None se não encontrar.
     """
     # Regex forçada para capturar o número após 令和
-    match = re.search(r'令和\s*(\d+)年', texto)
+    match = re.search(r'令和\s*(\d+)年?', texto)
     if match:
         ano_num = int(match.group(1))
         ano_gregoriano = calcular_ano_reiwa(ano_num)
@@ -307,12 +312,13 @@ def extrair_dados_do_documento(f):
 
     b64 = base64.b64encode(buf.getvalue()).decode()
 
-    r = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": """
+    try:
+        r = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
 EXTRAÇÃO SHAKEN JAPÃO - CAMPOS ESPECÍFICOS OBRIGATÓRIOS
 
 CAMPOS A EXTRAIR (APENAS ESTES):
@@ -322,6 +328,8 @@ CAMPOS A EXTRAIR (APENAS ESTES):
 4. placa: Campo "ナンバープレート" ou "車両番号". CAPTURE A PLACA COMPLETA, SEM CORTAR NENHUM CARACTERE. Inclua o nome da região (kanji), o número de classificação, o hiragana/katakana e o número de série. Exemplos de placas completas: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19. NÃO retorne apenas "品川-500" — a placa deve conter todos os segmentos visíveis no documento.
 5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
 6. data_registro: Campo "記録年月日" (Registro) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年3月31日")
+7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
+8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
 
 REGRAS ESTRICTAS PARA DATAS:
 - SEMPRE retorne datas no FORMATO BRUTO JAPONÊS (não converta para gregoriano)
@@ -344,13 +352,14 @@ ATENÇÃO ESPECIAL PARA shaken_vencimento:
 - Não confunda os anos da era Reiwa
 
 OUTROS CAMPOS:
-- contato pode ser vazio ""
-- Todos os campos são obrigatórios exceto contato
+- nome e contato podem ser vazios "" se não estiverem no documento
+- fabricante, modelo_katashiki, chassi_completo, placa, shaken_vencimento e data_registro são obrigatórios
+- NÃO invente nenhuma informação
 
 RETORNE APENAS JSON com estes campos:
 {
-  "nome": "string",
-  "contato": "string (pode ser vazio)",
+  "nome": "string (nome do proprietário; vazio se não estiver no documento)",
+  "contato": "string (telefone; vazio se não estiver no documento)",
   "shaken_vencimento": "FORMATO BRUTO JAPONÊS (ex: 令和8年5月10日)",
   "veiculo": "string (formato: {fabricante} {modelo_katashiki})",
   "placa": "string (Campo ナンバープレート - ex: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19)",
@@ -375,7 +384,10 @@ RETORNE APENAS JSON com estes campos:
         response_format={"type": "json_object"}
     )
 
-    d = json.loads(r.choices[0].message.content)
+        d = json.loads(r.choices[0].message.content)
+    except Exception as e:
+        print(f"[DEBUG] Erro na chamada OCR: {e}")
+        return {}
 
     # Debug: mostra dados brutos do OCR
     print(f"[DEBUG] Dados brutos do OCR: {d}")
@@ -419,7 +431,7 @@ RETORNE APENAS JSON com estes campos:
         d["placa"] = ""
     else:
         # Remove espaços extras e normaliza
-        d["placa"] = str(d["placa"]).strip().replace("  ", " ").replace("  ", " ")
+        d["placa"] = re.sub(r"\s+", " ", str(d["placa"])).strip()
 
     print(f"[DEBUG] Dados finais: {d}")
     return d

@@ -568,10 +568,14 @@ with col_foto:
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
                             d = extrair_dados_do_documento(f)
+                            if not d or (not d.get("chassi") and not d.get("veiculo")):
+                                status.warning(f"⚠️ {idx}/{total}: {f.name} - não foi possível ler dados essenciais")
+                                err += 1
+                                continue
                             if d.get("data_registro"):
                                 dr = d["data_registro"]
                                 if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
-                                    if not (2020 <= int(dr[:4]) <= 2035):
+                                    if not (1900 <= int(dr[:4]) <= 2100):
                                         d["data_registro"] = str(date.today())
                             d["_origem"] = f"foto:{f.name}"
                             st.session_state.fila_registros.append(d)
@@ -860,6 +864,13 @@ else:
             _ok = bool(re.match(r"^0[789]0\d{8}$", _digits)) or bool(re.match(r"^0\d{9,10}$", _digits))
             if not _ok:
                 _probs.append(("🟡", f"Registro {idx+1} (Contato): fora do padrão japonês"))
+        
+        # Placa formato (aviso não bloqueante)
+        _placa = str(row_dict.get("placa", "")).strip()
+        if _placa:
+            _ok_placa = bool(re.match(r"^[A-Za-z0-9\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff\-]+(?:[\s\-]+[A-Za-z0-9\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff\-]+)+$", _placa))
+            if not _ok_placa:
+                _probs.append(("🟡", f"Registro {idx+1} (Placa): formato incompleto ou inválido"))
         
         return _probs
     
