@@ -675,17 +675,28 @@ else:
     df_fila_view = df_fila[colunas_presentes].copy()
     df_fila_view.index = range(1, len(df_fila_view) + 1)
 
+    def _col_width(col, label):
+        try:
+            if col in df_fila_view.columns and not df_fila_view.empty:
+                lengths = df_fila_view[col].dropna().astype(str).str.len()
+                max_data = int(lengths.max()) if not lengths.empty else 0
+            else:
+                max_data = 0
+        except Exception:
+            max_data = 0
+        return max(50, int(max(max_data, len(label)) * 7) + 16)
+
     if st.session_state.fila_delete_mode:
         df_fila_view.insert(0, "Apagar", [False] * len(df_fila_view))
 
     _col_cfg = {
-        "nome":              st.column_config.TextColumn("Nome"),
-        "veiculo":           st.column_config.TextColumn("Veículo"),
-        "placa":             st.column_config.TextColumn("Placa"),
-        "chassi":            st.column_config.TextColumn("Chassi"),
-        "contato":           st.column_config.TextColumn("Contato"),
-        "shaken_vencimento": st.column_config.TextColumn("Venc. Shaken"),
-        "data_registro":     st.column_config.TextColumn("Data Registro"),
+        "nome":              st.column_config.TextColumn("Nome", width=_col_width("nome", "Nome")),
+        "veiculo":           st.column_config.TextColumn("Veículo", width=_col_width("veiculo", "Veículo")),
+        "placa":             st.column_config.TextColumn("Placa", width=_col_width("placa", "Placa")),
+        "chassi":            st.column_config.TextColumn("Chassi", width=_col_width("chassi", "Chassi")),
+        "contato":           st.column_config.TextColumn("Contato", width=_col_width("contato", "Contato")),
+        "shaken_vencimento": st.column_config.TextColumn("Venc. Shaken", width=_col_width("shaken_vencimento", "Venc. Shaken")),
+        "data_registro":     st.column_config.TextColumn("Data Registro", width=_col_width("data_registro", "Data Registro")),
     }
     if st.session_state.fila_delete_mode:
         _col_cfg["Apagar"] = st.column_config.CheckboxColumn("🗑️", default=False)

@@ -319,7 +319,7 @@ CAMPOS A EXTRAIR (APENAS ESTES):
 1. fabricante: Campo "車名" (Nome do veículo/montadora - NISSAN, DAIHATSU, SUZUKI, etc)
 2. modelo_katashiki: Campo "型式" (Código alfanumérico - ex: GD-S200P, EBD-DA64V)
 3. chassi_completo: Campo "車台番号" (Número de série - ex: S200P-0037449)
-4. placa: Campo "ナンバープレート" ou "車両番号" (Placa do veículo - CAPTURE TODOS OS CARACTERES INCLUINDO KANJI/HIRAGANA ANTES DOS NÚMEROS - ex: 品川-500, とちぎ-XXX, 浜松480な9924 - NÃO CORTE NENHUM CARACTERE)
+4. placa: Campo "ナンバープレート" ou "車両番号". CAPTURE A PLACA COMPLETA, SEM CORTAR NENHUM CARACTERE. Inclua o nome da região (kanji), o número de classificação, o hiragana/katakana e o número de série. Exemplos de placas completas: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19. NÃO retorne apenas "品川-500" — a placa deve conter todos os segmentos visíveis no documento.
 5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
 6. data_registro: Campo "記録年月日" (Registro) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年3月31日")
 
@@ -353,7 +353,7 @@ RETORNE APENAS JSON com estes campos:
   "contato": "string (pode ser vazio)",
   "shaken_vencimento": "FORMATO BRUTO JAPONÊS (ex: 令和8年5月10日)",
   "veiculo": "string (formato: {fabricante} {modelo_katashiki})",
-  "placa": "string (Campo ナンバープレート - ex: 品川-500, とちぎ-XXX, ou formato alfanumérico)",
+  "placa": "string (Campo ナンバープレート - ex: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19)",
   "chassi": "string (formato: {chassi_completo})",
   "fabricante": "string (Campo 車名 - NISSAN, DAIHATSU, SUZUKI, etc)",
   "modelo_katashiki": "string (Campo 型式 - ex: GD-S200P, EBD-DA64V)",

@@ -1772,7 +1772,7 @@ if not df.empty:
                                 # Padrão JP: ex: 品川-500, 大阪-123-456, 300-か-1234
                                 # Requer: pelo menos um hífen e combinação de caracteres/números
                                 # Mínimo 3 caracteres
-                                _ok_placa = bool(re.match(r"^[\w\u4e00-\u9faf\-]+\-[\w\u4e00-\u9faf\-]+$", _v)) if _v else True
+                                _ok_placa = bool(re.match(r"^[A-Za-z0-9\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff\-]+(?:[\s\-]+[A-Za-z0-9\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff\-]+)+$", _v)) if _v else True
                                 if _v and not _ok_placa:
                                     _rejeitar_aviso(
                                         f"<b>Placa</b>: '{_v}' está fora do padrão esperado (deve conter hífen). Verifique o documento.",
