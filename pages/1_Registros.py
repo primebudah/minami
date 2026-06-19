@@ -688,7 +688,7 @@ else:
                 max_data = 0
         except Exception:
             max_data = 0
-        return max(50, int(max(max_data, len(label)) * 7) + 16)
+        return max(50, min(350, int(max(max_data, len(label)) * 11) + 16))
 
     if st.session_state.fila_delete_mode:
         df_fila_view.insert(0, "Apagar", [False] * len(df_fila_view))

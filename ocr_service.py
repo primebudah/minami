@@ -315,6 +315,7 @@ def extrair_dados_do_documento(f):
     try:
         r = client.chat.completions.create(
             model="gpt-4o-mini",
+            temperature=0.2,
             messages=[
                 {
                     "role": "system",
@@ -350,6 +351,11 @@ ATENÇÃO ESPECIAL PARA shaken_vencimento:
 - Se o documento mostrar "令和9", retorne "令和9年" (não "令和8年")
 - Se o documento mostrar "令和10", retorne "令和10年" (não "令和8年")
 - Não confunda os anos da era Reiwa
+
+VERIFICAÇÃO FINAL OBRIGATÓRIA:
+- Confirme se a placa inclui: região + classificação + hiragana/katakana + número de série
+- Confirme se o nome e o contato vieram SOMENTE dos campos do proprietário
+- Não retorne parte da placa, não abrevie o nome e não invente dados
 
 OUTROS CAMPOS:
 - nome e contato podem ser vazios "" se não estiverem no documento
