@@ -336,7 +336,7 @@ CAMPOS A EXTRAIR (APENAS ESTES):
    Exemplos ERRADOS (NUNCA retorne assim): "581-4338", "480-9924", "500-1234" (faltam região e hiragana!)
    Se alguma parte não estiver legível, retorne o que conseguir ler com "?" no lugar da parte ilegível.
 5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
-6. data_registro: Campo "交付年月日" (Data de emissão/entrega do certificado shaken). Use EXCLUSIVAMENTE este campo. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "令和8年3月31日")
+6. data_registro: Campo "交付年月日" (Data de emissão/entrega do certificado shaken). Este campo fica próximo ao rodapé do documento. A data de emissão é SEMPRE PRÓXIMA (1-2 anos antes) da data de validade do shaken. Se não encontrar "交付年月日", use a data que estiver mais próxima e anterior ao vencimento. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "令和8年3月31日")
 7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
 8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
 
@@ -428,6 +428,21 @@ RETORNE APENAS JSON com estes campos:
             else:
                 d[campo] = "VERIFICAR"
                 print(f"[DEBUG] Data não pôde ser convertida, marcando para verificação manual")
+
+    # Pós-validação: data_registro deve ser próxima ao shaken_vencimento (máx 2-3 anos antes)
+    # Se for muito antiga, provavelmente pegou 初度検査年月 ao invés de 交付年月日
+    if d.get("shaken_vencimento") and d.get("data_registro"):
+        _shaken = d["shaken_vencimento"]
+        _dreg = d["data_registro"]
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", _shaken) and re.match(r"^\d{4}-\d{2}-\d{2}$", _dreg):
+            _ano_shaken = int(_shaken[:4])
+            _ano_dreg = int(_dreg[:4])
+            # Se data_registro é mais de 3 anos antes do vencimento, está errada
+            if _ano_shaken - _ano_dreg > 3:
+                # Calcula como 2 anos antes do vencimento (intervalo padrão do shaken)
+                _ano_correto = _ano_shaken - 2
+                d["data_registro"] = f"{_ano_correto}-{_shaken[5:7]}-{_shaken[8:10]}"
+                print(f"[DEBUG] data_registro corrigida: {_dreg} → {d['data_registro']} (muito antiga vs shaken {_shaken})")
 
     # Formata veículo como {fabricante} {modelo_katashiki}
     fabricante = d.get("fabricante", "")
