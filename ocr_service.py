@@ -336,7 +336,7 @@ CAMPOS A EXTRAIR (APENAS ESTES):
    Exemplos ERRADOS (NUNCA retorne assim): "581-4338", "480-9924", "500-1234" (faltam região e hiragana!)
    Se alguma parte não estiver legível, retorne o que conseguir ler com "?" no lugar da parte ilegível.
 5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
-6. data_registro: Campo "登録年月日" ou "初度登録年月" (Data de primeiro registro do veículo). Se esse campo não existir, use "交付年月日". RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "平成26年3月31日")
+6. data_registro: Campo "交付年月日" (Data de emissão/entrega do certificado shaken). Use EXCLUSIVAMENTE este campo. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "令和8年3月31日")
 7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
 8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
 
@@ -350,10 +350,10 @@ REGRAS ESTRICTAS PARA DATAS:
 
 NÃO EXTRAIA NÚMEROS DE OUTROS CAMPOS:
 - Use EXCLUSIVAMENTE o campo "有効期間の満了する日" para shaken_vencimento
-- Para data_registro, use o campo "登録年月日" ou "初度登録年月" ou "交付年月日"
+- Para data_registro, use EXCLUSIVAMENTE o campo "交付年月日" (data de emissão do certificado)
+- NÃO use "初度登録年月" (primeiro registro) — esse é outro campo
 - Não extraia números aleatórios do documento como se fossem datas
-- Não confunda "有効期間の満了する日" com outras datas do documento
-- data_registro pode ser uma data ANTIGA (ex: 平成26年 = 2014) — isso é NORMAL, não corrija
+- Não confunda "有効期間の満了する日" com "交付年月日"
 
 ATENÇÃO ESPECIAL PARA shaken_vencimento:
 - Leia ATENTAMENTE o ano da era Reiwa no campo "有効期間の満了する日"
