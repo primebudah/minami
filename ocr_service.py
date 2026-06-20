@@ -326,9 +326,17 @@ CAMPOS A EXTRAIR (APENAS ESTES):
 1. fabricante: Campo "車名" (Nome do veículo/montadora - NISSAN, DAIHATSU, SUZUKI, etc)
 2. modelo_katashiki: Campo "型式" (Código alfanumérico - ex: GD-S200P, EBD-DA64V)
 3. chassi_completo: Campo "車台番号" (Número de série - ex: S200P-0037449)
-4. placa: Campo "ナンバープレート" ou "車両番号". CAPTURE A PLACA COMPLETA, SEM CORTAR NENHUM CARACTERE. Inclua o nome da região (kanji), o número de classificação, o hiragana/katakana e o número de série. Exemplos de placas completas: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19. NÃO retorne apenas "品川-500" — a placa deve conter todos os segmentos visíveis no documento.
+4. placa: Campo "自動車登録番号又は車両番号" no topo do documento (número de registro do veículo). A placa japonesa TEM SEMPRE 4 PARTES:
+   - Parte 1: Nome da região em kanji (ex: 浜松, 品川, 横浜, 大宮) ou hiragana (ex: とちぎ)
+   - Parte 2: Número de classificação (3 dígitos, ex: 480, 500, 581)
+   - Parte 3: UM caractere hiragana/katakana (ex: な, あ, ら, も, す)
+   - Parte 4: Número de série (2 ou 4 dígitos, ex: 9924, 4338, 79-19)
+   FORMATO DE RETORNO: "região classificação hiragana número" separados por espaço ou hífen.
+   Exemplos CORRETOS: "浜松 581 す 4338", "浜松 480 な 9924", "品川 500 あ 1234", "とちぎ も 79-19"
+   Exemplos ERRADOS (NUNCA retorne assim): "581-4338", "480-9924", "500-1234" (faltam região e hiragana!)
+   Se alguma parte não estiver legível, retorne o que conseguir ler com "?" no lugar da parte ilegível.
 5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
-6. data_registro: Campo "記録年月日" (Registro) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年3月31日")
+6. data_registro: Campo "登録年月日" ou "初度登録年月" (Data de primeiro registro do veículo). Se esse campo não existir, use "交付年月日". RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "平成26年3月31日")
 7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
 8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
 
@@ -342,9 +350,10 @@ REGRAS ESTRICTAS PARA DATAS:
 
 NÃO EXTRAIA NÚMEROS DE OUTROS CAMPOS:
 - Use EXCLUSIVAMENTE o campo "有効期間の満了する日" para shaken_vencimento
-- Para data_registro, use EXCLUSIVAMENTE o campo "記録年月日" (Registro)
+- Para data_registro, use o campo "登録年月日" ou "初度登録年月" ou "交付年月日"
 - Não extraia números aleatórios do documento como se fossem datas
 - Não confunda "有効期間の満了する日" com outras datas do documento
+- data_registro pode ser uma data ANTIGA (ex: 平成26年 = 2014) — isso é NORMAL, não corrija
 
 ATENÇÃO ESPECIAL PARA shaken_vencimento:
 - Leia ATENTAMENTE o ano da era Reiwa no campo "有効期間の満了する日"
@@ -368,7 +377,7 @@ RETORNE APENAS JSON com estes campos:
   "contato": "string (telefone; vazio se não estiver no documento)",
   "shaken_vencimento": "FORMATO BRUTO JAPONÊS (ex: 令和8年5月10日)",
   "veiculo": "string (formato: {fabricante} {modelo_katashiki})",
-  "placa": "string (Campo ナンバープレート - ex: 品川-500-あ-1234, 横浜-407-ら-7890, 浜松-480-な-9924, とちぎ-も-79-19)",
+  "placa": "string (SEMPRE com 4 partes: região + classificação + hiragana + número. Ex: 浜松 581 す 4338, 品川 500 あ 1234)",
   "chassi": "string (formato: {chassi_completo})",
   "fabricante": "string (Campo 車名 - NISSAN, DAIHATSU, SUZUKI, etc)",
   "modelo_katashiki": "string (Campo 型式 - ex: GD-S200P, EBD-DA64V)",
