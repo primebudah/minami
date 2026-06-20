@@ -246,6 +246,9 @@ def converter_data_japonesa(s):
             if len(n) >= 3:
                 ano = 1988 + int(n[0])
                 return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
+            elif len(n) == 2:
+                ano = 1988 + int(n[0])
+                return f"{ano}-{int(n[1]):02d}-01"
             elif len(n) == 1:
                 ano = 1988 + int(n[0])
                 return f"{ano}-01-01"
@@ -256,6 +259,9 @@ def converter_data_japonesa(s):
             if len(n) >= 3:
                 ano = 1925 + int(n[0])
                 return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
+            elif len(n) == 2:
+                ano = 1925 + int(n[0])
+                return f"{ano}-{int(n[1]):02d}-01"
             elif len(n) == 1:
                 ano = 1925 + int(n[0])
                 return f"{ano}-01-01"
@@ -266,6 +272,9 @@ def converter_data_japonesa(s):
             if len(n) >= 3:
                 ano = 1911 + int(n[0])
                 return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
+            elif len(n) == 2:
+                ano = 1911 + int(n[0])
+                return f"{ano}-{int(n[1]):02d}-01"
             elif len(n) == 1:
                 ano = 1911 + int(n[0])
                 return f"{ano}-01-01"
@@ -305,7 +314,7 @@ def extrair_dados_do_documento(f):
         return {}
     
     img = Image.open(f).convert("RGB")
-    img.thumbnail((1600, 1600))
+    img.thumbnail((2048, 2048))
 
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=78, optimize=True)
@@ -335,8 +344,12 @@ CAMPOS A EXTRAIR (APENAS ESTES):
    Exemplos CORRETOS: "浜松 581 す 4338", "浜松 480 な 9924", "品川 500 あ 1234", "とちぎ も 79-19"
    Exemplos ERRADOS (NUNCA retorne assim): "581-4338", "480-9924", "500-1234" (faltam região e hiragana!)
    Se alguma parte não estiver legível, retorne o que conseguir ler com "?" no lugar da parte ilegível.
-5. shaken_vencimento: Campo "有効期間の満了する日" (Validade) - RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年5月10日")
-6. data_registro: Campo "交付年月日" (Data de emissão/entrega do certificado shaken). Este campo fica próximo ao rodapé do documento. A data de emissão é SEMPRE PRÓXIMA (1-2 anos antes) da data de validade do shaken. Se não encontrar "交付年月日", use a data que estiver mais próxima e anterior ao vencimento. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年1月14日", "令和8年3月31日")
+5. shaken_vencimento: Campo "有効期間の満了する日" — fica à DIREITA na mesma linha de "交付年月日" e "初度検査年月". É a DATA MAIS RECENTE/FUTURA das três. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年3月18日")
+6. data_registro: Campo "交付年月日" — fica à ESQUERDA na mesma linha do vencimento, logo abaixo de "車台番号". NÃO confunda com "初度検査年月" (que fica no MEIO e é a data mais antiga). A data de emissão (交付年月日) é SEMPRE PRÓXIMA (até 2 anos antes) da data de vencimento. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年3月19日")
+
+LAYOUT DO DOCUMENTO (da esquerda para a direita):
+| 交付年月日 (data_registro) | 初度検査年月 (IGNORAR!) | 有効期間の満了する日 (shaken_vencimento) |
+| Data recente (ex: 令和6年) | Data ANTIGA (ex: 平成28年) — NÃO USE | Data futura (ex: 令和8年) |
 7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
 8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
 
