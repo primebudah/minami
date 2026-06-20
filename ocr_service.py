@@ -443,19 +443,83 @@ RETORNE APENAS JSON com estes campos:
                 print(f"[DEBUG] Data não pôde ser convertida, marcando para verificação manual")
 
     # Pós-validação: data_registro deve ser próxima ao shaken_vencimento (máx 2-3 anos antes)
-    # Se for muito antiga, provavelmente pegou 初度検査年月 ao invés de 交付年月日
+    _precisa_retry_datas = False
+    if d.get("shaken_vencimento") == "VERIFICAR" or d.get("data_registro") == "VERIFICAR":
+        _precisa_retry_datas = True
+    elif d.get("shaken_vencimento") and d.get("data_registro"):
+        _shaken = d["shaken_vencimento"]
+        _dreg = d["data_registro"]
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", _shaken) and re.match(r"^\d{4}-\d{2}-\d{2}$", _dreg):
+            _ano_shaken = int(_shaken[:4])
+            _ano_dreg = int(_dreg[:4])
+            if _ano_shaken - _ano_dreg > 3:
+                _precisa_retry_datas = True
+
+    # Retry automático focado em datas quando resultado é suspeito
+    if _precisa_retry_datas:
+        print("[DEBUG] Datas suspeitas, executando retry focado em datas...")
+        try:
+            r2 = client.chat.completions.create(
+                model="gpt-4o-mini",
+                temperature=0.0,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """Você vai analisar um documento shaken japonês (自動車検査証記録事項).
+Preciso APENAS de 2 datas que estão na MESMA LINHA, logo abaixo de "車台番号":
+
+LAYOUT DA LINHA (da esquerda para a direita):
+| 交付年月日 | 初度検査年月 | 有効期間の満了する日 |
+
+1. shaken_vencimento = "有効期間の満了する日" (campo da DIREITA, data FUTURA)
+2. data_registro = "交付年月日" (campo da ESQUERDA, data RECENTE mas não futura)
+
+IGNORAR COMPLETAMENTE: "初度検査年月" (campo do MEIO, data ANTIGA tipo 平成XX年)
+
+REGRAS:
+- Retorne no formato BRUTO JAPONÊS (ex: "令和8年3月18日")
+- data_registro é SEMPRE 1-2 anos ANTES do shaken_vencimento
+- NÃO retorne datas com "平成" para data_registro (isso seria 初度検査年月, que é o campo ERRADO)
+
+RETORNE JSON: {"shaken_vencimento": "...", "data_registro": "..."}"""
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Extrair APENAS as datas: 交付年月日 e 有効期間の満了する日"},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}}
+                        ]
+                    }
+                ],
+                response_format={"type": "json_object"}
+            )
+            d2 = json.loads(r2.choices[0].message.content)
+            print(f"[DEBUG] Retry datas resultado: {d2}")
+
+            # Converte e valida as datas do retry
+            for campo in ["shaken_vencimento", "data_registro"]:
+                if d2.get(campo):
+                    data_bruta = d2[campo]
+                    if "NÃO IDENTIFICADO" in str(data_bruta):
+                        continue
+                    data_convertida = converter_data_japonesa(data_bruta)
+                    if data_convertida and re.match(r"^\d{4}-\d{2}-\d{2}$", data_convertida):
+                        d[campo] = data_convertida
+                        print(f"[DEBUG] Retry: {campo} atualizado para {data_convertida}")
+        except Exception as e:
+            print(f"[DEBUG] Erro no retry de datas: {e}")
+
+    # Fallback final: se data_registro ainda estiver errada, calcula a partir do vencimento
     if d.get("shaken_vencimento") and d.get("data_registro"):
         _shaken = d["shaken_vencimento"]
         _dreg = d["data_registro"]
         if re.match(r"^\d{4}-\d{2}-\d{2}$", _shaken) and re.match(r"^\d{4}-\d{2}-\d{2}$", _dreg):
             _ano_shaken = int(_shaken[:4])
             _ano_dreg = int(_dreg[:4])
-            # Se data_registro é mais de 3 anos antes do vencimento, está errada
             if _ano_shaken - _ano_dreg > 3:
-                # Calcula como 2 anos antes do vencimento (intervalo padrão do shaken)
                 _ano_correto = _ano_shaken - 2
                 d["data_registro"] = f"{_ano_correto}-{_shaken[5:7]}-{_shaken[8:10]}"
-                print(f"[DEBUG] data_registro corrigida: {_dreg} → {d['data_registro']} (muito antiga vs shaken {_shaken})")
+                print(f"[DEBUG] Fallback: data_registro corrigida para {d['data_registro']}")
 
     # Formata veículo como {fabricante} {modelo_katashiki}
     fabricante = d.get("fabricante", "")
