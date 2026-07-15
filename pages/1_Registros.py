@@ -339,6 +339,10 @@ if "_fila_editor_v" not in st.session_state:
 if "fila_ultima_edicao" not in st.session_state:
     st.session_state.fila_ultima_edicao = None
 
+# Session state para armazenar edições persistidas
+if "fila_valores_editados" not in st.session_state:
+    st.session_state.fila_valores_editados = {}
+
 if "_reg_duplicados_persistente" not in st.session_state:
     st.session_state._reg_duplicados_persistente = []
 
@@ -476,6 +480,8 @@ with col_manual:
                 }
                 st.session_state.fila_registros.append(registro)
                 st.session_state._fila_editor_v += 1
+                # Limpa edições persistidas quando adiciona novo registro
+                st.session_state.fila_valores_editados = {}
                 # Limpa flag após adicionar com sucesso
                 st.session_state._confirma_aviso = False
                 st.success(f"'{nome}' adicionado à fila.")
@@ -593,6 +599,8 @@ with col_foto:
                 if ok:
                     st.session_state._fila_editor_v += 1
                     st.session_state.uploader_key = st.session_state.get('uploader_key', 0) + 1
+                    # Limpa edições persistidas quando adiciona novos registros
+                    st.session_state.fila_valores_editados = {}
                 st.rerun()
 
 # =========================================================
@@ -679,6 +687,14 @@ else:
     df_fila_view = df_fila[colunas_presentes].copy()
     df_fila_view.index = range(1, len(df_fila_view) + 1)
 
+    # Restaura edições persistidas do session_state
+    _edit_key_prefix = f"edit_{st.session_state._fila_editor_v}"
+    for i in range(len(df_fila_view)):
+        for col in colunas_presentes:
+            chave = f"{_edit_key_prefix}_{i}_{col}"
+            if chave in st.session_state.fila_valores_editados:
+                df_fila_view.iloc[i, df_fila_view.columns.get_loc(col)] = st.session_state.fila_valores_editados[chave]
+
     def _col_width(col, label):
         try:
             if col in df_fila_view.columns and not df_fila_view.empty:
@@ -719,15 +735,19 @@ else:
     _houve_edicao = False
     editor_dict = editor_fila.to_dict("records")
     
-    # Primeiro, aplica todas as edições ao session_state
+    # Primeiro, aplica todas as edições ao session_state e armazena persistentemente
     for i, row in enumerate(editor_dict):
         for col in colunas_presentes:
             v_new = str(row.get(col, "") or "")
             v_atual = str(st.session_state.fila_registros[i].get(col, "") or "")
             if v_new != v_atual:
+                # Atualiza session_state principal
                 st.session_state.fila_registros[i][col] = v_new
                 if col == "chassi":
                     st.session_state.fila_registros[i]["chassi_completo"] = v_new
+                # Armazena persistentemente para restaurar após reruns
+                chave = f"{_edit_key_prefix}_{i}_{col}"
+                st.session_state.fila_valores_editados[chave] = v_new
                 _houve_edicao = True
     
     # Limpa aviso de validação se houve edição
