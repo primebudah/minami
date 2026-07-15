@@ -710,12 +710,17 @@ else:
         use_container_width=True,
         num_rows="fixed",
         key=f"editor_fila_{st.session_state._fila_editor_v}",
-        column_config=_col_cfg
+        column_config=_col_cfg,
+        disabled=False
     )
 
     # Atualiza registros da fila com valores do editor (edição simples)
+    # Processa TODAS as edições antes de qualquer validação
     _houve_edicao = False
-    for i, row in enumerate(editor_fila.to_dict("records")):
+    editor_dict = editor_fila.to_dict("records")
+    
+    # Primeiro, aplica todas as edições ao session_state
+    for i, row in enumerate(editor_dict):
         for col in colunas_presentes:
             v_new = str(row.get(col, "") or "")
             v_atual = str(st.session_state.fila_registros[i].get(col, "") or "")
