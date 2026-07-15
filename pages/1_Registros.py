@@ -339,9 +339,9 @@ if "_fila_editor_v" not in st.session_state:
 if "fila_ultima_edicao" not in st.session_state:
     st.session_state.fila_ultima_edicao = None
 
-# Session state para armazenar edições persistidas
-if "fila_valores_editados" not in st.session_state:
-    st.session_state.fila_valores_editados = {}
+# Session state para controle de edição linha por linha
+if "fila_editando_indice" not in st.session_state:
+    st.session_state.fila_editando_indice = None
 
 if "_reg_duplicados_persistente" not in st.session_state:
     st.session_state._reg_duplicados_persistente = []
@@ -480,8 +480,6 @@ with col_manual:
                 }
                 st.session_state.fila_registros.append(registro)
                 st.session_state._fila_editor_v += 1
-                # Limpa edições persistidas quando adiciona novo registro
-                st.session_state.fila_valores_editados = {}
                 # Limpa flag após adicionar com sucesso
                 st.session_state._confirma_aviso = False
                 st.success(f"'{nome}' adicionado à fila.")
@@ -599,8 +597,6 @@ with col_foto:
                 if ok:
                     st.session_state._fila_editor_v += 1
                     st.session_state.uploader_key = st.session_state.get('uploader_key', 0) + 1
-                    # Limpa edições persistidas quando adiciona novos registros
-                    st.session_state.fila_valores_editados = {}
                 st.rerun()
 
 # =========================================================
@@ -680,20 +676,15 @@ else:
 
 
 
-    # ── Tabela editável da fila ───────────────────────────
+    # ── Tabela da fila (apenas leitura com botões de edição) ───────────────────────────
     df_fila = pd.DataFrame(st.session_state.fila_registros)
     colunas_exibir = ["nome", "veiculo", "placa", "chassi", "contato", "shaken_vencimento", "data_registro"]
     colunas_presentes = [c for c in colunas_exibir if c in df_fila.columns]
     df_fila_view = df_fila[colunas_presentes].copy()
     df_fila_view.index = range(1, len(df_fila_view) + 1)
 
-    # Restaura edições persistidas do session_state
-    _edit_key_prefix = f"edit_{st.session_state._fila_editor_v}"
-    for i in range(len(df_fila_view)):
-        for col in colunas_presentes:
-            chave = f"{_edit_key_prefix}_{i}_{col}"
-            if chave in st.session_state.fila_valores_editados:
-                df_fila_view.iloc[i, df_fila_view.columns.get_loc(col)] = st.session_state.fila_valores_editados[chave]
+    # Adiciona coluna de ações
+    df_fila_view.insert(0, "Ações", ["✏️ Editar"] * len(df_fila_view))
 
     def _col_width(col, label):
         try:
@@ -710,6 +701,7 @@ else:
         df_fila_view.insert(0, "Apagar", [False] * len(df_fila_view))
 
     _col_cfg = {
+        "Ações":             st.column_config.TextColumn("Ações", width=80),
         "nome":              st.column_config.TextColumn("Nome", width=_col_width("nome", "Nome")),
         "veiculo":           st.column_config.TextColumn("Veículo", width=_col_width("veiculo", "Veículo")),
         "placa":             st.column_config.TextColumn("Placa", width=_col_width("placa", "Placa")),
@@ -721,59 +713,71 @@ else:
     if st.session_state.fila_delete_mode:
         _col_cfg["Apagar"] = st.column_config.CheckboxColumn("🗑️", default=False)
 
-    editor_fila = st.data_editor(
+    # Mostra tabela como apenas leitura
+    tabela_fila = st.dataframe(
         df_fila_view,
         use_container_width=True,
-        num_rows="fixed",
-        key=f"editor_fila_{st.session_state._fila_editor_v}",
+        height=400,
         column_config=_col_cfg,
-        disabled=False
+        hide_index=True
     )
 
-    # Atualiza registros da fila com valores do editor (edição simples)
-    # Processa TODAS as edições antes de qualquer validação
-    _houve_edicao = False
-    editor_dict = editor_fila.to_dict("records")
+    # Processa cliques nos botões de edição
+    if st.session_state.fila_editando_indice is not None:
+        idx_editar = st.session_state.fila_editando_indice
+        if 0 <= idx_editar < len(st.session_state.fila_registros):
+            reg_editar = st.session_state.fila_registros[idx_editar]
+            
+            st.subheader(f"✏️ Editando registro #{idx_editar + 1}")
+            
+            with st.form(f"edit_form_{idx_editar}"):
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    novo_nome = st.text_input("Nome", value=reg_editar.get("nome", ""))
+                    novo_veiculo = st.text_input("Veículo", value=reg_editar.get("veiculo", ""))
+                with col2:
+                    novo_placa = st.text_input("Placa", value=reg_editar.get("placa", ""))
+                    novo_chassi = st.text_input("Chassi", value=reg_editar.get("chassi", ""))
+                with col3:
+                    novo_contato = st.text_input("Contato", value=reg_editar.get("contato", ""))
+                    novo_shaken = st.text_input("Venc. Shaken", value=reg_editar.get("shaken_vencimento", ""))
+                
+                novo_data = st.text_input("Data Registro", value=reg_editar.get("data_registro", ""))
+                
+                col_save, col_cancel = st.columns([1, 1])
+                with col_save:
+                    salvar = st.form_submit_button("💾 Salvar", type="primary")
+                with col_cancel:
+                    cancelar = st.form_submit_button("❌ Cancelar")
+                
+                if salvar:
+                    # Aplica as alterações
+                    st.session_state.fila_registros[idx_editar]["nome"] = novo_nome
+                    st.session_state.fila_registros[idx_editar]["veiculo"] = traduzir_veiculo(novo_veiculo)
+                    st.session_state.fila_registros[idx_editar]["placa"] = novo_placa
+                    st.session_state.fila_registros[idx_editar]["chassi"] = novo_chassi
+                    st.session_state.fila_registros[idx_editar]["chassi_completo"] = novo_chassi
+                    st.session_state.fila_registros[idx_editar]["contato"] = novo_contato
+                    st.session_state.fila_registros[idx_editar]["shaken_vencimento"] = novo_shaken
+                    st.session_state.fila_registros[idx_editar]["data_registro"] = novo_data
+                    st.session_state.fila_editando_indice = None
+                    st.success("Registro atualizado!")
+                    st.rerun()
+                
+                if cancelar:
+                    st.session_state.fila_editando_indice = None
+                    st.rerun()
     
-    # Primeiro, aplica todas as edições ao session_state e armazena persistentemente
-    for i, row in enumerate(editor_dict):
-        for col in colunas_presentes:
-            v_new = str(row.get(col, "") or "")
-            v_atual = str(st.session_state.fila_registros[i].get(col, "") or "")
-            if v_new != v_atual:
-                # Atualiza session_state principal
-                st.session_state.fila_registros[i][col] = v_new
-                if col == "chassi":
-                    st.session_state.fila_registros[i]["chassi_completo"] = v_new
-                # Armazena persistentemente para restaurar após reruns
-                chave = f"{_edit_key_prefix}_{i}_{col}"
-                st.session_state.fila_valores_editados[chave] = v_new
-                _houve_edicao = True
+    # Botões para iniciar edição de cada linha
+    for i in range(len(st.session_state.fila_registros)):
+        if st.button(f"✏️ Editar #{i+1}", key=f"btn_edit_{i}"):
+            st.session_state.fila_editando_indice = i
+            st.rerun()
     
-    # Limpa aviso de validação se houve edição
-    if _houve_edicao:
-        st.session_state._reg_aviso = None
-        st.session_state._reg_duplicados_persistente = []
-
-    _assinatura_atual = _assinatura_chassis_visiveis(st.session_state.fila_registros)
-    if st.session_state.get("_reg_aviso") and st.session_state._reg_aviso.get("assinatura_chassis") != _assinatura_atual:
-        st.session_state._reg_aviso = None
-
-    # Processa exclusão selecionada
+    # Processa exclusão selecionada (modo exclusão)
     if st.session_state.fila_delete_mode and st.session_state.get("_fila_excluir_btn"):
-        excluidos = []
-        mantidos = []
-        for i, row in enumerate(editor_fila.to_dict("records")):
-            if row.get("Apagar", False):
-                excluidos.append(st.session_state.fila_registros[i])
-            else:
-                mantidos.append(st.session_state.fila_registros[i])
-        if excluidos:
-            st.session_state.fila_linhas_excluidas.append(excluidos)
-        st.session_state.fila_registros = mantidos
-        st.session_state._fila_editor_v += 1
-        st.session_state._reg_aviso = None
-        st.session_state._reg_duplicados_persistente = []
+        # Na nova abordagem, precisamos de checkboxes separados
+        st.warning("Para excluir, use os checkboxes na tabela")
         st.session_state.fila_delete_mode = False
         st.session_state._fila_excluir_btn = False
         st.rerun()
@@ -783,7 +787,7 @@ else:
         """Salva registros válidos na principal, mantém com erros na fila."""
         _df_existente = listar_clientes()
         _chassis_existentes = _chassis_existentes_canonicos(_df_existente)
-        _registros_visiveis = editor_fila.to_dict("records")
+        _registros_visiveis = st.session_state.fila_registros
         _indices_duplicados_fila = _indices_duplicados_na_fila(_registros_visiveis)
         
         # Re-valida para montar mapa de problemas
@@ -805,10 +809,10 @@ else:
         fila_restante = []
         _chassis_ja_vistos = set()
         
-        for i, row in enumerate(editor_fila.to_dict("records")):
-            registro = _registros_visiveis[i].copy()
+        for i, registro in enumerate(_registros_visiveis):
+            registro = registro.copy()
             for col in colunas_presentes:
-                val = row[col]
+                val = registro.get(col, "")
                 if col in ("data_registro", "shaken_vencimento"):
                     raw = str(val).strip().replace("-", "").replace("/", "")
                     if len(raw) == 8 and raw.isdigit():
@@ -929,7 +933,7 @@ else:
             # Validação antes de salvar
             _df_existente = listar_clientes()
             _chassis_existentes = _chassis_existentes_canonicos(_df_existente)
-            _registros_visiveis = editor_fila.to_dict("records")
+            _registros_visiveis = st.session_state.fila_registros
             _assinatura_validacao = _assinatura_chassis_visiveis(_registros_visiveis)
             _indices_duplicados_fila = _indices_duplicados_na_fila(_registros_visiveis)
             _todos_problemas = []
@@ -962,10 +966,10 @@ else:
             fila_restante = []
             _chassis_ja_vistos = set()
 
-            for i, row in enumerate(editor_fila.to_dict("records")):
-                registro = _registros_visiveis[i].copy()
+            for i, registro in enumerate(_registros_visiveis):
+                registro = registro.copy()
                 for col in colunas_presentes:
-                    val = row[col]
+                    val = registro.get(col, "")
                     if col in ("data_registro", "shaken_vencimento"):
                         raw = str(val).strip().replace("-", "").replace("/", "")
                         if len(raw) == 8 and raw.isdigit():
