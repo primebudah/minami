@@ -39,7 +39,14 @@ if USE_SUPABASE:
             get_supabase,
             migrar_dados_sqlite
         )
-        print("[DB] Usando Supabase (PostgreSQL)")
+        # Testa conexão
+        try:
+            get_supabase()
+            print("[DB] Usando Supabase (PostgreSQL)")
+        except Exception as e:
+            print(f"[DB] Erro conectando ao Supabase: {e}")
+            print("[DB] Usando SQLite local como fallback")
+            USE_SUPABASE = False
     except ImportError as e:
         print(f"[DB] Supabase configurado mas biblioteca não instalada: {e}")
         USE_SUPABASE = False
