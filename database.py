@@ -13,10 +13,6 @@ from typing import Optional, Dict, Any, List
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
-# Força uso de SQLite local (comente para voltar ao Supabase)
-SUPABASE_URL = ""
-SUPABASE_KEY = ""
-
 # Se secrets.toml existir, tenta carregar de lá
 try:
     import streamlit as st
@@ -24,6 +20,10 @@ try:
     SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", SUPABASE_KEY)
 except:
     pass
+
+# Força uso de SQLite local (comente para voltar ao Supabase)
+SUPABASE_URL = ""
+SUPABASE_KEY = ""
 
 # Flag: True = usar Supabase, False = usar SQLite local
 USE_SUPABASE = bool(SUPABASE_URL and SUPABASE_KEY)
