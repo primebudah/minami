@@ -558,10 +558,6 @@ with col_foto:
             if len(files) > 5:
                 st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 5 fotos por vez. Processando apenas as 5 primeiras.")
                 files = files[:5]
-            st.write(f"**{len(files)} foto(s) selecionada(s):**")
-            # Lista simples sem expander para melhor compatibilidade mobile
-            for f in files:
-                st.write(f"📄 {f.name}")
 
             if st.button("🔍 Processar Fotos"):
                 ok, err = 0, 0
@@ -590,9 +586,6 @@ with col_foto:
                             st.error(f"Erro em {f.name}: {e}")
                             err += 1
                         progress.progress(idx / total)
-                        # Pequena pausa entre fotos para evitar rate limiting
-                        import time
-                        time.sleep(0.5)
                 status.empty()
                 if ok:
                     st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
