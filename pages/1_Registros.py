@@ -559,10 +559,9 @@ with col_foto:
                 st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 10 fotos por vez. Processando apenas as 10 primeiras.")
                 files = files[:10]
             st.write(f"**{len(files)} foto(s) selecionada(s):**")
-            # Expander para lista compacta no mobile
-            with st.expander(f"Ver lista de {len(files)} fotos", expanded=True):
-                for f in files:
-                    st.write(f"📄 {f.name}")
+            # Lista simples sem expander para melhor compatibilidade mobile
+            for f in files:
+                st.write(f"📄 {f.name}")
 
             if st.button("🔍 Processar Fotos"):
                 ok, err = 0, 0
