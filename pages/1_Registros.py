@@ -589,6 +589,9 @@ with col_foto:
                             st.error(f"Erro em {f.name}: {e}")
                             err += 1
                         progress.progress(idx / total)
+                        # Pequena pausa entre fotos para evitar rate limiting
+                        import time
+                        time.sleep(0.5)
                 status.empty()
                 if ok:
                     st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
