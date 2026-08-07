@@ -22,8 +22,8 @@ except:
     pass
 
 # Força uso de SQLite local (comente para voltar ao Supabase)
-SUPABASE_URL = ""
-SUPABASE_KEY = ""
+# SUPABASE_URL = ""
+# SUPABASE_KEY = ""
 
 # Flag: True = usar Supabase, False = usar SQLite local
 USE_SUPABASE = bool(SUPABASE_URL and SUPABASE_KEY)
