@@ -545,19 +545,19 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
-        st.caption("📱 Selecione até **10 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
+        st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
         files = st.file_uploader(
-            "Selecione até 10 fotos",
+            "Selecione até 5 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
             key=f"uploader_{st.session_state.get('uploader_key', 0)}"
         )
 
         if files:
-            # Limita a 10 fotos
-            if len(files) > 10:
-                st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 10 fotos por vez. Processando apenas as 10 primeiras.")
-                files = files[:10]
+            # Limita a 5 fotos
+            if len(files) > 5:
+                st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 5 fotos por vez. Processando apenas as 5 primeiras.")
+                files = files[:5]
             st.write(f"**{len(files)} foto(s) selecionada(s):**")
             # Lista simples sem expander para melhor compatibilidade mobile
             for f in files:
