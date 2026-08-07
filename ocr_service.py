@@ -16,7 +16,7 @@ import streamlit as st
 
 try:
     from openai import OpenAI
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], timeout=45.0, max_retries=1)
+    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], timeout=120.0, max_retries=2)
     OPENAI_AVAILABLE = True
 except ImportError:
     OpenAI = None
