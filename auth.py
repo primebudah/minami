@@ -1,7 +1,12 @@
 import os
 import json
 import base64
+import logging
+
+import bcrypt
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 _SESSION_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "session.json")
 _CONFIG_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "config.json")
@@ -96,7 +101,24 @@ def login_page():
 
     if entrar:
         users = st.secrets.get("users", {})
-        if usuario in users and users[usuario]["password"] == senha:
+        if usuario in users:
+            stored_pw = users[usuario]["password"]
+            # Support bcrypt hashes (start with $2b$) and legacy plaintext
+            if stored_pw.startswith("$2b$"):
+                pw_ok = bcrypt.checkpw(senha.encode("utf-8"), stored_pw.encode("utf-8"))
+            else:
+                pw_ok = (stored_pw == senha)
+                if pw_ok:
+                    logger.warning(
+                        "User '%s' still uses a plaintext password. "
+                        "Generate a bcrypt hash with: "
+                        "python -c \"import bcrypt; print(bcrypt.hashpw(b'PASSWORD', bcrypt.gensalt()).decode())\"",
+                        usuario,
+                    )
+        else:
+            pw_ok = False
+
+        if pw_ok:
             st.session_state.logged_in  = True
             st.session_state.usuario    = usuario
             st.session_state.role       = users[usuario]["role"]
@@ -105,9 +127,7 @@ def login_page():
             if lembrar:
                 _save_session(usuario, users[usuario]["role"], users[usuario]["nome"], True)
             else:
-                # Limpa sessao se nao quiser permanecer conectado
                 _clear_session()
-            # Limpa query params para garantir que sempre vá para página principal
             st.query_params.clear()
             st.rerun()
         else:

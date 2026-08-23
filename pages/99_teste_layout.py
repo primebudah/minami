@@ -1,7 +1,9 @@
-# Teste isolado de layout - sem autenticação, sem login
+# Teste isolado de layout
 import streamlit as st
+from auth import require_login
 
 st.set_page_config(layout="wide")
+require_login()
 
 st.title("TESTE LAYOUT - Página Completa")
 

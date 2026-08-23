@@ -9,7 +9,7 @@ import os
 # CONFIG
 # =========================================================
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 # Intervalo válido para veículos modernos
 MIN_YEAR = 1990

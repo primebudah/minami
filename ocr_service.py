@@ -417,15 +417,10 @@ RETORNE APENAS JSON com estes campos:
         print(f"[DEBUG] Erro na chamada OCR: {e}")
         return {}
 
-    # Debug: mostra dados brutos do OCR
-    print(f"[DEBUG] Dados brutos do OCR: {d}")
-
     # Validação e conversão rígida de datas (STRICT VALIDATION)
     for campo in ["shaken_vencimento", "data_registro"]:
         if d.get(campo):
             data_bruta = d[campo]
-            print(f"[DEBUG] Validando campo {campo}: {data_bruta}")
-            
             # Se for "NÃO IDENTIFICADO", marca para verificação manual
             if "NÃO IDENTIFICADO" in data_bruta or data_bruta == "NÃO IDENTIFICADO":
                 d[campo] = "VERIFICAR"
@@ -437,10 +432,9 @@ RETORNE APENAS JSON com estes campos:
             # Se a conversão foi bem-sucedida, usa a data convertida
             if data_convertida and re.match(r"^\d{4}-\d{2}-\d{2}$", data_convertida):
                 d[campo] = data_convertida
-                print(f"[DEBUG] Data convertida com sucesso: {data_convertida}")
             else:
                 d[campo] = "VERIFICAR"
-                print(f"[DEBUG] Data não pôde ser convertida, marcando para verificação manual")
+
 
     # Pós-validação: data_registro deve ser próxima ao shaken_vencimento (máx 2-3 anos antes)
     _precisa_retry_datas = False
@@ -540,5 +534,4 @@ RETORNE JSON: {"shaken_vencimento": "...", "data_registro": "..."}"""
         # Remove espaços extras e normaliza
         d["placa"] = re.sub(r"\s+", " ", str(d["placa"])).strip()
 
-    print(f"[DEBUG] Dados finais: {d}")
     return d
