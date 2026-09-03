@@ -620,6 +620,14 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
+        # Verifica se OCR está disponível
+        try:
+            from ocr_service import OPENAI_AVAILABLE
+            if not OPENAI_AVAILABLE:
+                st.error("⚠️ OCR não disponível. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
+        except:
+            st.error("⚠️ OCR não disponível. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
+        
         st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
         files = st.file_uploader(
             "Selecione até 5 fotos",
