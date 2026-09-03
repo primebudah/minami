@@ -1717,6 +1717,17 @@ if not df.empty:
                                     st.session_state._conc_ciclos.add(ids[i])
                         row_dict[col] = val_salvar
                         atualizar_cliente(ids[i], row_dict)
+                        # Backup automático após edição
+                        try:
+                            from database_local_sync import _carregar_config_backup, backup_local_para_arquivo
+                            config = _carregar_config_backup()
+                            if config.get("auto_sync", False):
+                                df_backup = carregar_clientes()
+                                sucesso, msg, caminho = backup_local_para_arquivo(df_backup)
+                                if sucesso:
+                                    st.toast(f"✅ Backup salvo", icon="✅")
+                        except Exception as e:
+                            print(f"[DEBUG] Erro no backup após edição: {e}")
                         st.session_state.df = carregar_clientes()
                         st.session_state._editor_v += 1
                         _edit_found = True
@@ -1908,6 +1919,17 @@ if not df.empty:
                                             st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
                             atualizar_cliente(ids[i], row_dict)
+                            # Backup automático após edição
+                            try:
+                                from database_local_sync import _carregar_config_backup, backup_local_para_arquivo
+                                config = _carregar_config_backup()
+                                if config.get("auto_sync", False):
+                                    df_backup = carregar_clientes()
+                                    sucesso, msg, caminho = backup_local_para_arquivo(df_backup)
+                                    if sucesso:
+                                        st.toast(f"✅ Backup salvo", icon="✅")
+                            except Exception as e:
+                                print(f"[DEBUG] Erro no backup após edição: {e}")
                         celula_mudou = True
                         break
                 if celula_mudou:
