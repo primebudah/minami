@@ -59,6 +59,9 @@ with st.sidebar:
             from datetime import datetime
             df_backup = listar_clientes()
             if not df_backup.empty:
+                # Remove colunas internas se existirem
+                cols_para_remover = [col for col in df_backup.columns if col.startswith('_')]
+                df_backup = df_backup.drop(columns=cols_para_remover, errors='ignore')
                 csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
                 st.download_button(
                     label="💾 Clique para baixar",
