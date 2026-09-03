@@ -69,10 +69,18 @@ try:
                 is_local = os.path.exists(os.path.join(os.path.dirname(__file__), '.env.local'))
                 
                 if is_local:
-                    # Ambiente local: usa seletor de pasta
+                    # Ambiente local: entrada manual + seletor opcional
                     default_dir = config_backup.get("backup_dir") or "C:\\Users\\uni_t\\Desktop\\MinamiBackup"
                     
-                    if st.button("📂 Selecionar pasta...", use_container_width=True):
+                    backup_path = st.session_state.get("_backup_path_selected", default_dir)
+                    backup_path = st.text_input(
+                        "📁 Pasta para backup",
+                        value=backup_path,
+                        help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
+                    )
+                    
+                    # Botão de seleção opcional (pode falhar)
+                    if st.button("📂 Selecionar pasta (opcional)", use_container_width=True):
                         try:
                             import tkinter as tk
                             from tkinter import filedialog
@@ -85,14 +93,7 @@ try:
                                 st.session_state._backup_path_selected = selected_path
                                 st.rerun()
                         except Exception as e:
-                            st.warning("⚠️ Seletor de pasta não disponível")
-                    
-                    backup_path = st.session_state.get("_backup_path_selected", default_dir)
-                    backup_path = st.text_input(
-                        "📁 Pasta para backup",
-                        value=backup_path,
-                        help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
-                    )
+                            st.warning("⚠️ Seletor não disponível - digite o caminho manualmente")
                     
                     col_testar, col_salvar = st.columns([1, 1])
                     
