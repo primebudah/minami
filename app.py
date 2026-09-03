@@ -50,29 +50,6 @@ st.markdown(f"""
 
 require_login()
 
-# ── BOTÃO DE DOWNLOAD DE BACKUP ─────────────────────────────────────
-with st.sidebar:
-    st.divider()
-    with st.expander("📥 Baixar backup", expanded=False):
-        st.caption("Baixe uma cópia dos dados em CSV")
-        if st.button("� Baixar backup CSV", use_container_width=True):
-            try:
-                from datetime import datetime
-                df_backup = listar_clientes()
-                if not df_backup.empty:
-                    csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
-                    st.download_button(
-                        label="💾 Clique para baixar",
-                        data=csv,
-                        file_name=f"minami_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-                else:
-                    st.warning("⚠️ Não há dados para backup")
-            except Exception as e:
-                st.error(f"❌ Erro ao gerar backup: {e}")
-
 # ── DIAGNÓSTICO DE CONEXÃO SUPABASE ──────────────────────────────────
 try:
     from database import USE_SUPABASE, SUPABASE_URL, SUPABASE_KEY
