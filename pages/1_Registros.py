@@ -622,11 +622,21 @@ with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
         # Verifica se OCR está disponível
         try:
-            from ocr_service import OPENAI_AVAILABLE
-            if not OPENAI_AVAILABLE:
-                st.error("⚠️ OCR não disponível. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
-        except:
-            st.error("⚠️ OCR não disponível. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
+            api_key = st.secrets.get("OPENAI_API_KEY")
+            if not api_key:
+                st.error("⚠️ OPENAI_API_KEY não encontrada nos secrets. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
+            else:
+                st.info(f"✅ OPENAI_API_KEY carregada: {api_key[:10]}...")
+                try:
+                    from ocr_service import OPENAI_AVAILABLE
+                    if not OPENAI_AVAILABLE:
+                        st.error("⚠️ OCR não disponível. Erro ao inicializar OpenAI.")
+                    else:
+                        st.success("✅ OCR disponível e pronto para uso.")
+                except Exception as e:
+                    st.error(f"⚠️ Erro ao carregar OCR: {e}")
+        except Exception as e:
+            st.error(f"⚠️ Erro ao verificar OPENAI_API_KEY: {e}")
         
         st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
         files = st.file_uploader(
