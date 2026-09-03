@@ -5,6 +5,7 @@
 import os
 from datetime import date
 import re
+import json
 
 import pandas as pd
 import streamlit as st
@@ -17,6 +18,41 @@ from auth import require_login, can, logout_button, _load_config
 # =========================================================
 # CONFIG
 # =========================================================
+
+# =========================================================
+# PERSISTÊNCIA DA FILA - Previne perda de dados
+# =========================================================
+
+_FILA_BACKUP_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".streamlit", "fila_backup.json")
+
+def _salvar_fila_em_disco():
+    """Salva a fila atual em disco para prevenção de perda de dados."""
+    try:
+        if hasattr(st.session_state, 'fila_registros') and st.session_state.fila_registros:
+            with open(_FILA_BACKUP_FILE, 'w', encoding='utf-8') as f:
+                json.dump(st.session_state.fila_registros, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[DEBUG] Erro ao salvar fila em disco: {e}")
+
+def _carregar_fila_do_disco():
+    """Carrega a fila do disco se existir."""
+    try:
+        if os.path.exists(_FILA_BACKUP_FILE):
+            with open(_FILA_BACKUP_FILE, 'r', encoding='utf-8') as f:
+                fila_recuperada = json.load(f)
+                if fila_recuperada:
+                    return fila_recuperada
+    except Exception as e:
+        print(f"[DEBUG] Erro ao carregar fila do disco: {e}")
+    return []
+
+def _limpar_fila_backup():
+    """Remove o arquivo de backup da fila."""
+    try:
+        if os.path.exists(_FILA_BACKUP_FILE):
+            os.remove(_FILA_BACKUP_FILE)
+    except Exception as e:
+        print(f"[DEBUG] Erro ao limpar backup da fila: {e}")
 
 # Carrega ícone da logo
 _icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".streamlit", "icon_b64.txt")
@@ -322,7 +358,13 @@ st.markdown("""
 # =========================================================
 
 if "fila_registros" not in st.session_state:
-    st.session_state.fila_registros = []
+    # Tenta recuperar dados do backup se a fila estiver vazia
+    fila_recuperada = _carregar_fila_do_disco()
+    if fila_recuperada:
+        st.session_state.fila_registros = fila_recuperada
+        st.warning("📋 Fila de registros recuperada do backup após reinício do sistema.")
+    else:
+        st.session_state.fila_registros = []
 
 if "uploader_key" not in st.session_state:
     st.session_state.uploader_key = 0
@@ -409,14 +451,46 @@ div[data-testid="stColumns"] > div:nth-child(3) button {
 </style>
 """, unsafe_allow_html=True)
 
-_nav_cols = st.columns([1, 0.5, 0.5, 1])
+_nav_cols = st.columns([1, 0.5, 0.5, 0.5, 1])
 with _nav_cols[1]:
     if st.button("🔍 Central Shaken", key="nav_home", use_container_width=True):
         st.switch_page("app.py")
 with _nav_cols[2]:
     st.button("📋 Registrar", key="nav_reg", disabled=True, use_container_width=True)
+with _nav_cols[3]:
+    if can("admin"):
+        if st.button("⚙️ Configurações", key="nav_config", use_container_width=True):
+            st.switch_page("pages/3_Configuracoes.py")
 
 st.caption("Adicione registros manualmente ou via foto. Confira a fila e clique em **Salvar Registros** para enviar à tabela principal.")
+
+# Sistema de recuperação de dados perdidos
+if os.path.exists(_FILA_BACKUP_FILE):
+    with st.expander("🔧 Recuperação de Dados", expanded=False):
+        st.info("💾 Encontrado backup de fila anterior. Os dados podem ter sido perdidos devido a refresh da página ou reinício do servidor.")
+        try:
+            with open(_FILA_BACKUP_FILE, 'r', encoding='utf-8') as f:
+                backup_data = json.load(f)
+            if backup_data:
+                st.write(f"📋 **{len(backup_data)} registro(s) encontrado(s) no backup:**")
+                df_backup = pd.DataFrame(backup_data)
+                st.dataframe(df_backup, use_container_width=True)
+                
+                col_restaurar, col_limpar_backup = st.columns([1, 1])
+                with col_restaurar:
+                    if st.button("🔄 Restaurar Backup", use_container_width=True):
+                        st.session_state.fila_registros = backup_data
+                        st.session_state._fila_editor_v += 1
+                        st.success(f"✅ {len(backup_data)} registro(s) restaurado(s) para a fila!")
+                        st.rerun()
+                with col_limpar_backup:
+                    if st.button("🗑️ Limpar Backup", use_container_width=True):
+                        _limpar_fila_backup()
+                        st.warning("Backup removido.")
+                        st.rerun()
+        except Exception as e:
+            st.error(f"Erro ao ler backup: {e}")
+
 st.divider()
 
 # =========================================================
@@ -480,6 +554,7 @@ with col_manual:
                 }
                 st.session_state.fila_registros.append(registro)
                 st.session_state._fila_editor_v += 1
+                _salvar_fila_em_disco()  # Salva backup automaticamente
                 # Limpa flag após adicionar com sucesso
                 st.session_state._confirma_aviso = False
                 st.success(f"'{nome}' adicionado à fila.")
@@ -568,7 +643,9 @@ with col_foto:
                     for idx, f in enumerate(files, start=1):
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
+                            print(f"[DEBUG] Iniciando OCR para {f.name}")
                             d = extrair_dados_do_documento(f)
+                            print(f"[DEBUG] Resultado OCR: {d}")
                             if not d or (not d.get("chassi") and not d.get("veiculo")):
                                 status.warning(f"⚠️ {idx}/{total}: {f.name} - não foi possível ler dados essenciais")
                                 err += 1
@@ -580,6 +657,7 @@ with col_foto:
                                         d["data_registro"] = str(date.today())
                             d["_origem"] = f"foto:{f.name}"
                             st.session_state.fila_registros.append(d)
+                            _salvar_fila_em_disco()  # Salva backup automaticamente
                             ok += 1
                             status.success(f"✅ {idx}/{total}: {f.name} processada")
                         except Exception as e:
@@ -758,6 +836,7 @@ else:
                     st.session_state.fila_registros[idx_editar]["shaken_vencimento"] = novo_shaken
                     st.session_state.fila_registros[idx_editar]["data_registro"] = novo_data
                     st.session_state.fila_editando_indice = None
+                    _salvar_fila_em_disco()  # Salva backup automaticamente
                     st.success("Registro atualizado!")
                     st.rerun()
                 
@@ -841,6 +920,12 @@ else:
         st.session_state._reg_com_erros = com_erros
         if "df" in st.session_state:
             del st.session_state["df"]
+        
+        # Limpa backup se salvou tudo com sucesso
+        if salvos > 0 and not fila_restante:
+            _limpar_fila_backup()
+        else:
+            _salvar_fila_em_disco()  # Atualiza backup com fila restante
     
     # ── Função de validação (Parte 1) ─────────────────────
     def _validar_registro(row_dict, idx, chassis_existentes, indices_duplicados_fila):
@@ -1003,11 +1088,29 @@ else:
 
             st.session_state._reg_salvos_count = salvos
             st.session_state._reg_com_erros = com_erros
+            
+            # Limpa backup se salvou tudo com sucesso
+            if salvos > 0 and not fila_restante:
+                _limpar_fila_backup()
+            else:
+                _salvar_fila_em_disco()  # Atualiza backup com fila restante
 
             st.rerun()
 
     with col_limpar:
         if st.button("🗑️ Limpar Fila", use_container_width=True):
-            st.session_state.fila_registros = []
-            st.session_state._fila_editor_v += 1
-            st.rerun()
+            if st.session_state.fila_registros:
+                # Confirmação antes de limpar
+                if st.session_state.get("_confirmar_limpar_fila", False):
+                    st.session_state.fila_registros = []
+                    st.session_state._fila_editor_v += 1
+                    st.session_state._confirmar_limpar_fila = False
+                    _limpar_fila_backup()
+                    st.warning("Fila limpa com sucesso.")
+                    st.rerun()
+                else:
+                    st.session_state._confirmar_limpar_fila = True
+                    st.error("⚠️ Tem certeza que deseja limpar toda a fila? Clique novamente para confirmar.")
+                    st.rerun()
+            else:
+                st.info("A fila já está vazia.")
