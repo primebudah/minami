@@ -242,11 +242,23 @@ if not USE_SUPABASE:
             if SYNC_AVAILABLE:
                 try:
                     config = _carregar_config_backup()
+                    print(f"[DEBUG SQLite] Config backup: {config}")
                     if config.get("auto_sync", False):
+                        print(f"[DEBUG SQLite] Iniciando backup automático...")
                         df_clientes = listar_clientes()
-                        backup_local_para_arquivo(df_clientes)
+                        print(f"[DEBUG SQLite] Clientes para backup: {len(df_clientes)}")
+                        sucesso, msg, caminho = backup_local_para_arquivo(df_clientes)
+                        print(f"[DEBUG SQLite] Backup resultado: sucesso={sucesso}, msg={msg}, caminho={caminho}")
+                        if sucesso:
+                            st.toast(f"✅ Backup salvo: {msg}", icon="✅")
+                        else:
+                            st.warning(f"⚠️ Backup falhou: {msg}")
+                    else:
+                        print(f"[DEBUG SQLite] auto_sync está False na config")
                 except Exception as e:
-                    print(f"[DEBUG] Erro na sincronização automática: {e}")
+                    print(f"[DEBUG SQLite] Erro na sincronização automática: {e}")
+                    import traceback
+                    traceback.print_exc()
 
     def deletar_cliente(cliente_id):
         """Deleta cliente."""
