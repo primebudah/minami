@@ -643,9 +643,9 @@ with col_foto:
                     for idx, f in enumerate(files, start=1):
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
-                            print(f"[DEBUG] Iniciando OCR para {f.name}")
+                            st.info(f"🔍 Iniciando OCR para {f.name}")
                             d = extrair_dados_do_documento(f)
-                            print(f"[DEBUG] Resultado OCR: {d}")
+                            st.info(f"📊 Resultado OCR: {d}")
                             if not d or (not d.get("chassi") and not d.get("veiculo")):
                                 status.warning(f"⚠️ {idx}/{total}: {f.name} - não foi possível ler dados essenciais")
                                 err += 1
