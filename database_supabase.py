@@ -24,6 +24,19 @@ except ImportError as e:
     SYNC_AVAILABLE = False
     print(f"[DEBUG] SYNC_AVAILABLE = False - erro ao importar: {e}")
 
+# Sistema de logs visível no app
+backup_logs = []
+
+def add_log(message):
+    """Adiciona log ao sistema visível"""
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+    backup_logs.append(f"[{timestamp}] {message}")
+    # Mantém apenas os últimos 20 logs
+    if len(backup_logs) > 20:
+        backup_logs.pop(0)
+    print(f"[DEBUG] {message}")
+
 # =========================================================
 # CONFIG
 # =========================================================
@@ -120,29 +133,29 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
         }).execute()
         
         # Sincronização automática se configurado
-        print(f"[DEBUG] SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
+        add_log(f"SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
         if SYNC_AVAILABLE and result.data is not None:
             try:
                 config = _carregar_config_backup()
-                print(f"[DEBUG] Config backup: {config}")
+                add_log(f"Config backup: {config}")
                 if config.get("auto_sync", False):
-                    print(f"[DEBUG] Iniciando backup automático...")
+                    add_log("Iniciando backup automático...")
                     df_clientes = listar_clientes()
-                    print(f"[DEBUG] Clientes para backup: {len(df_clientes)}")
+                    add_log(f"Clientes para backup: {len(df_clientes)}")
                     sucesso, msg, caminho = backup_local_para_arquivo(df_clientes)
-                    print(f"[DEBUG] Backup resultado: sucesso={sucesso}, msg={msg}, caminho={caminho}")
+                    add_log(f"Backup resultado: sucesso={sucesso}, msg={msg}, caminho={caminho}")
                     if sucesso:
                         st.toast(f"✅ Backup salvo: {msg}", icon="✅")
                     else:
                         st.warning(f"⚠️ Backup falhou: {msg}")
                 else:
-                    print(f"[DEBUG] auto_sync está False na config")
+                    add_log("auto_sync está False na config")
             except Exception as e:
-                print(f"[DEBUG] Erro na sincronização automática: {e}")
+                add_log(f"Erro na sincronização automática: {e}")
                 import traceback
                 traceback.print_exc()
         else:
-            print(f"[DEBUG] Condição de backup não atendida: SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
+            add_log(f"Condição de backup não atendida: SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
         
         return result.data is not None
     except Exception as e:

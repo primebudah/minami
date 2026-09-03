@@ -100,6 +100,20 @@ try:
             st.caption(f"Pasta: {backup_dir}")
             if config_backup.get("auto_sync"):
                 st.caption("🔄 Sync automático: ATIVO")
+    
+    # Mostrar logs de backup
+    with st.sidebar:
+        st.divider()
+        with st.expander("📋 Logs de Backup", expanded=False):
+            try:
+                from database_supabase import backup_logs
+                if backup_logs:
+                    for log in reversed(backup_logs):
+                        st.text(log)
+                else:
+                    st.caption("Nenhum log ainda")
+            except Exception as e:
+                st.caption(f"Erro ao carregar logs: {e}")
         
 except Exception as e:
     with st.sidebar:
