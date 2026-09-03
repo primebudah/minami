@@ -50,91 +50,60 @@ st.markdown(f"""
 
 require_login()
 
-# ── CONFIGURAÇÃO OBRIGATÓRIA DE BACKUP LOCAL (PRIMEIRA VEZ) ─────────────
-# TEMPORARIAMENTE DESATIVADO PARA DEBUG
-# try:
-#     from database_local_sync import _carregar_config_backup, _definir_caminho_backup, _criar_diretorio_backup
-#     from database import listar_clientes
-#     
-#     config_backup = _carregar_config_backup()
-#     backup_dir = config_backup.get("backup_dir")
-#     
-#     # Se não tem backup configurado, pede configuração
-#     if not backup_dir or not os.path.exists(backup_dir):
-#         st.markdown("""
-#         <style>
-#         .setup-container {
-#             max-width: 600px;
-#             margin: 2rem auto;
-#             padding: 2rem;
-#             background: linear-gradient(135deg, #0d2a6e 0%, #1044b5 100%);
-#             border-radius: 16px;
-#             color: white;
-#             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-#         }
-#         .setup-container h2 { margin-top: 0; }
-#         .setup-container .stTextInput input {
-#             background: white !important;
-#             color: black !important;
-#         }
-#         </style>
-#         """, unsafe_allow_html=True)
-#         
-#         st.markdown("""
-#         <div class="setup-container">
-#             <h2>🔒 Configuração de Segurança</h2>
-#             <p>Por segurança, configure uma pasta local para backup automático dos dados.</p>
-#             <p>Isso garante que seus dados estejam sempre salvos no seu computador.</p>
-#         </div>
-#         """, unsafe_allow_html=True)
-#         
-#         st.divider()
-#         
-#         # Interface de configuração
-#         default_dir = os.path.join(os.path.expanduser("~"), "Desktop", "MinamiBackup")
-#         backup_path = st.text_input(
-#             "📁 Pasta para backup local",
-#             value=default_dir,
-#             placeholder="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup",
-#             help="Escolha uma pasta no seu computador para salvar backups automáticos"
-#         )
-#         
-#         col_testar, col_salvar = st.columns([1, 1])
-#         
-#         with col_testar:
-#             if st.button("🧪 Testar pasta", use_container_width=True):
-#                 if backup_path and _criar_diretorio_backup(backup_path):
-#                     st.success(f"✅ Pasta válida: {backup_path}")
-#                 else:
-#                     st.error("❌ Não foi possível criar/acessar esta pasta")
-#         
-#         with col_salvar:
-#             if st.button("💾 Salvar configuração", type="primary", use_container_width=True):
-#                 if backup_path and _definir_caminho_backup(backup_path):
-#                     # Ativa sync automático
-#                     config_backup["backup_dir"] = backup_path
-#                     config_backup["auto_sync"] = True
-#                     config_backup["ultima_sincronizacao"] = None
-#                     from database_local_sync import _salvar_config_backup
-#                     _salvar_config_backup(config_backup)
-#                     
-#                     st.success("✅ Configuração salva! Backup automático ativado.")
-#                     st.rerun()
-#                 else:
-#                     st.error("❌ Erro ao salvar configuração")
-#         
-#         st.info("💡 Após configurar, o sistema fará backup automático após cada operação.")
-#         st.stop()  # Para o app aqui até configurar
-#     
-#     # Se tem backup configurado mas sync automático não está ativo, ativa
-#     if not config_backup.get("auto_sync", False):
-#         config_backup["auto_sync"] = True
-#         from database_local_sync import _salvar_config_backup
-#         _salvar_config_backup(config_backup)
-#         st.success("✅ Backup automático ativado")
-#         
-# except Exception as e:
-#     st.warning(f"⚠️ Erro ao verificar configuração de backup: {e}")
+# ── AVISO DE CONFIGURAÇÃO DE BACKUP LOCAL ─────────────────────────────
+try:
+    from database_local_sync import _carregar_config_backup, _definir_caminho_backup, _criar_diretorio_backup, _salvar_config_backup
+    from database import listar_clientes
+    
+    config_backup = _carregar_config_backup()
+    backup_dir = config_backup.get("backup_dir")
+    
+    # Se não tem backup configurado, mostra aviso na sidebar
+    if not backup_dir or not os.path.exists(backup_dir):
+        with st.sidebar:
+            st.warning("⚠️ **Backup local não configurado**")
+            with st.expander("Configurar backup local", expanded=False):
+                st.info("� Configure uma pasta para backup automático dos dados no seu computador")
+                
+                default_dir = os.path.join(os.path.expanduser("~"), "Desktop", "MinamiBackup")
+                backup_path = st.text_input(
+                    "📁 Pasta para backup",
+                    value=default_dir,
+                    help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
+                )
+                
+                col_testar, col_salvar = st.columns([1, 1])
+                
+                with col_testar:
+                    if st.button("🧪 Testar", use_container_width=True):
+                        if backup_path and _criar_diretorio_backup(backup_path):
+                            st.success("✅ Pasta válida!")
+                        else:
+                            st.error("❌ Erro ao acessar pasta")
+                
+                with col_salvar:
+                    if st.button("💾 Salvar", type="primary", use_container_width=True):
+                        if backup_path and _definir_caminho_backup(backup_path):
+                            config_backup["backup_dir"] = backup_path
+                            config_backup["auto_sync"] = True
+                            config_backup["ultima_sincronizacao"] = None
+                            _salvar_config_backup(config_backup)
+                            st.success("✅ Configuração salva!")
+                            st.rerun()
+                        else:
+                            st.error("❌ Erro ao salvar")
+    
+    # Se tem backup configurado, mostra status
+    else:
+        with st.sidebar:
+            st.success(f"✅ Backup local ativo")
+            st.caption(f"Pasta: {backup_dir}")
+            if config_backup.get("auto_sync"):
+                st.caption("🔄 Sync automático: ATIVO")
+        
+except Exception as e:
+    with st.sidebar:
+        st.warning(f"⚠️ Erro backup: {e}")
 
 # ── DIAGNÓSTICO DE CONEXÃO SUPABASE ──────────────────────────────────
 try:
