@@ -67,7 +67,8 @@ with st.sidebar:
                 for col in df_backup.columns:
                     df_backup[col] = df_backup[col].astype(str)
                 
-                csv = df_backup.to_csv(index=False, encoding='utf-8-sig', sep=',')
+                # Usa ponto-e-vírgula para compatibilidade com Excel em português
+                csv = df_backup.to_csv(index=False, encoding='utf-8-sig', sep=';')
                 st.download_button(
                     label="💾 Clique para baixar",
                     data=csv,
