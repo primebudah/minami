@@ -50,6 +50,140 @@ st.markdown(f"""
 
 require_login()
 
+# ── CONFIGURAÇÃO OBRIGATÓRIA DE BACKUP LOCAL (PRIMEIRA VEZ) ─────────────
+# TEMPORARIAMENTE DESATIVADO PARA DEBUG
+# try:
+#     from database_local_sync import _carregar_config_backup, _definir_caminho_backup, _criar_diretorio_backup
+#     from database import listar_clientes
+#     
+#     config_backup = _carregar_config_backup()
+#     backup_dir = config_backup.get("backup_dir")
+#     
+#     # Se não tem backup configurado, pede configuração
+#     if not backup_dir or not os.path.exists(backup_dir):
+#         st.markdown("""
+#         <style>
+#         .setup-container {
+#             max-width: 600px;
+#             margin: 2rem auto;
+#             padding: 2rem;
+#             background: linear-gradient(135deg, #0d2a6e 0%, #1044b5 100%);
+#             border-radius: 16px;
+#             color: white;
+#             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+#         }
+#         .setup-container h2 { margin-top: 0; }
+#         .setup-container .stTextInput input {
+#             background: white !important;
+#             color: black !important;
+#         }
+#         </style>
+#         """, unsafe_allow_html=True)
+#         
+#         st.markdown("""
+#         <div class="setup-container">
+#             <h2>🔒 Configuração de Segurança</h2>
+#             <p>Por segurança, configure uma pasta local para backup automático dos dados.</p>
+#             <p>Isso garante que seus dados estejam sempre salvos no seu computador.</p>
+#         </div>
+#         """, unsafe_allow_html=True)
+#         
+#         st.divider()
+#         
+#         # Interface de configuração
+#         default_dir = os.path.join(os.path.expanduser("~"), "Desktop", "MinamiBackup")
+#         backup_path = st.text_input(
+#             "📁 Pasta para backup local",
+#             value=default_dir,
+#             placeholder="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup",
+#             help="Escolha uma pasta no seu computador para salvar backups automáticos"
+#         )
+#         
+#         col_testar, col_salvar = st.columns([1, 1])
+#         
+#         with col_testar:
+#             if st.button("🧪 Testar pasta", use_container_width=True):
+#                 if backup_path and _criar_diretorio_backup(backup_path):
+#                     st.success(f"✅ Pasta válida: {backup_path}")
+#                 else:
+#                     st.error("❌ Não foi possível criar/acessar esta pasta")
+#         
+#         with col_salvar:
+#             if st.button("💾 Salvar configuração", type="primary", use_container_width=True):
+#                 if backup_path and _definir_caminho_backup(backup_path):
+#                     # Ativa sync automático
+#                     config_backup["backup_dir"] = backup_path
+#                     config_backup["auto_sync"] = True
+#                     config_backup["ultima_sincronizacao"] = None
+#                     from database_local_sync import _salvar_config_backup
+#                     _salvar_config_backup(config_backup)
+#                     
+#                     st.success("✅ Configuração salva! Backup automático ativado.")
+#                     st.rerun()
+#                 else:
+#                     st.error("❌ Erro ao salvar configuração")
+#         
+#         st.info("💡 Após configurar, o sistema fará backup automático após cada operação.")
+#         st.stop()  # Para o app aqui até configurar
+#     
+#     # Se tem backup configurado mas sync automático não está ativo, ativa
+#     if not config_backup.get("auto_sync", False):
+#         config_backup["auto_sync"] = True
+#         from database_local_sync import _salvar_config_backup
+#         _salvar_config_backup(config_backup)
+#         st.success("✅ Backup automático ativado")
+#         
+# except Exception as e:
+#     st.warning(f"⚠️ Erro ao verificar configuração de backup: {e}")
+
+# ── DIAGNÓSTICO DE CONEXÃO SUPABASE ──────────────────────────────────
+try:
+    from database import USE_SUPABASE, SUPABASE_URL, SUPABASE_KEY
+    if USE_SUPABASE:
+        st.info(f"✅ Usando Supabase: {SUPABASE_URL}")
+    else:
+        st.warning("⚠️ Usando SQLite local (Supabase não configurado)")
+        st.caption(f"URL: {SUPABASE_URL}, Key: {SUPABASE_KEY[:10] if SUPABASE_KEY else 'None'}...")
+except Exception as e:
+    st.error(f"❌ Erro ao verificar conexão: {e}")
+
+# ── DIAGNÓSTICO SIMPLES E DIRETO ─────────────────────────────────────
+st.divider()
+st.subheader("🔍 DIAGNÓSTICO DE DADOS")
+try:
+    from database import listar_clientes, inicializar_banco
+    
+    # Inicializa banco
+    inicializar_banco()
+    st.write("✅ Banco inicializado")
+    
+    # Tenta listar clientes
+    df_teste = listar_clientes()
+    st.write(f"**Registros encontrados:** {len(df_teste)}")
+    
+    if len(df_teste) > 0:
+        st.write("**Dados encontrados:**")
+        st.dataframe(df_teste)
+        st.success(f"✅ {len(df_teste)} registros carregados com sucesso")
+    else:
+        st.error("❌ NENHUM REGISTRO ENCONTRADO - Tabela aparecerá vazia!")
+        
+        # Tenta conexão direta com Supabase
+        try:
+            from database_supabase import get_supabase
+            supabase = get_supabase()
+            result = supabase.table('clientes').select('*').execute()
+            st.write(f"**Teste direto Supabase:** {len(result.data)} registros")
+            if result.data:
+                st.dataframe(result.data)
+        except Exception as e2:
+            st.error(f"❌ Erro conexão direta: {e2}")
+            
+except Exception as e:
+    st.error(f"❌ Erro no diagnóstico: {e}")
+    import traceback
+    st.code(traceback.format_exc())
+
 # ── JS global: killMenu + openSidebar ──────────────────────────────────
 st.markdown("""
 <script>
@@ -451,6 +585,13 @@ if "_celebration_enabled" not in st.session_state:
     st.session_state._celebration_enabled = config.get("celebration_enabled", True)
 
 logout_button()
+
+# Link para página de configurações (apenas admin)
+if can("admin"):
+    with st.sidebar:
+        st.markdown("---")
+        if st.button("⚙️ Configurações", use_container_width=True):
+            st.switch_page("pages/3_Configuracoes.py")
 
 # Download banco de dados (apenas para Kaori)
 if st.session_state.get("usuario") == "Kaori":

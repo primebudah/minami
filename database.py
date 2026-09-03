@@ -9,21 +9,41 @@ from contextlib import contextmanager
 from datetime import date
 from typing import Optional, Dict, Any, List
 
+# Carrega variaveis do .env.local automaticamente (antes de qualquer import)
+try:
+    from dotenv import load_dotenv
+    # Carrega .env.local do diretorio atual
+    env_path = os.path.join(os.path.dirname(__file__), '.env.local')
+    load_dotenv(env_path)
+    print(f"[DB] Carregando .env.local de: {env_path}")
+except ImportError:
+    print("[DB] python-dotenv não instalado, usando variaveis de ambiente do sistema")
+
+# Importa sistema de sincronização local
+try:
+    from database_local_sync import backup_local_para_arquivo, _carregar_config_backup
+    SYNC_AVAILABLE = True
+except ImportError:
+    SYNC_AVAILABLE = False
+
 # Detecta se Supabase está configurado
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
-# Se secrets.toml existir, tenta carregar de lá
+# Se secrets.toml existir, tenta carregar de lá (mas mantém .env.local como prioridade)
 try:
     import streamlit as st
-    SUPABASE_URL = st.secrets.get("SUPABASE_URL", SUPABASE_URL)
-    SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", SUPABASE_KEY)
+    # Só usa secrets.toml se .env.local não tiver valores
+    if not SUPABASE_URL:
+        SUPABASE_URL = st.secrets.get("SUPABASE_URL", SUPABASE_URL)
+    if not SUPABASE_KEY:
+        SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", SUPABASE_KEY)
 except:
     pass
 
 # Força uso de SQLite local (comente para voltar ao Supabase)
-SUPABASE_URL = ""
-SUPABASE_KEY = ""
+# SUPABASE_URL = ""
+# SUPABASE_KEY = ""
 
 # Flag: True = usar Supabase, False = usar SQLite local
 USE_SUPABASE = bool(SUPABASE_URL and SUPABASE_KEY)
@@ -164,7 +184,19 @@ if not USE_SUPABASE:
                 d.get("chassi_completo", ""),
                 d.get("data_registro", str(date.today()))
             ))
-            return cur.lastrowid
+            cliente_id = cur.lastrowid
+            
+            # Sincronização automática se configurado
+            if SYNC_AVAILABLE:
+                try:
+                    config = _carregar_config_backup()
+                    if config.get("auto_sync", False):
+                        df_clientes = listar_clientes()
+                        backup_local_para_arquivo(df_clientes)
+                except Exception as e:
+                    print(f"[DEBUG] Erro na sincronização automática: {e}")
+            
+            return cliente_id
 
     def listar_clientes(where_clause=None, params=None):
         """Lista todos os clientes como DataFrame.
@@ -205,6 +237,16 @@ if not USE_SUPABASE:
             valores.append(cliente_id)
             sql = f"UPDATE clientes SET {', '.join(campos)} WHERE id = ?"
             cur.execute(sql, valores)
+            
+            # Sincronização automática se configurado
+            if SYNC_AVAILABLE:
+                try:
+                    config = _carregar_config_backup()
+                    if config.get("auto_sync", False):
+                        df_clientes = listar_clientes()
+                        backup_local_para_arquivo(df_clientes)
+                except Exception as e:
+                    print(f"[DEBUG] Erro na sincronização automática: {e}")
 
     def deletar_cliente(cliente_id):
         """Deleta cliente."""

@@ -15,12 +15,25 @@ except ImportError:
 
 import streamlit as st
 
+# Importa sistema de sincronização local
+try:
+    from database_local_sync import backup_local_para_arquivo, _carregar_config_backup
+    SYNC_AVAILABLE = True
+except ImportError:
+    SYNC_AVAILABLE = False
+
 # =========================================================
 # CONFIG
 # =========================================================
 
-SUPABASE_URL = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL", ""))
-SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", os.getenv("SUPABASE_KEY", ""))
+# Tenta carregar de st.secrets se disponivel, senha usa variaveis de ambiente
+try:
+    SUPABASE_URL = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL", ""))
+    SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", os.getenv("SUPABASE_KEY", ""))
+except:
+    # Se st.secrets não estiver disponivel (fora do contexto Streamlit)
+    SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 
 _supabase: Optional[Client] = None
 
@@ -104,6 +117,16 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
             'p_observacao': dados.get("observacao") or None
         }).execute()
         
+        # Sincronização automática se configurado
+        if SYNC_AVAILABLE and result.data is not None:
+            try:
+                config = _carregar_config_backup()
+                if config.get("auto_sync", False):
+                    df_clientes = listar_clientes()
+                    backup_local_para_arquivo(df_clientes)
+            except Exception as e:
+                print(f"[DEBUG] Erro na sincronização automática: {e}")
+        
         return result.data is not None
     except Exception as e:
         st.error(f"Erro salvando cliente: {e}")
@@ -178,6 +201,16 @@ def atualizar_cliente(cliente_id: int, dados: Dict[str, Any]) -> bool:
             'p_status': dados.get("status", "Pendente"),
             'p_observacao': clean_value(dados.get("observacao"))
         }).execute()
+        
+        # Sincronização automática se configurado
+        if SYNC_AVAILABLE and result.data is True:
+            try:
+                config = _carregar_config_backup()
+                if config.get("auto_sync", False):
+                    df_clientes = listar_clientes()
+                    backup_local_para_arquivo(df_clientes)
+            except Exception as e:
+                print(f"[DEBUG] Erro na sincronização automática: {e}")
 
         return result.data is True
     except Exception as e:
