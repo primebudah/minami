@@ -226,6 +226,7 @@ if not USE_SUPABASE:
 
     def atualizar_cliente(cliente_id, dados):
         """Atualiza cliente existente."""
+        print(f"[DEBUG SQLite] atualizar_cliente chamado - cliente_id={cliente_id}, SYNC_AVAILABLE={SYNC_AVAILABLE}")
         with get_db_connection() as conn:
             cur = conn.cursor()
             campos = []
@@ -237,6 +238,7 @@ if not USE_SUPABASE:
             valores.append(cliente_id)
             sql = f"UPDATE clientes SET {', '.join(campos)} WHERE id = ?"
             cur.execute(sql, valores)
+            print(f"[DEBUG SQLite] UPDATE executado com sucesso")
             
             # Sincronização automática se configurado
             if SYNC_AVAILABLE:
@@ -259,6 +261,8 @@ if not USE_SUPABASE:
                     print(f"[DEBUG SQLite] Erro na sincronização automática: {e}")
                     import traceback
                     traceback.print_exc()
+            else:
+                print(f"[DEBUG SQLite] SYNC_AVAILABLE é False, backup não será executado")
 
     def deletar_cliente(cliente_id):
         """Deleta cliente."""
