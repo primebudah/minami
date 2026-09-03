@@ -50,111 +50,28 @@ st.markdown(f"""
 
 require_login()
 
-# ── AVISO DE CONFIGURAÇÃO DE BACKUP LOCAL ─────────────────────────────
-try:
-    from database_local_sync import _carregar_config_backup, _definir_caminho_backup, _criar_diretorio_backup, _salvar_config_backup
-    from database import listar_clientes
-    
-    config_backup = _carregar_config_backup()
-    backup_dir = config_backup.get("backup_dir")
-    
-    # Se não tem backup configurado, mostra aviso na sidebar
-    if not backup_dir or not os.path.exists(backup_dir):
-        with st.sidebar:
-            st.warning("⚠️ **Backup local não configurado**")
-            with st.expander("Configurar backup local", expanded=False):
-                st.info("Configure uma pasta para backup automático dos dados no seu computador")
-                
-                # Detecta se está rodando localmente ou na nuvem
-                is_local = os.path.exists(os.path.join(os.path.dirname(__file__), '.env.local'))
-                
-                if is_local:
-                    # Ambiente local: cria pasta automaticamente no Desktop
-                    import getpass
-                    username = getpass.getuser()
-                    auto_backup_dir = f"C:\\Users\\{username}\\Desktop\\MinamiBackup"
-                    
-                    st.info(f"� Pasta automática: {auto_backup_dir}")
-                    st.caption("A pasta será criada automaticamente no seu Desktop")
-                    
-                    if st.button("💾 Criar pasta e configurar backup", type="primary", use_container_width=True):
-                        try:
-                            # Cria pasta automaticamente
-                            if not os.path.exists(auto_backup_dir):
-                                os.makedirs(auto_backup_dir)
-                                st.success(f"✅ Pasta criada: {auto_backup_dir}")
-                            
-                            # Salva configuração
-                            config_backup["backup_dir"] = auto_backup_dir
-                            config_backup["auto_sync"] = True
-                            config_backup["ultima_sincronizacao"] = None
-                            _salvar_config_backup(config_backup)
-                            
-                            # Cria backup imediatamente
-                            try:
-                                from datetime import datetime
-                                df_backup = listar_clientes()
-                                if not df_backup.empty:
-                                    import pandas as pd
-                                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                                    csv_path = os.path.join(auto_backup_dir, f"minami_backup_{timestamp}.csv")
-                                    df_backup.to_csv(csv_path, index=False, encoding='utf-8-sig')
-                                    st.success(f"✅ Backup criado: minami_backup_{timestamp}.csv")
-                                else:
-                                    st.warning("⚠️ Não há dados para backup")
-                            except Exception as e:
-                                st.error(f"❌ Erro ao criar backup: {e}")
-                            
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"❌ Erro: {e}")
-                else:
-                    # Ambiente online: botão de download manual
-                    st.info("🌐 Ambiente online detectado")
-                    st.caption("Use o botão abaixo para baixar backup manual dos dados")
-                    
-                    if st.button("📥 Baixar backup CSV", use_container_width=True):
-                        try:
-                            df_backup = listar_clientes()
-                            if not df_backup.empty:
-                                csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
-                                st.download_button(
-                                    label="💾 Clique para baixar",
-                                    data=csv,
-                                    file_name=f"minami_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                                    mime="text/csv",
-                                    use_container_width=True
-                                )
-                            else:
-                                st.warning("⚠️ Não há dados para backup")
-                        except Exception as e:
-                            st.error(f"❌ Erro ao gerar backup: {e}")
-    
-    # Se tem backup configurado, mostra status
-    else:
-        with st.sidebar:
-            st.success(f"✅ Backup local ativo")
-            st.caption(f"Pasta: {backup_dir}")
-            if config_backup.get("auto_sync"):
-                st.caption("🔄 Sync automático: ATIVO")
-    
-    # Mostrar logs de backup
-    with st.sidebar:
-        st.divider()
-        with st.expander("📋 Logs de Backup", expanded=False):
+# ── BOTÃO DE DOWNLOAD DE BACKUP ─────────────────────────────────────
+with st.sidebar:
+    st.divider()
+    with st.expander("📥 Baixar backup", expanded=False):
+        st.caption("Baixe uma cópia dos dados em CSV")
+        if st.button("� Baixar backup CSV", use_container_width=True):
             try:
-                from database_supabase import backup_logs
-                if backup_logs:
-                    for log in reversed(backup_logs):
-                        st.text(log)
+                from datetime import datetime
+                df_backup = listar_clientes()
+                if not df_backup.empty:
+                    csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
+                    st.download_button(
+                        label="💾 Clique para baixar",
+                        data=csv,
+                        file_name=f"minami_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        mime="text/csv",
+                        use_container_width=True
+                    )
                 else:
-                    st.caption("Nenhum log ainda")
+                    st.warning("⚠️ Não há dados para backup")
             except Exception as e:
-                st.caption(f"Erro ao carregar logs: {e}")
-        
-except Exception as e:
-    with st.sidebar:
-        st.warning(f"⚠️ Erro backup: {e}")
+                st.error(f"❌ Erro ao gerar backup: {e}")
 
 # ── DIAGNÓSTICO DE CONEXÃO SUPABASE ──────────────────────────────────
 try:
@@ -1754,17 +1671,6 @@ if not df.empty:
                                     st.session_state._conc_ciclos.add(ids[i])
                         row_dict[col] = val_salvar
                         atualizar_cliente(ids[i], row_dict)
-                        # Backup automático após edição
-                        try:
-                            from database_local_sync import _carregar_config_backup, backup_local_para_arquivo
-                            config = _carregar_config_backup()
-                            if config.get("auto_sync", False):
-                                df_backup = carregar_clientes()
-                                sucesso, msg, caminho = backup_local_para_arquivo(df_backup)
-                                if sucesso:
-                                    st.toast(f"✅ Backup salvo", icon="✅")
-                        except Exception as e:
-                            print(f"[DEBUG] Erro no backup após edição: {e}")
                         st.session_state.df = carregar_clientes()
                         st.session_state._editor_v += 1
                         _edit_found = True
@@ -1956,17 +1862,6 @@ if not df.empty:
                                             st.session_state._conc_ciclos.add(ids[i])
                             row_dict[col] = val_salvar
                             atualizar_cliente(ids[i], row_dict)
-                            # Backup automático após edição
-                            try:
-                                from database_local_sync import _carregar_config_backup, backup_local_para_arquivo
-                                config = _carregar_config_backup()
-                                if config.get("auto_sync", False):
-                                    df_backup = carregar_clientes()
-                                    sucesso, msg, caminho = backup_local_para_arquivo(df_backup)
-                                    if sucesso:
-                                        st.toast(f"✅ Backup salvo", icon="✅")
-                            except Exception as e:
-                                print(f"[DEBUG] Erro no backup após edição: {e}")
                         celula_mudou = True
                         break
                 if celula_mudou:
