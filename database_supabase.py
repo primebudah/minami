@@ -19,8 +19,10 @@ import streamlit as st
 try:
     from database_local_sync import backup_local_para_arquivo, _carregar_config_backup
     SYNC_AVAILABLE = True
-except ImportError:
+    print(f"[DEBUG] SYNC_AVAILABLE = True - sistema de backup local carregado")
+except ImportError as e:
     SYNC_AVAILABLE = False
+    print(f"[DEBUG] SYNC_AVAILABLE = False - erro ao importar: {e}")
 
 # =========================================================
 # CONFIG
@@ -118,6 +120,7 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
         }).execute()
         
         # Sincronização automática se configurado
+        print(f"[DEBUG] SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
         if SYNC_AVAILABLE and result.data is not None:
             try:
                 config = _carregar_config_backup()
@@ -132,10 +135,14 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
                         st.toast(f"✅ Backup salvo: {msg}", icon="✅")
                     else:
                         st.warning(f"⚠️ Backup falhou: {msg}")
+                else:
+                    print(f"[DEBUG] auto_sync está False na config")
             except Exception as e:
                 print(f"[DEBUG] Erro na sincronização automática: {e}")
                 import traceback
                 traceback.print_exc()
+        else:
+            print(f"[DEBUG] Condição de backup não atendida: SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
         
         return result.data is not None
     except Exception as e:
