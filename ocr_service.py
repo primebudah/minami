@@ -22,12 +22,12 @@ except ImportError:
     OpenAI = None
     client = None
     OPENAI_AVAILABLE = False
-    st.warning("⚠️ OpenAI não disponível. OCR desativado.")
+    # st.warning("⚠️ OpenAI não disponível. OCR desativado.")
 except Exception as e:
     OpenAI = None
     client = None
     OPENAI_AVAILABLE = False
-    st.warning(f"⚠️ OpenAI não configurado: {e}. OCR desativado.")
+    # st.warning(f"⚠️ OpenAI não configurado: {e}. OCR desativado.")
 
 # =========================================================
 # TRADUÇÃO DE VEÍCULOS JAPONÊS → INGLÊS
