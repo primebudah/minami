@@ -105,18 +105,37 @@ try:
                                 st.error("❌ Erro ao acessar pasta")
                     
                     with col_salvar:
-                        if st.button("💾 Salvar", type="primary", use_container_width=True):
-                            if backup_path and _definir_caminho_backup(backup_path):
-                                config_backup["backup_dir"] = backup_path
-                                config_backup["auto_sync"] = True
-                                config_backup["ultima_sincronizacao"] = None
-                                _salvar_config_backup(config_backup)
-                                if "_backup_path_selected" in st.session_state:
-                                    del st.session_state._backup_path_selected
-                                st.success("✅ Configuração salva!")
-                                st.rerun()
+                        if st.button("💾 Salvar e criar backup", type="primary", use_container_width=True):
+                            if backup_path:
+                                # Cria pasta e salva configuração
+                                if _criar_diretorio_backup(backup_path):
+                                    config_backup["backup_dir"] = backup_path
+                                    config_backup["auto_sync"] = True
+                                    config_backup["ultima_sincronizacao"] = None
+                                    _salvar_config_backup(config_backup)
+                                    
+                                    # Cria backup imediatamente
+                                    try:
+                                        from datetime import datetime
+                                        df_backup = listar_clientes()
+                                        if not df_backup.empty:
+                                            import pandas as pd
+                                            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                                            csv_path = os.path.join(backup_path, f"minami_backup_{timestamp}.csv")
+                                            df_backup.to_csv(csv_path, index=False, encoding='utf-8-sig')
+                                            st.success(f"✅ Backup criado: {csv_path}")
+                                        else:
+                                            st.warning("⚠️ Não há dados para backup")
+                                    except Exception as e:
+                                        st.error(f"❌ Erro ao criar backup: {e}")
+                                    
+                                    if "_backup_path_selected" in st.session_state:
+                                        del st.session_state._backup_path_selected
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Erro ao criar pasta")
                             else:
-                                st.error("❌ Erro ao salvar")
+                                st.error("❌ Digite um caminho válido")
                 else:
                     # Ambiente online: botão de download manual
                     st.info("🌐 Ambiente online detectado")
