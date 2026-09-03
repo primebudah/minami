@@ -62,7 +62,12 @@ with st.sidebar:
                 # Remove colunas internas se existirem
                 cols_para_remover = [col for col in df_backup.columns if col.startswith('_')]
                 df_backup = df_backup.drop(columns=cols_para_remover, errors='ignore')
-                csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
+                
+                # Converte para string e garante formato correto
+                for col in df_backup.columns:
+                    df_backup[col] = df_backup[col].astype(str)
+                
+                csv = df_backup.to_csv(index=False, encoding='utf-8-sig', sep=',')
                 st.download_button(
                     label="💾 Clique para baixar",
                     data=csv,
