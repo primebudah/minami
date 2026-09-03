@@ -620,24 +620,6 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
     with st.expander("📸 Registro por Foto", expanded=False):
-        # Verifica se OCR está disponível
-        try:
-            api_key = st.secrets.get("OPENAI_API_KEY")
-            if not api_key:
-                st.error("⚠️ OPENAI_API_KEY não encontrada nos secrets. Configure a chave OPENAI_API_KEY nos secrets do Streamlit Cloud para usar o processamento de fotos.")
-            else:
-                st.info(f"✅ OPENAI_API_KEY carregada: {api_key[:10]}...")
-                try:
-                    from ocr_service import OPENAI_AVAILABLE
-                    if not OPENAI_AVAILABLE:
-                        st.error("⚠️ OCR não disponível. Erro ao inicializar OpenAI.")
-                    else:
-                        st.success("✅ OCR disponível e pronto para uso.")
-                except Exception as e:
-                    st.error(f"⚠️ Erro ao carregar OCR: {e}")
-        except Exception as e:
-            st.error(f"⚠️ Erro ao verificar OPENAI_API_KEY: {e}")
-        
         st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
         files = st.file_uploader(
             "Selecione até 5 fotos",
@@ -657,13 +639,11 @@ with col_foto:
                 progress = st.progress(0)
                 status = st.empty()
                 total = len(files)
-                resultados = []
                 with st.spinner("Processando fotos..."):
                     for idx, f in enumerate(files, start=1):
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
                             d = extrair_dados_do_documento(f)
-                            resultados.append({"arquivo": f.name, "resultado": d})
                             if not d or (not d.get("chassi") and not d.get("veiculo")):
                                 status.warning(f"⚠️ {idx}/{total}: {f.name} - não foi possível ler dados essenciais")
                                 err += 1
@@ -687,13 +667,6 @@ with col_foto:
                     st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
                 if err:
                     st.warning(f"{err} erro(s).")
-                
-                # Mostra resultados do OCR para debug
-                if resultados:
-                    with st.expander("🔍 Resultados do OCR (Debug)", expanded=True):
-                        for r in resultados:
-                            st.write(f"**Arquivo:** {r['arquivo']}")
-                            st.json(r['resultado'])
                 
                 if ok:
                     st.session_state._fila_editor_v += 1
