@@ -82,15 +82,16 @@ with st.sidebar:
             st.error(f"❌ Erro ao gerar backup: {e}")
 
 # ── DIAGNÓSTICO DE CONEXÃO SUPABASE ──────────────────────────────────
-try:
-    from database import USE_SUPABASE, SUPABASE_URL, SUPABASE_KEY
-    if USE_SUPABASE:
-        st.info(f"✅ Usando Supabase: {SUPABASE_URL}")
-    else:
-        st.warning("⚠️ Usando SQLite local (Supabase não configurado)")
-        st.caption(f"URL: {SUPABASE_URL}, Key: {SUPABASE_KEY[:10] if SUPABASE_KEY else 'None'}...")
-except Exception as e:
-    st.error(f"❌ Erro ao verificar conexão: {e}")
+# Comentado - não exibe mais mensagens de diagnóstico
+# try:
+#     from database import USE_SUPABASE, SUPABASE_URL, SUPABASE_KEY
+#     if USE_SUPABASE:
+#         st.info(f"✅ Usando Supabase: {SUPABASE_URL}")
+#     else:
+#         st.warning("⚠️ Usando SQLite local (Supabase não configurado)")
+#         st.caption(f"URL: {SUPABASE_URL}, Key: {SUPABASE_KEY[:10] if SUPABASE_KEY else 'None'}...")
+# except Exception as e:
+#     st.error(f"❌ Erro ao verificar conexão: {e}")
 
 # ── JS global: killMenu + openSidebar ──────────────────────────────────
 st.markdown("""
