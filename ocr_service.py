@@ -16,17 +16,22 @@ import streamlit as st
 
 try:
     from openai import OpenAI
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"], timeout=120.0, max_retries=2)
+    api_key = st.secrets.get("OPENAI_API_KEY")
+    print(f"[DEBUG] OPENAI_API_KEY carregada: {api_key[:10] if api_key else 'None'}...")
+    client = OpenAI(api_key=api_key, timeout=120.0, max_retries=2)
     OPENAI_AVAILABLE = True
-except ImportError:
+    print(f"[DEBUG] OpenAI client inicializado com sucesso")
+except ImportError as e:
     OpenAI = None
     client = None
     OPENAI_AVAILABLE = False
+    print(f"[DEBUG] Erro de importação OpenAI: {e}")
     # st.warning("⚠️ OpenAI não disponível. OCR desativado.")
 except Exception as e:
     OpenAI = None
     client = None
     OPENAI_AVAILABLE = False
+    print(f"[DEBUG] Erro ao inicializar OpenAI: {e}")
     # st.warning(f"⚠️ OpenAI não configurado: {e}. OCR desativado.")
 
 # =========================================================
