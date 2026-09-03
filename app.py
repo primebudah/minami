@@ -147,43 +147,6 @@ try:
 except Exception as e:
     st.error(f"❌ Erro ao verificar conexão: {e}")
 
-# ── DIAGNÓSTICO SIMPLES E DIRETO ─────────────────────────────────────
-st.divider()
-st.subheader("🔍 DIAGNÓSTICO DE DADOS")
-try:
-    from database import listar_clientes, inicializar_banco
-    
-    # Inicializa banco
-    inicializar_banco()
-    st.write("✅ Banco inicializado")
-    
-    # Tenta listar clientes
-    df_teste = listar_clientes()
-    st.write(f"**Registros encontrados:** {len(df_teste)}")
-    
-    if len(df_teste) > 0:
-        st.write("**Dados encontrados:**")
-        st.dataframe(df_teste)
-        st.success(f"✅ {len(df_teste)} registros carregados com sucesso")
-    else:
-        st.error("❌ NENHUM REGISTRO ENCONTRADO - Tabela aparecerá vazia!")
-        
-        # Tenta conexão direta com Supabase
-        try:
-            from database_supabase import get_supabase
-            supabase = get_supabase()
-            result = supabase.table('clientes').select('*').execute()
-            st.write(f"**Teste direto Supabase:** {len(result.data)} registros")
-            if result.data:
-                st.dataframe(result.data)
-        except Exception as e2:
-            st.error(f"❌ Erro conexão direta: {e2}")
-            
-except Exception as e:
-    st.error(f"❌ Erro no diagnóstico: {e}")
-    import traceback
-    st.code(traceback.format_exc())
-
 # ── JS global: killMenu + openSidebar ──────────────────────────────────
 st.markdown("""
 <script>
