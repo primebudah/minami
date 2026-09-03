@@ -39,12 +39,18 @@ def _salvar_config_backup(config):
 def _criar_diretorio_backup(path):
     """Cria diretório de backup se não existir."""
     try:
+        print(f"[DEBUG] Tentando criar diretório: {path}")
+        print(f"[DEBUG] Diretório existe? {os.path.exists(path)}")
         if not os.path.exists(path):
             os.makedirs(path)
-            return True
+            print(f"[DEBUG] Diretório criado com sucesso")
+        else:
+            print(f"[DEBUG] Diretório já existe")
         return True
     except Exception as e:
         print(f"[DEBUG] Erro ao criar diretório backup: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def _obter_caminho_backup():
