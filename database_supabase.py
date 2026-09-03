@@ -133,21 +133,31 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
         return False
 
 def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
-    """Retorna todos os clientes via RPC como DataFrame.
+    """Retorna todos os clientes via query direta (fallback se RPC falhar).
     
     Args:
         where_clause: Ignorado no Supabase (para compatibilidade com SQLite)
         params: Ignorado no Supabase (para compatibilidade com SQLite)
     """
-    df = rpc_df('listar_clientes_rpc')
+    try:
+        # Tenta RPC primeiro
+        df = rpc_df('listar_clientes_rpc')
+        if not df.empty:
+            return df
+    except Exception as e:
+        print(f"[DEBUG] RPC falhou, usando query direta: {e}")
     
-    # Se há filtros, aplica no DataFrame
-    if where_clause and params:
-        # Parse simples do where_clause para filtrar DataFrame
-        # Ex: "nome LIKE ?" -> df[df['nome'].str.contains(params[0], case=False, na=False)]
-        pass
-    
-    return df
+    # Fallback: query direta se RPC falhar
+    try:
+        supabase = get_supabase()
+        result = supabase.table('clientes').select('*').order('id', desc=True).execute()
+        data = result.data or []
+        if not isinstance(data, list):
+            data = []
+        return pd.DataFrame(data)
+    except Exception as e:
+        st.error(f"Erro ao listar clientes: {e}")
+        return pd.DataFrame()
 
 def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
     """Busca cliente por chassi via RPC."""
