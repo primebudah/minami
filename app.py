@@ -69,73 +69,45 @@ try:
                 is_local = os.path.exists(os.path.join(os.path.dirname(__file__), '.env.local'))
                 
                 if is_local:
-                    # Ambiente local: entrada manual + seletor opcional
-                    default_dir = config_backup.get("backup_dir") or "C:\\Users\\uni_t\\Desktop\\MinamiBackup"
+                    # Ambiente local: cria pasta automaticamente no Desktop
+                    import getpass
+                    username = getpass.getuser()
+                    auto_backup_dir = f"C:\\Users\\{username}\\Desktop\\MinamiBackup"
                     
-                    backup_path = st.session_state.get("_backup_path_selected", default_dir)
-                    backup_path = st.text_input(
-                        "📁 Pasta para backup",
-                        value=backup_path,
-                        help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
-                    )
+                    st.info(f"� Pasta automática: {auto_backup_dir}")
+                    st.caption("A pasta será criada automaticamente no seu Desktop")
                     
-                    # Botão de seleção opcional (pode falhar)
-                    if st.button("📂 Selecionar pasta (opcional)", use_container_width=True):
+                    if st.button("💾 Criar pasta e configurar backup", type="primary", use_container_width=True):
                         try:
-                            import tkinter as tk
-                            from tkinter import filedialog
-                            root = tk.Tk()
-                            root.withdraw()
-                            root.attributes('-topmost', True)
-                            selected_path = filedialog.askdirectory(title="Selecione a pasta para backup")
-                            root.destroy()
-                            if selected_path:
-                                st.session_state._backup_path_selected = selected_path
-                                st.rerun()
-                        except Exception as e:
-                            st.warning("⚠️ Seletor não disponível - digite o caminho manualmente")
-                    
-                    col_testar, col_salvar = st.columns([1, 1])
-                    
-                    with col_testar:
-                        if st.button("🧪 Testar", use_container_width=True):
-                            if backup_path and _criar_diretorio_backup(backup_path):
-                                st.success("✅ Pasta válida!")
-                            else:
-                                st.error("❌ Erro ao acessar pasta")
-                    
-                    with col_salvar:
-                        if st.button("💾 Salvar e criar backup", type="primary", use_container_width=True):
-                            if backup_path:
-                                # Cria pasta e salva configuração
-                                if _criar_diretorio_backup(backup_path):
-                                    config_backup["backup_dir"] = backup_path
-                                    config_backup["auto_sync"] = True
-                                    config_backup["ultima_sincronizacao"] = None
-                                    _salvar_config_backup(config_backup)
-                                    
-                                    # Cria backup imediatamente
-                                    try:
-                                        from datetime import datetime
-                                        df_backup = listar_clientes()
-                                        if not df_backup.empty:
-                                            import pandas as pd
-                                            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                                            csv_path = os.path.join(backup_path, f"minami_backup_{timestamp}.csv")
-                                            df_backup.to_csv(csv_path, index=False, encoding='utf-8-sig')
-                                            st.success(f"✅ Backup criado: {csv_path}")
-                                        else:
-                                            st.warning("⚠️ Não há dados para backup")
-                                    except Exception as e:
-                                        st.error(f"❌ Erro ao criar backup: {e}")
-                                    
-                                    if "_backup_path_selected" in st.session_state:
-                                        del st.session_state._backup_path_selected
-                                    st.rerun()
+                            # Cria pasta automaticamente
+                            if not os.path.exists(auto_backup_dir):
+                                os.makedirs(auto_backup_dir)
+                                st.success(f"✅ Pasta criada: {auto_backup_dir}")
+                            
+                            # Salva configuração
+                            config_backup["backup_dir"] = auto_backup_dir
+                            config_backup["auto_sync"] = True
+                            config_backup["ultima_sincronizacao"] = None
+                            _salvar_config_backup(config_backup)
+                            
+                            # Cria backup imediatamente
+                            try:
+                                from datetime import datetime
+                                df_backup = listar_clientes()
+                                if not df_backup.empty:
+                                    import pandas as pd
+                                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                                    csv_path = os.path.join(auto_backup_dir, f"minami_backup_{timestamp}.csv")
+                                    df_backup.to_csv(csv_path, index=False, encoding='utf-8-sig')
+                                    st.success(f"✅ Backup criado: minami_backup_{timestamp}.csv")
                                 else:
-                                    st.error("❌ Erro ao criar pasta")
-                            else:
-                                st.error("❌ Digite um caminho válido")
+                                    st.warning("⚠️ Não há dados para backup")
+                            except Exception as e:
+                                st.error(f"❌ Erro ao criar backup: {e}")
+                            
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"❌ Erro: {e}")
                 else:
                     # Ambiente online: botão de download manual
                     st.info("🌐 Ambiente online detectado")
