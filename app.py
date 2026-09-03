@@ -63,12 +63,30 @@ try:
         with st.sidebar:
             st.warning("⚠️ **Backup local não configurado**")
             with st.expander("Configurar backup local", expanded=False):
-                st.info("� Configure uma pasta para backup automático dos dados no seu computador")
+                st.info("Configure uma pasta para backup automático dos dados no seu computador")
+                default_dir = config_backup.get("backup_dir") or "C:\\Users\\uni_t\\Desktop\\MinamiBackup"
                 
-                default_dir = os.path.join(os.path.expanduser("~"), "Desktop", "MinamiBackup")
+                # Botão para selecionar pasta (só funciona localmente)
+                if st.button("📂 Selecionar pasta...", use_container_width=True):
+                    try:
+                        import tkinter as tk
+                        from tkinter import filedialog
+                        root = tk.Tk()
+                        root.withdraw()  # esconde a janela principal
+                        root.attributes('-topmost', True)  # traz para frente
+                        selected_path = filedialog.askdirectory(title="Selecione a pasta para backup")
+                        root.destroy()
+                        if selected_path:
+                            st.session_state._backup_path_selected = selected_path
+                            st.rerun()
+                    except Exception as e:
+                        st.warning("⚠️ Seletor de pasta não disponível (funciona apenas localmente)")
+                
+                # Usa o caminho selecionado ou o padrão
+                backup_path = st.session_state.get("_backup_path_selected", default_dir)
                 backup_path = st.text_input(
                     "📁 Pasta para backup",
-                    value=default_dir,
+                    value=backup_path,
                     help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
                 )
                 
@@ -88,6 +106,8 @@ try:
                             config_backup["auto_sync"] = True
                             config_backup["ultima_sincronizacao"] = None
                             _salvar_config_backup(config_backup)
+                            if "_backup_path_selected" in st.session_state:
+                                del st.session_state._backup_path_selected
                             st.success("✅ Configuração salva!")
                             st.rerun()
                         else:
