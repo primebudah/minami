@@ -64,54 +64,79 @@ try:
             st.warning("⚠️ **Backup local não configurado**")
             with st.expander("Configurar backup local", expanded=False):
                 st.info("Configure uma pasta para backup automático dos dados no seu computador")
-                default_dir = config_backup.get("backup_dir") or "C:\\Users\\uni_t\\Desktop\\MinamiBackup"
                 
-                # Botão para selecionar pasta (só funciona localmente)
-                if st.button("📂 Selecionar pasta...", use_container_width=True):
-                    try:
-                        import tkinter as tk
-                        from tkinter import filedialog
-                        root = tk.Tk()
-                        root.withdraw()  # esconde a janela principal
-                        root.attributes('-topmost', True)  # traz para frente
-                        selected_path = filedialog.askdirectory(title="Selecione a pasta para backup")
-                        root.destroy()
-                        if selected_path:
-                            st.session_state._backup_path_selected = selected_path
-                            st.rerun()
-                    except Exception as e:
-                        st.warning("⚠️ Seletor de pasta não disponível (funciona apenas localmente)")
+                # Detecta se está rodando localmente ou na nuvem
+                is_local = os.path.exists(os.path.join(os.path.dirname(__file__), '.env.local'))
                 
-                # Usa o caminho selecionado ou o padrão
-                backup_path = st.session_state.get("_backup_path_selected", default_dir)
-                backup_path = st.text_input(
-                    "📁 Pasta para backup",
-                    value=backup_path,
-                    help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
-                )
-                
-                col_testar, col_salvar = st.columns([1, 1])
-                
-                with col_testar:
-                    if st.button("🧪 Testar", use_container_width=True):
-                        if backup_path and _criar_diretorio_backup(backup_path):
-                            st.success("✅ Pasta válida!")
-                        else:
-                            st.error("❌ Erro ao acessar pasta")
-                
-                with col_salvar:
-                    if st.button("💾 Salvar", type="primary", use_container_width=True):
-                        if backup_path and _definir_caminho_backup(backup_path):
-                            config_backup["backup_dir"] = backup_path
-                            config_backup["auto_sync"] = True
-                            config_backup["ultima_sincronizacao"] = None
-                            _salvar_config_backup(config_backup)
-                            if "_backup_path_selected" in st.session_state:
-                                del st.session_state._backup_path_selected
-                            st.success("✅ Configuração salva!")
-                            st.rerun()
-                        else:
-                            st.error("❌ Erro ao salvar")
+                if is_local:
+                    # Ambiente local: usa seletor de pasta
+                    default_dir = config_backup.get("backup_dir") or "C:\\Users\\uni_t\\Desktop\\MinamiBackup"
+                    
+                    if st.button("📂 Selecionar pasta...", use_container_width=True):
+                        try:
+                            import tkinter as tk
+                            from tkinter import filedialog
+                            root = tk.Tk()
+                            root.withdraw()
+                            root.attributes('-topmost', True)
+                            selected_path = filedialog.askdirectory(title="Selecione a pasta para backup")
+                            root.destroy()
+                            if selected_path:
+                                st.session_state._backup_path_selected = selected_path
+                                st.rerun()
+                        except Exception as e:
+                            st.warning("⚠️ Seletor de pasta não disponível")
+                    
+                    backup_path = st.session_state.get("_backup_path_selected", default_dir)
+                    backup_path = st.text_input(
+                        "📁 Pasta para backup",
+                        value=backup_path,
+                        help="Ex: C:\\Users\\SeuNome\\Desktop\\MinamiBackup"
+                    )
+                    
+                    col_testar, col_salvar = st.columns([1, 1])
+                    
+                    with col_testar:
+                        if st.button("🧪 Testar", use_container_width=True):
+                            if backup_path and _criar_diretorio_backup(backup_path):
+                                st.success("✅ Pasta válida!")
+                            else:
+                                st.error("❌ Erro ao acessar pasta")
+                    
+                    with col_salvar:
+                        if st.button("💾 Salvar", type="primary", use_container_width=True):
+                            if backup_path and _definir_caminho_backup(backup_path):
+                                config_backup["backup_dir"] = backup_path
+                                config_backup["auto_sync"] = True
+                                config_backup["ultima_sincronizacao"] = None
+                                _salvar_config_backup(config_backup)
+                                if "_backup_path_selected" in st.session_state:
+                                    del st.session_state._backup_path_selected
+                                st.success("✅ Configuração salva!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Erro ao salvar")
+                else:
+                    # Ambiente online: botão de download manual
+                    st.info("🌐 Ambiente online detectado")
+                    st.caption("Use o botão abaixo para baixar backup manual dos dados")
+                    
+                    if st.button("📥 Baixar backup CSV", use_container_width=True):
+                        try:
+                            df_backup = listar_clientes()
+                            if not df_backup.empty:
+                                csv = df_backup.to_csv(index=False, encoding='utf-8-sig')
+                                st.download_button(
+                                    label="💾 Clique para baixar",
+                                    data=csv,
+                                    file_name=f"minami_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                                    mime="text/csv",
+                                    use_container_width=True
+                                )
+                            else:
+                                st.warning("⚠️ Não há dados para backup")
+                        except Exception as e:
+                            st.error(f"❌ Erro ao gerar backup: {e}")
     
     # Se tem backup configurado, mostra status
     else:
