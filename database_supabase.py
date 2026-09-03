@@ -121,11 +121,21 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
         if SYNC_AVAILABLE and result.data is not None:
             try:
                 config = _carregar_config_backup()
+                print(f"[DEBUG] Config backup: {config}")
                 if config.get("auto_sync", False):
+                    print(f"[DEBUG] Iniciando backup automático...")
                     df_clientes = listar_clientes()
-                    backup_local_para_arquivo(df_clientes)
+                    print(f"[DEBUG] Clientes para backup: {len(df_clientes)}")
+                    sucesso, msg, caminho = backup_local_para_arquivo(df_clientes)
+                    print(f"[DEBUG] Backup resultado: sucesso={sucesso}, msg={msg}, caminho={caminho}")
+                    if sucesso:
+                        st.toast(f"✅ Backup salvo: {msg}", icon="✅")
+                    else:
+                        st.warning(f"⚠️ Backup falhou: {msg}")
             except Exception as e:
                 print(f"[DEBUG] Erro na sincronização automática: {e}")
+                import traceback
+                traceback.print_exc()
         
         return result.data is not None
     except Exception as e:
