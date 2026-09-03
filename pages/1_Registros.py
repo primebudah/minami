@@ -639,13 +639,13 @@ with col_foto:
                 progress = st.progress(0)
                 status = st.empty()
                 total = len(files)
+                resultados = []
                 with st.spinner("Processando fotos..."):
                     for idx, f in enumerate(files, start=1):
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
-                            st.info(f"🔍 Iniciando OCR para {f.name}")
                             d = extrair_dados_do_documento(f)
-                            st.info(f"📊 Resultado OCR: {d}")
+                            resultados.append({"arquivo": f.name, "resultado": d})
                             if not d or (not d.get("chassi") and not d.get("veiculo")):
                                 status.warning(f"⚠️ {idx}/{total}: {f.name} - não foi possível ler dados essenciais")
                                 err += 1
@@ -669,6 +669,14 @@ with col_foto:
                     st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
                 if err:
                     st.warning(f"{err} erro(s).")
+                
+                # Mostra resultados do OCR para debug
+                if resultados:
+                    with st.expander("🔍 Resultados do OCR (Debug)", expanded=True):
+                        for r in resultados:
+                            st.write(f"**Arquivo:** {r['arquivo']}")
+                            st.json(r['resultado'])
+                
                 if ok:
                     st.session_state._fila_editor_v += 1
                     st.session_state.uploader_key = st.session_state.get('uploader_key', 0) + 1
