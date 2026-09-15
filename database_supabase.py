@@ -112,6 +112,7 @@ def inicializar_banco():
 
 def salvar_cliente(dados: Dict[str, Any]) -> bool:
     """Salva novo cliente no Supabase via RPC."""
+    print(f"[DEBUG Supabase] salvar_cliente chamado com dados: {dados}")
     try:
         supabase = get_supabase()
         
@@ -131,6 +132,7 @@ def salvar_cliente(dados: Dict[str, Any]) -> bool:
             'p_status': dados.get("status", "Pendente"),
             'p_observacao': dados.get("observacao") or None
         }).execute()
+        print(f"[DEBUG Supabase] Resultado salvar_cliente: {result.data}")
         
         # Sincronização automática se configurado
         add_log(f"SYNC_AVAILABLE={SYNC_AVAILABLE}, result.data={result.data}")
@@ -169,10 +171,12 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         where_clause: Ignorado no Supabase (para compatibilidade com SQLite)
         params: Ignorado no Supabase (para compatibilidade com SQLite)
     """
+    print(f"[DEBUG Supabase] listar_clientes chamado")
     try:
         # Tenta RPC primeiro
         df = rpc_df('listar_clientes_rpc')
         if not df.empty:
+            print(f"[DEBUG Supabase] listar_clientes retornou {len(df)} registros via RPC")
             return df
     except Exception as e:
         print(f"[DEBUG] RPC falhou, usando query direta: {e}")
@@ -184,9 +188,11 @@ def listar_clientes(where_clause=None, params=None) -> pd.DataFrame:
         data = result.data or []
         if not isinstance(data, list):
             data = []
+        print(f"[DEBUG Supabase] listar_clientes retornou {len(data)} registros via query direta")
         return pd.DataFrame(data)
     except Exception as e:
         st.error(f"Erro ao listar clientes: {e}")
+        print(f"[DEBUG Supabase] Erro ao listar clientes: {e}")
         return pd.DataFrame()
 
 def buscar_cliente_por_chassi(chassi: str) -> Optional[Dict]:
