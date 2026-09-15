@@ -891,4 +891,3 @@ if not USE_SUPABASE:
             True,
             "Desfazer não implementado no SQLite"
         )
-```
