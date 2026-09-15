@@ -167,6 +167,7 @@ if not USE_SUPABASE:
 
     def salvar_cliente(d):
         """Salva um novo cliente no banco."""
+        print(f"[DEBUG] salvar_cliente chamado com dados: {d}")
         with get_db_connection() as conn:
             cur = conn.cursor()
             cur.execute("""
@@ -185,6 +186,7 @@ if not USE_SUPABASE:
                 d.get("data_registro", str(date.today()))
             ))
             cliente_id = cur.lastrowid
+            print(f"[DEBUG] Cliente salvo com ID: {cliente_id}")
             
             # Sincronização automática se configurado
             if SYNC_AVAILABLE:
@@ -214,6 +216,7 @@ if not USE_SUPABASE:
             else:
                 cur.execute("SELECT * FROM clientes ORDER BY id DESC")
             data = [dict(row) for row in cur.fetchall()]
+            print(f"[DEBUG] listar_clientes retornou {len(data)} registros")
             return pd.DataFrame(data)
 
     def buscar_cliente_por_chassi(chassi):
