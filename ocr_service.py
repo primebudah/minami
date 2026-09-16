@@ -1223,7 +1223,8 @@ def _mesclar_retry(original, retry):
 # OCR ISOLADO PARA DATAS
 # =========================================================
 
-PASTA_CROPS = r"C:\Users\uni_t\OneDrive\Desktop\UNI3\apps"
+# Caminho dos crops estáticos no projeto
+CROPS_DIR = os.path.join(os.path.dirname(__file__), "crops")
 
 DATA_REGISTRO_PROMPT = r"""
 Esta imagem contém EXCLUSIVAMENTE o campo japonês 交付年月日.
@@ -1247,11 +1248,11 @@ Retorne somente a data exatamente como aparece, incluindo a era japonesa.
 Se ilegível, retorne VERIFICAR.
 """
 
-def _carregar_crop(nome_arquivo):
-    """Carrega um crop da pasta de crops e converte para base64."""
-    caminho = os.path.join(PASTA_CROPS, nome_arquivo)
+def _carregar_crop_estatico(nome_arquivo):
+    """Carrega um crop estático do projeto e converte para base64."""
+    caminho = os.path.join(CROPS_DIR, nome_arquivo)
     
-    _debug_log("CROP_LOAD", f"Tentando carregar crop: {caminho}")
+    _debug_log("CROP_LOAD", f"Tentando carregar crop estático: {caminho}")
     
     if not os.path.exists(caminho):
         _debug_log("CROP_LOAD", f"Arquivo não encontrado: {caminho}")
@@ -1262,30 +1263,19 @@ def _carregar_crop(nome_arquivo):
             imagem_bytes = img_file.read()
             imagem_b64 = base64.b64encode(imagem_bytes).decode("utf-8")
             tamanho = len(imagem_bytes)
-            _debug_log("CROP_LOAD", f"Crop carregado: {nome_arquivo} ({tamanho} bytes)")
+            _debug_log("CROP_LOAD", f"Crop estático carregado: {nome_arquivo} ({tamanho} bytes)")
             return imagem_b64
     except Exception as e:
-        _debug_log("CROP_LOAD", f"Erro ao carregar crop: {e}")
+        _debug_log("CROP_LOAD", f"Erro ao carregar crop estático: {e}")
         return None
 
-def _ocr_data_isolada(campo, prompt):
-    """Executa OCR isolado para um campo específico usando crop."""
-    nome_crop = {
-        "data_registro": "data de registro.png",
-        "shaken_vencimento": "vencimento shaken.png"
-    }.get(campo)
-    
-    if not nome_crop:
-        _debug_log("OCR_ISOLADO", f"Campo desconhecido: {campo}")
+def _ocr_data_isolada(campo, imagem_documento_b64, crop_guia_b64, prompt):
+    """Executa OCR isolado para um campo específico usando crop como guia visual."""
+    if crop_guia_b64 is None:
+        _debug_log("OCR_ISOLADO", f"Sem crop guia para {campo}, usando VERIFICAR")
         return "VERIFICAR"
     
     _debug_log("OCR_ISOLADO", f"Iniciando OCR isolado para campo: {campo}")
-    _debug_log("OCR_ISOLADO", f"Crop a ser usado: {nome_crop}")
-    
-    imagem_b64 = _carregar_crop(nome_crop)
-    if not imagem_b64:
-        _debug_log("OCR_ISOLADO", f"Não foi possível carregar crop para {campo}")
-        return "VERIFICAR"
     
     try:
         resposta = client.chat.completions.create(
@@ -1300,12 +1290,19 @@ def _ocr_data_isolada(campo, prompt):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Leia a data e retorne somente o texto da data.",
+                            "text": "PRIMEIRA IMAGEM: Este é um exemplo de como o campo deve aparecer. Use como guia visual para entender o padrão e localização.\n\nSEGUNDA IMAGEM: Esta é a imagem do documento. Localize o campo correspondente ao exemplo e leia SOMENTE a data deste campo.",
                         },
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": "data:image/jpeg;base64," + imagem_b64,
+                                "url": "data:image/jpeg;base64," + crop_guia_b64,
+                                "detail": "high",
+                            },
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": "data:image/jpeg;base64," + imagem_documento_b64,
                                 "detail": "high",
                             },
                         },
@@ -1327,11 +1324,8 @@ def _ocr_data_isolada(campo, prompt):
         _debug_log("OCR_ISOLADO", f"Erro no OCR isolado para {campo}: {e}")
         return "VERIFICAR"
 
-# =========================================================
-# FUNÇÃO PRINCIPAL
-# =========================================================
-
 def extrair_dados_do_documento(f):
+    """Extrai dados do documento usando crops estáticos como guia."""
     if f is None:
         return None
 
@@ -1362,16 +1356,30 @@ def extrair_dados_do_documento(f):
 
         dados = _normalizar_dados_ocr(dados_brutos)
 
-        # OCR ISOLADO para datas usando crops
-        _debug_log("OCR_ISOLADO", "Iniciando OCR isolado para data_registro")
-        data_registro_bruta = _ocr_data_isolada("data_registro", DATA_REGISTRO_PROMPT)
-        dados["data_registro"] = data_registro_bruta
-        _debug_log("OCR_ISOLADO", f"data_registro definida como: '{data_registro_bruta}'")
+        # Carrega crops estáticos como guia
+        crop_data_registro_b64 = _carregar_crop_estatico("data_registro.png")
+        crop_shaken_vencimento_b64 = _carregar_crop_estatico("shaken_vencimento.png")
 
-        _debug_log("OCR_ISOLADO", "Iniciando OCR isolado para shaken_vencimento")
-        shaken_vencimento_bruto = _ocr_data_isolada("shaken_vencimento", SHAKEN_VENCIMENTO_PROMPT)
-        dados["shaken_vencimento"] = shaken_vencimento_bruto
-        _debug_log("OCR_ISOLADO", f"shaken_vencimento definido como: '{shaken_vencimento_bruto}'")
+        # Se crops estão disponíveis, usa OCR com guia visual
+        if crop_data_registro_b64 or crop_shaken_vencimento_b64:
+            _debug_log("OCR_ISOLADO", "Usando crops estáticos como guia visual")
+            
+            # Refaz OCR com crops como guia para datas
+            if crop_data_registro_b64:
+                _debug_log("OCR_ISOLADO", "Enviando guia visual para data_registro")
+                data_registro_bruta = _ocr_data_isolada("data_registro", imagem_b64, crop_data_registro_b64, DATA_REGISTRO_PROMPT)
+                if data_registro_bruta != "VERIFICAR":
+                    dados["data_registro"] = data_registro_bruta
+                    _debug_log("OCR_ISOLADO", f"data_registro atualizada com guia: '{data_registro_bruta}'")
+            
+            if crop_shaken_vencimento_b64:
+                _debug_log("OCR_ISOLADO", "Enviando guia visual para shaken_vencimento")
+                shaken_vencimento_bruto = _ocr_data_isolada("shaken_vencimento", imagem_b64, crop_shaken_vencimento_b64, SHAKEN_VENCIMENTO_PROMPT)
+                if shaken_vencimento_bruto != "VERIFICAR":
+                    dados["shaken_vencimento"] = shaken_vencimento_bruto
+                    _debug_log("OCR_ISOLADO", f"shaken_vencimento atualizado com guia: '{shaken_vencimento_bruto}'")
+        else:
+            _debug_log("OCR_ISOLADO", "Crops estáticos não disponíveis, usando OCR da imagem inteira")
 
         # Conversão das datas
         dados = _converter_datas_dados(dados)
