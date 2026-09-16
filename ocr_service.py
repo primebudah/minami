@@ -199,36 +199,45 @@ def _formatar_data_iso(ano, mes, dia):
 
 def _debug_log(tipo, mensagem, dados=None):
     """Armazena logs de debug no session_state para persistência"""
-    if "debug_ocr_logs" not in st.session_state:
-        st.session_state.debug_ocr_logs = []
-    
-    log_entry = {
-        "tipo": tipo,
-        "mensagem": mensagem,
-        "timestamp": str(st.session_state.get("_debug_counter", 0))
-    }
-    
-    if dados is not None:
-        log_entry["dados"] = dados
-    
-    st.session_state.debug_ocr_logs.append(log_entry)
-    st.session_state._debug_counter = st.session_state.get("_debug_counter", 0) + 1
+    try:
+        if "debug_ocr_logs" not in st.session_state:
+            st.session_state.debug_ocr_logs = []
+        
+        log_entry = {
+            "tipo": tipo,
+            "mensagem": mensagem,
+            "timestamp": str(st.session_state.get("_debug_counter", 0))
+        }
+        
+        if dados is not None:
+            log_entry["dados"] = dados
+        
+        st.session_state.debug_ocr_logs.append(log_entry)
+        st.session_state._debug_counter = st.session_state.get("_debug_counter", 0) + 1
+    except Exception as e:
+        # Se falhar ao armazenar log, não quebra o processamento
+        print(f"[DEBUG] Erro ao armazenar log: {e}")
 
 
 def _mostrar_logs_debug():
     """Exibe todos os logs de debug armazenados no session_state"""
-    if "debug_ocr_logs" not in st.session_state or not st.session_state.debug_ocr_logs:
-        return
-    
-    with st.expander("🔍 Logs de Debug OCR (Persistente)", expanded=True):
-        for i, log in enumerate(st.session_state.debug_ocr_logs):
-            st.markdown(f"**[{i+1}] {log['tipo']}** - {log['mensagem']}")
-            if "dados" in log:
-                if isinstance(log["dados"], dict):
-                    st.json(log["dados"])
-                else:
-                    st.write(log["dados"])
-            st.divider()
+    try:
+        if "debug_ocr_logs" not in st.session_state or not st.session_state.debug_ocr_logs:
+            return
+        
+        with st.expander("🔍 Logs de Debug OCR (Persistente)", expanded=True):
+            for i, log in enumerate(st.session_state.debug_ocr_logs):
+                st.markdown(f"**[{i+1}] {log['tipo']}** - {log['mensagem']}")
+                if "dados" in log:
+                    if isinstance(log["dados"], dict):
+                        st.json(log["dados"])
+                    else:
+                        st.write(log["dados"])
+                st.divider()
+    except Exception as e:
+        st.error(f"Erro ao exibir logs de debug: {e}")
+        import traceback
+        st.error(traceback.format_exc())
 
 
 def converter_data_japonesa(valor):
