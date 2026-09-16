@@ -1,549 +1,1043 @@
 # =========================================================
-# IMPORTS
+# OCR SERVICE - CENTRAL SHAKEN
+# Leitura de documentos japoneses 自動車検査証記録事項
 # =========================================================
 
 import io
 import base64
 import json
 import re
+from datetime import date
 
 from PIL import Image
 import streamlit as st
 
+
 # =========================================================
-# OPENAI CLIENT (com proteção de import)
+# OPENAI
 # =========================================================
 
 try:
     from openai import OpenAI
+
     api_key = st.secrets.get("OPENAI_API_KEY")
-    print(f"[DEBUG] OPENAI_API_KEY carregada: {api_key[:10] if api_key else 'None'}...")
-    client = OpenAI(api_key=api_key, timeout=120.0, max_retries=2)
+
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY não encontrada nos secrets.")
+
+    client = OpenAI(
+        api_key=api_key,
+        timeout=120.0,
+        max_retries=2,
+    )
+
     OPENAI_AVAILABLE = True
-    print(f"[DEBUG] OpenAI client inicializado com sucesso")
-except ImportError as e:
-    OpenAI = None
-    client = None
-    OPENAI_AVAILABLE = False
-    print(f"[DEBUG] Erro de importação OpenAI: {e}")
-    # st.warning("⚠️ OpenAI não disponível. OCR desativado.")
+
+    print(f"[DEBUG] OPENAI_API_KEY carregada: {api_key[:8]}...")
+
 except Exception as e:
-    OpenAI = None
     client = None
     OPENAI_AVAILABLE = False
-    print(f"[DEBUG] Erro ao inicializar OpenAI: {e}")
-    # st.warning(f"⚠️ OpenAI não configurado: {e}. OCR desativado.")
+    print(f"[DEBUG] OpenAI indisponível: {e}")
+
 
 # =========================================================
-# TRADUÇÃO DE VEÍCULOS JAPONÊS → INGLÊS
+# TRADUÇÃO DE VEÍCULOS
 # =========================================================
 
 _VEICULO_TRADUCAO = {
-    # Fabricantes
-    "トヨタ": "Toyota",
-    "ホンダ": "Honda",
-    "日産": "Nissan",
-    "ニッサン": "Nissan",
-    "スズキ": "Suzuki",
-    "ダイハツ": "Daihatsu",
-    "マツダ": "Mazda",
-    "スバル": "Subaru",
-    "三菱": "Mitsubishi",
-    "ミツビシ": "Mitsubishi",
-    "レクサス": "Lexus",
-    "いすゞ": "Isuzu",
-    # Modelos
-    "アルファード": "Alphard",
-    "ヴェルファイア": "Vellfire",
-    "プリウス": "Prius",
-    "カローラ": "Corolla",
-    "クラウン": "Crown",
-    "ランドクルーザー": "Land Cruiser",
-    "ランクル": "Land Cruiser",
-    "ハイエース": "Hiace",
-    "ハイラックス": "Hilux",
-    "ノア": "Noah",
-    "ヴォクシー": "Voxy",
-    "エスティマ": "Estima",
-    "セルシオ": "Celsior",
-    "レクサス": "Lexus",
-    "ハリアー": "Harrier",
-    "ラヴ４": "RAV4",
-    "ＲＡＶ４": "RAV4",
-    "RAV4": "RAV4",
-    "ヤリス": "Yaris",
-    "アクア": "Aqua",
-    "シエンタ": "Sienta",
-    "フィット": "Fit",
-    "ステップワゴン": "Stepwgn",
-    "フリード": "Freed",
-    "オデッセイ": "Odyssey",
-    "ヴェゼル": "Vezel",
-    "ＣＲ－Ｖ": "CR-V",
-    "CR-V": "CR-V",
-    "ジムニー": "Jimny",
-    "スイフト": "Swift",
-    "エブリイ": "Every",
-    "ワゴンＲ": "Wagon R",
-    "スペーシア": "Spacia",
-    "タント": "Tanto",
-    "ムーヴ": "Move",
-    "ミラ": "Mira",
-    "コペン": "Copen",
-    "ロッキー": "Rocky",
-    "ライズ": "Raize",
-    "ルーミー": "Roomy",
-    "トール": "Tall",
-    "キャスト": "Cast",
-    "ウェイク": "Wake",
-    "ムーヴキャンバス": "Move Canbus",
-    "エクストレイル": "X-Trail",
-    "セレナ": "Serena",
-    "エルグランド": "Elgrand",
-    "リーフ": "Leaf",
-    "ノート": "Note",
-    "マーチ": "March",
-    "キューブ": "Cube",
-    "デイズ": "Dayz",
-    "ルークス": "Roox",
-    "スカイライン": "Skyline",
-    "フェアレディＺ": "Fairlady Z",
-    "ＧＴ－Ｒ": "GT-R",
-    "GT-R": "GT-R",
-    "シルビア": "Silvia",
-    "インプレッサ": "Impreza",
-    "レガシィ": "Legacy",
-    "フォレスター": "Forester",
-    "アウトバック": "Outback",
-    "ＢＲＺ": "BRZ",
-    "ＷＲＸ": "WRX",
-    "レヴォーグ": "Levorg",
-    "デミオ": "Demio",
-    "アクセラ": "Axela",
-    "アテンザ": "Atenza",
-    "ＣＸ－５": "CX-5",
-    "ＣＸ－３": "CX-3",
-    "ロードスター": "Roadster",
-    "ＲＸ－７": "RX-7",
-    "ＲＸ－８": "RX-8",
-    "コルト": "Colt",
-    "アウトランダー": "Outlander",
-    "エクリプスクロス": "Eclipse Cross",
-    "デリカ": "Delica",
-    "パジェロ": "Pajero",
+    "普通乗用": "Passeio",
+    "小型乗用": "Passeio",
+    "軽乗用": "Kei",
+    "軽自動車": "Kei",
+    "普通貨物": "Carga",
+    "小型貨物": "Carga",
+    "軽貨物": "Kei Carga",
+    "乗用": "Passeio",
+    "貨物": "Carga",
+    "特殊": "Especial",
+    "大型特殊": "Especial",
+    "二輪": "Motocicleta",
+    "側車付二輪": "Motocicleta",
+    "原付": "Ciclomotor",
+    "小型二輪": "Motocicleta",
+    "普通二輪": "Motocicleta",
 }
 
-def traduzir_veiculo(nome: str) -> str:
-    if not nome:
-        return nome
-    s = str(nome).strip()
-    for jp, en in _VEICULO_TRADUCAO.items():
-        if jp in s:
-            s = s.replace(jp, en)
-    return s
+
+def traduzir_veiculo(valor):
+    if valor is None:
+        return ""
+
+    texto = str(valor).strip()
+
+    if not texto:
+        return ""
+
+    for japones, portugues in _VEICULO_TRADUCAO.items():
+        if japones in texto:
+            return portugues
+
+    return texto
+
 
 # =========================================================
-# DATA CLEANER (ANTI JAPAN FORMAT)
+# NORMALIZAÇÃO
+# =========================================================
+
+def _limpar_texto(valor):
+    if valor is None:
+        return ""
+
+    return str(valor).strip()
+
+
+def _campo_nao_identificado(valor):
+    if valor is None:
+        return True
+
+    texto = str(valor).strip().upper()
+
+    return texto in {
+        "",
+        "NÃO IDENTIFICADO",
+        "NAO IDENTIFICADO",
+        "NÃO IDENTIFICADA",
+        "NAO IDENTIFICADA",
+        "VERIFICAR",
+        "UNKNOWN",
+        "N/A",
+        "NULL",
+        "NONE",
+    }
+
+
+def _normalizar_nao_identificado(valor):
+    if _campo_nao_identificado(valor):
+        return "VERIFICAR"
+
+    return str(valor).strip()
+
+
+# =========================================================
+# ANOS JAPONESES
 # =========================================================
 
 def calcular_ano_reiwa(numero_ano_era):
-    """Regra de ferro: Reiwa 1 = 2019. Logo, Reiwa N = 2018 + N"""
     return 2018 + int(numero_ano_era)
 
-def extrair_ano_reiwa_regex(texto):
-    """
-    Usa regex forçada para capturar o número após '令和' (Reiwa).
-    Retorna o ano gregoriano calculado ou None se não encontrar.
-    """
-    # Regex forçada para capturar o número após 令和
-    match = re.search(r'令和\s*(\d+)年?', texto)
-    if match:
-        ano_num = int(match.group(1))
-        ano_gregoriano = calcular_ano_reiwa(ano_num)
-        return ano_gregoriano
-    return None
 
-def extrair_placa(texto):
-    """Extrai placa japonesa do texto OCR."""
+def calcular_ano_heisei(numero_ano_era):
+    return 1988 + int(numero_ano_era)
+
+
+def calcular_ano_showa(numero_ano_era):
+    return 1925 + int(numero_ano_era)
+
+
+def calcular_ano_taisho(numero_ano_era):
+    return 1911 + int(numero_ano_era)
+
+
+def calcular_ano_meiji(numero_ano_era):
+    return 1867 + int(numero_ano_era)
+
+
+def _converter_numeros_japoneses(texto):
     if not texto:
         return ""
-    
-    texto = str(texto).upper().strip()
-    
-    # Padrões de placa japonesa (mais abrangentes)
+
+    return str(texto).translate(
+        str.maketrans(
+            "０１２３４５６７８９",
+            "0123456789",
+        )
+    )
+
+
+def extrair_ano_reiwa_regex(texto):
+    if not texto:
+        return None
+
+    texto = _converter_numeros_japoneses(texto).upper().strip()
+
     padroes = [
-        r'([A-Z]{1,3}\s*-?\s*\d{2,4})',  # Alfanumérico: ABC-123, ABC123
-        r'([A-Z]{1,3}\d{2,4})',  # Sem hífen: ABC123
-        r'(\d{2,4}\s*-?\s*[A-Z]{1,3})',  # Número primeiro: 123-ABC
-        r'([あ-んア-ン一-龯]{1,3}\s*-?\s*\d{2,4})',  # Kanji/hiragana + número
-        r'(\d{2,4}\s*-?\s*[あ-んア-ン一-龯]{1,3})',  # Número + kanji/hiragana
-        r'([あ-んア-ン一-龯]\d{1,4}[あ-んア-ン一-龯]?\s*-?\s*\d{2,4})',  # Prefeitura + número
+        r"令和\s*([0-9]+)\s*年?",
+        r"\bR\s*([0-9]+)\s*年?",
     ]
-    
+
     for padrao in padroes:
         match = re.search(padrao, texto)
-        if match:
-            placa = match.group(1).replace(" ", "").replace("-", "")
-            if len(placa) >= 4 and len(placa) <= 8:
-                return placa
-    
-    return ""
 
-def converter_data_japonesa(s):
-    """
-    Converte datas no formato japonês (Nengo) para YYYY-MM-DD (Gregoriano).
-    
-    Lógica de Conversão de Eras Japonesas (Nengo):
-    Para converter um ano da era japonesa para o ano gregoriano, utilize a fórmula:
-    Ano_Gregoriano = Ano_Base_da_Era + Ano_da_Era
-    
-    Nota: O Ano_Base_da_Era é o ano anterior ao início da era, permitindo o cálculo direto sem precisar subtrair 1.
-    
-    Tabela de Referência para Programação:
-    Guia de Conversão de Eras Japonesas (Nengo para Gregoriano):
-    Para realizar a conversão de forma precisa em sistemas, utilize a constante de ajuste (ano base) somada ao ano indicado no documento.
-    A fórmula base é: Ano Gregoriano = Constante de Ajuste + Ano da Era.
-    
-    - Era Reiwa (令和): Inicia-se em 2019. A constante de ajuste é 2018. Portanto, o cálculo para qualquer ano desta era é: 2018 + Ano_da_Era. (Exemplo: Reiwa 8 = 2026).
-    - Era Heisei (平成): Inicia-se em 1989. A constante de ajuste é 1988. Portanto, o cálculo para qualquer ano desta era é: 1988 + Ano_da_Era. (Exemplo: Heisei 30 = 2018).
-    - Era Showa (昭和): Inicia-se em 1926. A constante de ajuste é 1925. Portanto, o cálculo para qualquer ano desta era é: 1925 + Ano_da_Era. (Exemplo: Showa 64 = 1989).
-    - Era Taisho (大正): Inicia-se em 1912. A constante de ajuste é 1911. Portanto, o cálculo para qualquer ano desta era é: 1911 + Ano_da_Era.
-    - Era Meiji (明治): Inicia-se em 1868. A constante de ajuste é 1867. Portanto, o cálculo para qualquer ano desta era é: 1867 + Ano_da_Era.
-    
-    Esta lógica garante que o sistema execute a soma matemática correta, eliminando erros de interpretação humana e assegurando que o ano de vencimento seja sempre processado no formato gregoriano (YYYY).
-    """
+        if match:
+            try:
+                return calcular_ano_reiwa(int(match.group(1)))
+            except Exception:
+                return None
+
+    return None
+
+
+# =========================================================
+# DATAS
+# =========================================================
+
+def _data_valida_iso(ano, mes, dia):
     try:
-        if not s:
+        ano = int(ano)
+        mes = int(mes)
+        dia = int(dia)
+
+        date(ano, mes, dia)
+
+        return 1900 <= ano <= 2100
+
+    except Exception:
+        return False
+
+
+def _formatar_data_iso(ano, mes, dia):
+    if not _data_valida_iso(ano, mes, dia):
+        return None
+
+    return f"{int(ano):04d}-{int(mes):02d}-{int(dia):02d}"
+
+
+def converter_data_japonesa(valor):
+    """
+    Converte somente datas completas e válidas.
+    Não completa mês ou dia ausente com 01.
+    """
+
+    if valor is None:
+        return None
+
+    texto = str(valor).strip()
+
+    if not texto or _campo_nao_identificado(texto):
+        return None
+
+    texto = _converter_numeros_japoneses(texto)
+
+    # YYYY-MM-DD
+    match = re.fullmatch(
+        r"(\d{4})-(\d{1,2})-(\d{1,2})",
+        texto,
+    )
+
+    if match:
+        return _formatar_data_iso(
+            match.group(1),
+            match.group(2),
+            match.group(3),
+        )
+
+    # YYYY/MM/DD, YYYY.MM.DD
+    match = re.fullmatch(
+        r"(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})",
+        texto,
+    )
+
+    if match:
+        return _formatar_data_iso(
+            match.group(1),
+            match.group(2),
+            match.group(3),
+        )
+
+    # DD/MM/YYYY
+    match = re.fullmatch(
+        r"(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})",
+        texto,
+    )
+
+    if match:
+        return _formatar_data_iso(
+            match.group(3),
+            match.group(2),
+            match.group(1),
+        )
+
+    # YYYY年MM月DD日
+    match = re.fullmatch(
+        r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?",
+        texto,
+    )
+
+    if match:
+        return _formatar_data_iso(
+            match.group(1),
+            match.group(2),
+            match.group(3),
+        )
+
+    # Reiwa
+    if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
+        ano = extrair_ano_reiwa_regex(texto)
+
+        if ano is None:
             return None
 
-        s = str(s).strip()
+        mes_match = re.search(r"(\d{1,2})\s*月", texto)
+        dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
-        # Já está no formato correto
-        if re.match(r"\d{4}-\d{2}-\d{2}", s):
-            return s
+        if mes_match and dia_match:
+            return _formatar_data_iso(
+                ano,
+                mes_match.group(1),
+                dia_match.group(1),
+            )
 
-        # Era Reiwa (令和 ou R) - Usa regex forçada para capturar o número
-        if "令和" in s or s.startswith("R"):
-            # Tenta regex forçada primeiro
-            ano_reiwa = extrair_ano_reiwa_regex(s)
-            if ano_reiwa:
-                # Extrai mês e dia
-                mes_match = re.search(r'(\d+)月', s)
-                dia_match = re.search(r'(\d+)日', s)
-                
-                mes = mes_match.group(1) if mes_match else "01"
-                dia = dia_match.group(1) if dia_match else "01"
-                
-                return f"{ano_reiwa}-{mes.zfill(2)}-{dia.zfill(2)}"
-            
-            # Se regex falhar, usa método antigo como fallback
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = calcular_ano_reiwa(int(n[0]))
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = calcular_ano_reiwa(int(n[0]))
-                return f"{ano}-01-01"
+        match_alt = re.search(
+            r"(?:令和|R)\s*\d+\s*[\/.\-]\s*(\d{1,2})"
+            r"\s*[\/.\-]\s*(\d{1,2})",
+            texto,
+            re.I,
+        )
 
-        # Era Heisei (平成 ou H) - Constante de ajuste: 1988
-        if "平成" in s or s.startswith("H"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1988 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 2:
-                ano = 1988 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-01"
-            elif len(n) == 1:
-                ano = 1988 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Showa (昭和 ou S) - Constante de ajuste: 1925
-        if "昭和" in s or s.startswith("S"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1925 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 2:
-                ano = 1925 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-01"
-            elif len(n) == 1:
-                ano = 1925 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Taisho (大正 ou T) - Constante de ajuste: 1911
-        if "大正" in s or s.startswith("T"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1911 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 2:
-                ano = 1911 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-01"
-            elif len(n) == 1:
-                ano = 1911 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Era Meiji (明治 ou M) - Constante de ajuste: 1867
-        if "明治" in s or s.startswith("M"):
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                ano = 1867 + int(n[0])
-                return f"{ano}-{int(n[1]):02d}-{int(n[2]):02d}"
-            elif len(n) == 1:
-                ano = 1867 + int(n[0])
-                return f"{ano}-01-01"
-
-        # Formato japonês padrão (年月日)
-        if "年" in s and "月" in s and "日" in s:
-            n = re.findall(r"\d+", s)
-            if len(n) >= 3:
-                return f"{int(n[0]):04d}-{int(n[1]):02d}-{int(n[2]):02d}"
+        if match_alt:
+            return _formatar_data_iso(
+                ano,
+                match_alt.group(1),
+                match_alt.group(2),
+            )
 
         return None
 
-    except:
-        return None
+    # Heisei
+    if "平成" in texto or re.search(r"\bH\s*\d+", texto, re.I):
+        match_ano = re.search(
+            r"(?:平成|H)\s*([0-9]+)",
+            texto,
+            re.I,
+        )
+
+        if not match_ano:
+            return None
+
+        ano = calcular_ano_heisei(match_ano.group(1))
+
+        mes_match = re.search(r"(\d{1,2})\s*月", texto)
+        dia_match = re.search(r"(\d{1,2})\s*日", texto)
+
+        if not mes_match or not dia_match:
+            return None
+
+        return _formatar_data_iso(
+            ano,
+            mes_match.group(1),
+            dia_match.group(1),
+        )
+
+    # Showa
+    if "昭和" in texto or re.search(r"\bS\s*\d+", texto, re.I):
+        match_ano = re.search(
+            r"(?:昭和|S)\s*([0-9]+)",
+            texto,
+            re.I,
+        )
+
+        if not match_ano:
+            return None
+
+        ano = calcular_ano_showa(match_ano.group(1))
+
+        mes_match = re.search(r"(\d{1,2})\s*月", texto)
+        dia_match = re.search(r"(\d{1,2})\s*日", texto)
+
+        if not mes_match or not dia_match:
+            return None
+
+        return _formatar_data_iso(
+            ano,
+            mes_match.group(1),
+            dia_match.group(1),
+        )
+
+    # Taisho
+    if "大正" in texto or re.search(r"\bT\s*\d+", texto, re.I):
+        match_ano = re.search(
+            r"(?:大正|T)\s*([0-9]+)",
+            texto,
+            re.I,
+        )
+
+        if not match_ano:
+            return None
+
+        ano = calcular_ano_taisho(match_ano.group(1))
+
+        mes_match = re.search(r"(\d{1,2})\s*月", texto)
+        dia_match = re.search(r"(\d{1,2})\s*日", texto)
+
+        if not mes_match or not dia_match:
+            return None
+
+        return _formatar_data_iso(
+            ano,
+            mes_match.group(1),
+            dia_match.group(1),
+        )
+
+    # Meiji
+    if "明治" in texto or re.search(r"\bM\s*\d+", texto, re.I):
+        match_ano = re.search(
+            r"(?:明治|M)\s*([0-9]+)",
+            texto,
+            re.I,
+        )
+
+        if not match_ano:
+            return None
+
+        ano = calcular_ano_meiji(match_ano.group(1))
+
+        mes_match = re.search(r"(\d{1,2})\s*月", texto)
+        dia_match = re.search(r"(\d{1,2})\s*日", texto)
+
+        if not mes_match or not dia_match:
+            return None
+
+        return _formatar_data_iso(
+            ano,
+            mes_match.group(1),
+            dia_match.group(1),
+        )
+
+    # YYYYMMDD
+    numeros = re.sub(r"\D", "", texto)
+
+    if len(numeros) == 8:
+        if 1900 <= int(numeros[:4]) <= 2100:
+            resultado = _formatar_data_iso(
+                numeros[:4],
+                numeros[4:6],
+                numeros[6:8],
+            )
+
+            if resultado:
+                return resultado
+
+    return None
+
+
+def validar_data_convertida(valor):
+    if not valor:
+        return False
+
+    match = re.fullmatch(
+        r"(\d{4})-(\d{2})-(\d{2})",
+        str(valor).strip(),
+    )
+
+    if not match:
+        return False
+
+    return _data_valida_iso(
+        match.group(1),
+        match.group(2),
+        match.group(3),
+    )
+
 
 # =========================================================
-# OCR SERVICE
+# PLACAS
 # =========================================================
 
-def extrair_dados_do_documento(f):
-    """
-    Extrai dados de documento usando OpenAI GPT-4o-mini.
-    Retorna dicionário com: nome, veiculo, chassi, contato, shaken_vencimento, data_registro
-    """
-    if not OPENAI_AVAILABLE:
-        st.warning("⚠️ OpenAI não disponível. OCR desativado.")
-        return {}
-    
-    img = Image.open(f).convert("RGB")
-    img.thumbnail((2048, 2048))
+def _normalizar_placa_texto(texto):
+    if not texto:
+        return ""
 
-    buf = io.BytesIO()
-    img.save(buf, format="JPEG", quality=78, optimize=True)
+    texto = str(texto).strip()
+    texto = texto.replace("　", " ")
+    texto = texto.replace("—", "-")
+    texto = texto.replace("－", "-")
+    texto = texto.replace("–", "-")
+    texto = re.sub(r"\s+", " ", texto)
 
-    b64 = base64.b64encode(buf.getvalue()).decode()
+    return texto.strip()
 
-    try:
-        r = client.chat.completions.create(
-            model="gpt-4o-mini",
-            temperature=0.2,
-            messages=[
-                {
-                    "role": "system",
-                    "content": """
-EXTRAÇÃO SHAKEN JAPÃO - CAMPOS ESPECÍFICOS OBRIGATÓRIOS
 
-CAMPOS A EXTRAIR (APENAS ESTES):
-1. fabricante: Campo "車名" (Nome do veículo/montadora - NISSAN, DAIHATSU, SUZUKI, etc)
-2. modelo_katashiki: Campo "型式" (Código alfanumérico - ex: GD-S200P, EBD-DA64V)
-3. chassi_completo: Campo "車台番号" (Número de série - ex: S200P-0037449)
-4. placa: Campo "自動車登録番号又は車両番号" no topo do documento (número de registro do veículo). A placa japonesa TEM SEMPRE 4 PARTES:
-   - Parte 1: Nome da região em kanji (ex: 浜松, 品川, 横浜, 大宮) ou hiragana (ex: とちぎ)
-   - Parte 2: Número de classificação (3 dígitos, ex: 480, 500, 581)
-   - Parte 3: UM caractere hiragana/katakana (ex: な, あ, ら, も, す)
-   - Parte 4: Número de série (2 ou 4 dígitos, ex: 9924, 4338, 79-19)
-   FORMATO DE RETORNO: "região classificação hiragana número" separados por espaço ou hífen.
-   Exemplos CORRETOS: "浜松 581 す 4338", "浜松 480 な 9924", "品川 500 あ 1234", "とちぎ も 79-19"
-   Exemplos ERRADOS (NUNCA retorne assim): "581-4338", "480-9924", "500-1234" (faltam região e hiragana!)
-   Se alguma parte não estiver legível, retorne o que conseguir ler com "?" no lugar da parte ilegível.
-5. shaken_vencimento: Campo "有効期間の満了する日" — fica à DIREITA na mesma linha de "交付年月日" e "初度検査年月". É a DATA MAIS RECENTE/FUTURA das três. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和8年3月18日")
-6. data_registro: Campo "交付年月日" — fica à ESQUERDA na mesma linha do vencimento, logo abaixo de "車台番号". NÃO confunda com "初度検査年月" (que fica no MEIO e é a data mais antiga). A data de emissão (交付年月日) é SEMPRE PRÓXIMA (até 2 anos antes) da data de vencimento. RETORNE NO FORMATO BRUTO JAPONÊS (ex: "令和6年3月19日")
+def validar_placa_japonesa(placa):
+    if not placa:
+        return False
 
-LAYOUT DO DOCUMENTO (da esquerda para a direita):
-| 交付年月日 (data_registro) | 初度検査年月 (IGNORAR!) | 有効期間の満了する日 (shaken_vencimento) |
-| Data recente (ex: 令和6年) | Data ANTIGA (ex: 平成28年) — NÃO USE | Data futura (ex: 令和8年) |
-7. nome: Nome do proprietário do veículo conforme os campos "所有者" ou "氏名" no documento. Se não estiver legível ou não existir, retorne "" (vazio).
-8. contato: Número de telefone do proprietário se houver um campo específico no documento. Se não estiver visível, retorne "" (vazio). NÃO invente números.
+    texto = _normalizar_placa_texto(placa)
 
-REGRAS ESTRICTAS PARA DATAS:
-- SEMPRE retorne datas no FORMATO BRUTO JAPONÊS (não converta para gregoriano)
-- Exemplo: "令和8年5月10日" (não "2026-05-10")
-- Exemplo: "令和9年2月" (não "2027-02-01")
-- NÃO tente converter para ano gregoriano
-- NÃO invente anos se não tiver certeza
-- Se não conseguir ler a data claramente, retorne "NÃO IDENTIFICADO"
+    if texto.upper() in {
+        "VERIFICAR",
+        "NÃO IDENTIFICADO",
+        "NAO IDENTIFICADO",
+    }:
+        return False
 
-NÃO EXTRAIA NÚMEROS DE OUTROS CAMPOS:
-- Use EXCLUSIVAMENTE o campo "有効期間の満了する日" para shaken_vencimento
-- Para data_registro, use EXCLUSIVAMENTE o campo "交付年月日" (data de emissão do certificado)
-- NÃO use "初度登録年月" (primeiro registro) — esse é outro campo
-- Não extraia números aleatórios do documento como se fossem datas
-- Não confunda "有効期間の満了する日" com "交付年月日"
+    regiao = r"[一-龯々ヶ]{1,8}"
+    classificacao = r"\d{3}"
+    kana = r"[あ-んア-ンゑヱ]"
+    numero = r"(?:\d{1,4}|\d{1,2}-\d{2})"
 
-ATENÇÃO ESPECIAL PARA shaken_vencimento:
-- Leia ATENTAMENTE o ano da era Reiwa no campo "有効期間の満了する日"
-- Se o documento mostrar "令和9", retorne "令和9年" (não "令和8年")
-- Se o documento mostrar "令和10", retorne "令和10年" (não "令和8年")
-- Não confunda os anos da era Reiwa
+    padroes = [
+        rf"^{regiao}\s+{classificacao}\s+{kana}\s+{numero}$",
+        rf"^{regiao}\s*{classificacao}\s*{kana}\s*{numero}$",
+    ]
 
-VERIFICAÇÃO FINAL OBRIGATÓRIA:
-- Confirme se a placa inclui: região + classificação + hiragana/katakana + número de série
-- Confirme se o nome e o contato vieram SOMENTE dos campos do proprietário
-- Não retorne parte da placa, não abrevie o nome e não invente dados
+    return any(
+        re.fullmatch(padrao, texto)
+        for padrao in padroes
+    )
 
-OUTROS CAMPOS:
-- nome e contato podem ser vazios "" se não estiverem no documento
-- fabricante, modelo_katashiki, chassi_completo, placa, shaken_vencimento e data_registro são obrigatórios
-- NÃO invente nenhuma informação
 
-RETORNE APENAS JSON com estes campos:
+def extrair_placa(texto):
+    if not texto:
+        return "VERIFICAR"
+
+    texto = _normalizar_placa_texto(texto)
+
+    padroes = [
+        r"([一-龯々ヶ]{1,8}\s+\d{3}\s+[あ-んア-ンゑヱ]\s+(?:\d{1,2}-\d{2}|\d{1,4}))",
+        r"([一-龯々ヶ]{1,8}\s*\d{3}\s*[あ-んア-ンゑヱ]\s*(?:\d{1,2}-\d{2}|\d{1,4}))",
+    ]
+
+    for padrao in padroes:
+        match = re.search(padrao, texto)
+
+        if match:
+            placa = _normalizar_placa_texto(match.group(1))
+
+            if validar_placa_japonesa(placa):
+                return placa
+
+    tokens = texto.split()
+
+    for i in range(len(tokens) - 3):
+        candidata = " ".join(tokens[i:i + 4])
+
+        if validar_placa_japonesa(candidata):
+            return candidata
+
+    return "VERIFICAR"
+
+
+def normalizar_placa_final(valor):
+    if _campo_nao_identificado(valor):
+        return "VERIFICAR"
+
+    placa = _normalizar_placa_texto(valor)
+
+    if validar_placa_japonesa(placa):
+        return placa
+
+    placa_extraida = extrair_placa(placa)
+
+    if validar_placa_japonesa(placa_extraida):
+        return placa_extraida
+
+    return "VERIFICAR"
+
+
+# =========================================================
+# PROMPTS
+# =========================================================
+
+SYSTEM_PROMPT = r"""
+Você é especialista em leitura de documentos japoneses de veículos.
+
+O documento normalmente é:
+自動車検査証記録事項
+
+Retorne somente JSON válido com estas chaves:
+
 {
-  "nome": "string (nome do proprietário; vazio se não estiver no documento)",
-  "contato": "string (telefone; vazio se não estiver no documento)",
-  "shaken_vencimento": "FORMATO BRUTO JAPONÊS (ex: 令和8年5月10日)",
-  "veiculo": "string (formato: {fabricante} {modelo_katashiki})",
-  "placa": "string (SEMPRE com 4 partes: região + classificação + hiragana + número. Ex: 浜松 581 す 4338, 品川 500 あ 1234)",
-  "chassi": "string (formato: {chassi_completo})",
-  "fabricante": "string (Campo 車名 - NISSAN, DAIHATSU, SUZUKI, etc)",
-  "modelo_katashiki": "string (Campo 型式 - ex: GD-S200P, EBD-DA64V)",
-  "chassi_completo": "string (Campo 車台番号 - ex: S200P-0037449)",
-  "data_registro": "FORMATO BRUTO JAPONÊS (ex: 令和8年3月31日)"
+  "nome": "",
+  "contato": "",
+  "fabricante": "",
+  "modelo": "",
+  "veiculo": "",
+  "chassi": "",
+  "chassi_completo": "",
+  "placa": "",
+  "shaken_vencimento": "",
+  "data_registro": ""
 }
+
+REGRAS:
+
+FABRICANTE:
+Use 車名.
+
+MODELO:
+Use 型式.
+
+CHASSI:
+Use 車台番号.
+Não confunda com número de tipo, modelo ou placa.
+
+PLACA:
+Use exclusivamente 自動車登録番号又は車両番号.
+
+A placa precisa conter quatro partes:
+REGIÃO + CLASSIFICAÇÃO + KANA + NÚMERO
+
+Exemplo:
+浜松 581 す 4338
+
+Outro:
+名古屋 330 あ 12-34
+
+Não retorne somente números.
+Não remova a estrutura.
+Não confunda chassi com placa.
+Se qualquer parte estiver ilegível, retorne VERIFICAR.
+
+DATA DE REGISTRO:
+Use somente 交付年月日.
+
+Não use 初度検査年月.
+Não use 有効期間の満了する日.
+
+VENCIMENTO DO SHAKEN:
+Use somente 有効期間の満了する日.
+
+DATAS:
+Retorne exatamente como aparecem no documento.
+Não invente mês ou dia.
+Não complete datas incompletas.
+Se não estiver completamente legível, retorne VERIFICAR.
+
+NOME:
+Extraia o proprietário quando estiver visível.
+
+CONTATO:
+Extraia telefone somente se estiver visível.
+
+Para qualquer campo ilegível, use VERIFICAR.
 """
+
+
+RETRY_PROMPT = r"""
+Faça uma segunda conferência visual deste documento japonês.
+
+Retorne somente JSON válido:
+
+{
+  "placa": "",
+  "shaken_vencimento": "",
+  "data_registro": ""
+}
+
+PLACA:
+Leia somente 自動車登録番号又は車両番号.
+A placa precisa ter:
+região em kanji + classificação de 3 dígitos + kana + número.
+
+Exemplo:
+浜松 581 す 4338
+
+Se faltar uma parte, retorne VERIFICAR.
+
+DATA DE REGISTRO:
+Leia somente 交付年月日.
+
+VENCIMENTO:
+Leia somente 有効期間の満了する日.
+
+Não use 初度検査年月.
+Não invente datas.
+Não complete mês ou dia.
+Se houver dúvida, retorne VERIFICAR.
+"""
+
+
+# =========================================================
+# IMAGEM
+# =========================================================
+
+def _preparar_imagem(f):
+    if hasattr(f, "seek"):
+        f.seek(0)
+
+    imagem = Image.open(f)
+
+    if imagem.mode != "RGB":
+        imagem = imagem.convert("RGB")
+
+    imagem.thumbnail((3000, 3000))
+
+    buffer = io.BytesIO()
+
+    imagem.save(
+        buffer,
+        format="JPEG",
+        quality=90,
+        optimize=True,
+    )
+
+    return base64.b64encode(
+        buffer.getvalue()
+    ).decode("utf-8")
+
+
+# =========================================================
+# OPENAI CALL
+# =========================================================
+
+def _chamar_openai(imagem_b64, prompt_sistema):
+    if not OPENAI_AVAILABLE or client is None:
+        raise RuntimeError(
+            "OpenAI não está disponível. "
+            "Verifique OPENAI_API_KEY."
+        )
+
+    resposta = client.chat.completions.create(
+        model="gpt-4o-mini",
+        temperature=0.0,
+        response_format={
+            "type": "json_object"
+        },
+        messages=[
+            {
+                "role": "system",
+                "content": prompt_sistema,
             },
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": "Extrair dados do documento Shaken"},
-                    {"type": "image_url", "image_url": {
-                        "url": f"data:image/jpeg;base64,{b64}"
-                    }}
-                ]
-            }
-        ],
-        response_format={"type": "json_object"}
-    )
-
-        d = json.loads(r.choices[0].message.content)
-    except Exception as e:
-        print(f"[DEBUG] Erro na chamada OCR: {e}")
-        return {}
-
-    # Debug: mostra dados brutos do OCR
-    print(f"[DEBUG] Dados brutos do OCR: {d}")
-
-    # Validação e conversão rígida de datas (STRICT VALIDATION)
-    for campo in ["shaken_vencimento", "data_registro"]:
-        if d.get(campo):
-            data_bruta = d[campo]
-            print(f"[DEBUG] Validando campo {campo}: {data_bruta}")
-            
-            # Se for "NÃO IDENTIFICADO", marca para verificação manual
-            if "NÃO IDENTIFICADO" in data_bruta or data_bruta == "NÃO IDENTIFICADO":
-                d[campo] = "VERIFICAR"
-                continue
-            
-            # Aplica conversão rígida usando função calcular_ano_reiwa
-            data_convertida = converter_data_japonesa(data_bruta)
-            
-            # Se a conversão foi bem-sucedida, usa a data convertida
-            if data_convertida and re.match(r"^\d{4}-\d{2}-\d{2}$", data_convertida):
-                d[campo] = data_convertida
-                print(f"[DEBUG] Data convertida com sucesso: {data_convertida}")
-            else:
-                d[campo] = "VERIFICAR"
-                print(f"[DEBUG] Data não pôde ser convertida, marcando para verificação manual")
-
-    # Pós-validação: data_registro deve ser próxima ao shaken_vencimento (máx 2-3 anos antes)
-    _precisa_retry_datas = False
-    if d.get("shaken_vencimento") == "VERIFICAR" or d.get("data_registro") == "VERIFICAR":
-        _precisa_retry_datas = True
-    elif d.get("shaken_vencimento") and d.get("data_registro"):
-        _shaken = d["shaken_vencimento"]
-        _dreg = d["data_registro"]
-        if re.match(r"^\d{4}-\d{2}-\d{2}$", _shaken) and re.match(r"^\d{4}-\d{2}-\d{2}$", _dreg):
-            _ano_shaken = int(_shaken[:4])
-            _ano_dreg = int(_dreg[:4])
-            if _ano_shaken - _ano_dreg > 3:
-                _precisa_retry_datas = True
-
-    # Retry automático focado em datas quando resultado é suspeito
-    if _precisa_retry_datas:
-        print("[DEBUG] Datas suspeitas, executando retry focado em datas...")
-        try:
-            r2 = client.chat.completions.create(
-                model="gpt-4o-mini",
-                temperature=0.0,
-                messages=[
                     {
-                        "role": "system",
-                        "content": """Você vai analisar um documento shaken japonês (自動車検査証記録事項).
-Preciso APENAS de 2 datas que estão na MESMA LINHA, logo abaixo de "車台番号":
-
-LAYOUT DA LINHA (da esquerda para a direita):
-| 交付年月日 | 初度検査年月 | 有効期間の満了する日 |
-
-1. shaken_vencimento = "有効期間の満了する日" (campo da DIREITA, data FUTURA)
-2. data_registro = "交付年月日" (campo da ESQUERDA, data RECENTE mas não futura)
-
-IGNORAR COMPLETAMENTE: "初度検査年月" (campo do MEIO, data ANTIGA tipo 平成XX年)
-
-REGRAS:
-- Retorne no formato BRUTO JAPONÊS (ex: "令和8年3月18日")
-- data_registro é SEMPRE 1-2 anos ANTES do shaken_vencimento
-- NÃO retorne datas com "平成" para data_registro (isso seria 初度検査年月, que é o campo ERRADO)
-
-RETORNE JSON: {"shaken_vencimento": "...", "data_registro": "..."}"""
+                        "type": "text",
+                        "text": (
+                            "Leia cuidadosamente a imagem "
+                            "e retorne somente o JSON solicitado."
+                        ),
                     },
                     {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Extrair APENAS as datas: 交付年月日 e 有効期間の満了する日"},
-                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}}
-                        ]
-                    }
+                        "type": "image_url",
+                        "image_url": {
+                            "url": (
+                                "data:image/jpeg;base64,"
+                                + imagem_b64
+                            ),
+                            "detail": "high",
+                        },
+                    },
                 ],
-                response_format={"type": "json_object"}
+            },
+        ],
+    )
+
+    conteudo = resposta.choices[0].message.content
+
+    if not conteudo:
+        raise RuntimeError(
+            "A OpenAI retornou resposta vazia."
+        )
+
+    return json.loads(conteudo)
+
+
+# =========================================================
+# NORMALIZAÇÃO DOS DADOS
+# =========================================================
+
+def _normalizar_dados_ocr(dados):
+    if not isinstance(dados, dict):
+        dados = {}
+
+    resultado = {
+        "nome": _normalizar_nao_identificado(
+            dados.get("nome", "")
+        ),
+        "contato": _normalizar_nao_identificado(
+            dados.get("contato", "")
+        ),
+        "fabricante": _normalizar_nao_identificado(
+            dados.get("fabricante", "")
+        ),
+        "modelo": _normalizar_nao_identificado(
+            dados.get("modelo", "")
+        ),
+        "veiculo": _normalizar_nao_identificado(
+            dados.get("veiculo", "")
+        ),
+        "chassi": _normalizar_nao_identificado(
+            dados.get("chassi", "")
+        ),
+        "chassi_completo": _normalizar_nao_identificado(
+            dados.get("chassi_completo", "")
+        ),
+        "placa": _normalizar_nao_identificado(
+            dados.get("placa", "")
+        ),
+        "shaken_vencimento": _normalizar_nao_identificado(
+            dados.get("shaken_vencimento", "")
+        ),
+        "data_registro": _normalizar_nao_identificado(
+            dados.get("data_registro", "")
+        ),
+    }
+
+    if resultado["veiculo"] != "VERIFICAR":
+        resultado["veiculo"] = traduzir_veiculo(
+            resultado["veiculo"]
+        )
+
+    resultado["placa"] = normalizar_placa_final(
+        resultado["placa"]
+    )
+
+    for campo in ["chassi", "chassi_completo"]:
+        if resultado[campo] != "VERIFICAR":
+            resultado[campo] = re.sub(
+                r"\s+",
+                "",
+                str(resultado[campo]),
+            ).upper()
+
+    return resultado
+
+
+def _converter_datas_dados(dados):
+    for campo in [
+        "shaken_vencimento",
+        "data_registro",
+    ]:
+        valor = dados.get(campo)
+
+        if _campo_nao_identificado(valor):
+            dados[campo] = "VERIFICAR"
+            continue
+
+        convertido = converter_data_japonesa(valor)
+
+        if convertido and validar_data_convertida(convertido):
+            dados[campo] = convertido
+        else:
+            dados[campo] = "VERIFICAR"
+
+    return dados
+
+
+# =========================================================
+# RETRY
+# =========================================================
+
+def _dados_precisam_retry(dados):
+    if not dados:
+        return True
+
+    if not validar_placa_japonesa(
+        dados.get("placa", "")
+    ):
+        return True
+
+    if not validar_data_convertida(
+        dados.get("shaken_vencimento", "")
+    ):
+        return True
+
+    if not validar_data_convertida(
+        dados.get("data_registro", "")
+    ):
+        return True
+
+    try:
+        ano_shaken = int(
+            str(dados["shaken_vencimento"])[:4]
+        )
+
+        ano_registro = int(
+            str(dados["data_registro"])[:4]
+        )
+
+        if abs(ano_shaken - ano_registro) > 5:
+            return True
+
+    except Exception:
+        return True
+
+    return False
+
+
+def _mesclar_retry(original, retry):
+    if not isinstance(retry, dict):
+        return original
+
+    placa_retry = normalizar_placa_final(
+        retry.get("placa", "")
+    )
+
+    if validar_placa_japonesa(placa_retry):
+        original["placa"] = placa_retry
+
+    shaken_retry = converter_data_japonesa(
+        retry.get("shaken_vencimento", "")
+    )
+
+    if shaken_retry and validar_data_convertida(
+        shaken_retry
+    ):
+        original["shaken_vencimento"] = shaken_retry
+
+    registro_retry = converter_data_japonesa(
+        retry.get("data_registro", "")
+    )
+
+    if registro_retry and validar_data_convertida(
+        registro_retry
+    ):
+        original["data_registro"] = registro_retry
+
+    return original
+
+
+# =========================================================
+# FUNÇÃO PRINCIPAL
+# =========================================================
+
+def extrair_dados_do_documento(f):
+    if f is None:
+        return None
+
+    try:
+        print(
+            f"[OCR] Iniciando processamento: "
+            f"{getattr(f, 'name', 'arquivo')}"
+        )
+
+        imagem_b64 = _preparar_imagem(f)
+
+        dados_brutos = _chamar_openai(
+            imagem_b64,
+            SYSTEM_PROMPT,
+        )
+
+        print(
+            "[OCR DEBUG] Resposta original:",
+            json.dumps(
+                dados_brutos,
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
+
+        dados = _normalizar_dados_ocr(
+            dados_brutos
+        )
+
+        dados = _converter_datas_dados(
+            dados
+        )
+
+        print(
+            "[OCR DEBUG] Dados normalizados:",
+            json.dumps(
+                dados,
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
+
+        if _dados_precisam_retry(dados):
+            print(
+                "[OCR] Dados incompletos ou suspeitos. "
+                "Executando segunda leitura."
             )
-            d2 = json.loads(r2.choices[0].message.content)
-            print(f"[DEBUG] Retry datas resultado: {d2}")
 
-            # Converte e valida as datas do retry
-            for campo in ["shaken_vencimento", "data_registro"]:
-                if d2.get(campo):
-                    data_bruta = d2[campo]
-                    if "NÃO IDENTIFICADO" in str(data_bruta):
-                        continue
-                    data_convertida = converter_data_japonesa(data_bruta)
-                    if data_convertida and re.match(r"^\d{4}-\d{2}-\d{2}$", data_convertida):
-                        d[campo] = data_convertida
-                        print(f"[DEBUG] Retry: {campo} atualizado para {data_convertida}")
-        except Exception as e:
-            print(f"[DEBUG] Erro no retry de datas: {e}")
+            try:
+                dados_retry = _chamar_openai(
+                    imagem_b64,
+                    RETRY_PROMPT,
+                )
 
-    # Fallback final: se data_registro ainda estiver errada, calcula a partir do vencimento
-    if d.get("shaken_vencimento") and d.get("data_registro"):
-        _shaken = d["shaken_vencimento"]
-        _dreg = d["data_registro"]
-        if re.match(r"^\d{4}-\d{2}-\d{2}$", _shaken) and re.match(r"^\d{4}-\d{2}-\d{2}$", _dreg):
-            _ano_shaken = int(_shaken[:4])
-            _ano_dreg = int(_dreg[:4])
-            if _ano_shaken - _ano_dreg > 3:
-                _ano_correto = _ano_shaken - 2
-                d["data_registro"] = f"{_ano_correto}-{_shaken[5:7]}-{_shaken[8:10]}"
-                print(f"[DEBUG] Fallback: data_registro corrigida para {d['data_registro']}")
+                print(
+                    "[OCR DEBUG] Segunda resposta:",
+                    json.dumps(
+                        dados_retry,
+                        ensure_ascii=False,
+                        indent=2,
+                    ),
+                )
 
-    # Formata veículo como {fabricante} {modelo_katashiki}
-    fabricante = d.get("fabricante", "")
-    modelo_katashiki = d.get("modelo_katashiki", "")
-    if fabricante and modelo_katashiki:
-        d["veiculo"] = f"{fabricante} {modelo_katashiki}"
-    d["veiculo"] = traduzir_veiculo(d.get("veiculo", ""))
-    
-    # Formata chassi como {chassi_completo}
-    chassi_completo = d.get("chassi_completo", "")
-    if chassi_completo:
-        d["chassi"] = chassi_completo
-    
-    # Placa já foi extraída pelo GPT, limpa espaços extras
-    if "placa" not in d:
-        d["placa"] = ""
-    else:
-        # Remove espaços extras e normaliza
-        d["placa"] = re.sub(r"\s+", " ", str(d["placa"])).strip()
+                dados = _mesclar_retry(
+                    dados,
+                    dados_retry,
+                )
 
-    print(f"[DEBUG] Dados finais: {d}")
-    return d
+            except Exception as erro_retry:
+                print(
+                    f"[OCR] Erro na segunda leitura: "
+                    f"{erro_retry}"
+                )
+
+        dados["placa"] = normalizar_placa_final(
+            dados.get("placa", "")
+        )
+
+        for campo in [
+            "shaken_vencimento",
+            "data_registro",
+        ]:
+            if not validar_data_convertida(
+                dados.get(campo)
+            ):
+                dados[campo] = "VERIFICAR"
+
+        if _campo_nao_identificado(
+            dados.get("veiculo", "")
+        ):
+            dados["veiculo"] = "VERIFICAR"
+        else:
+            dados["veiculo"] = traduzir_veiculo(
+                dados["veiculo"]
+            )
+
+        for campo in [
+            "nome",
+            "contato",
+            "fabricante",
+            "modelo",
+            "chassi",
+            "chassi_completo",
+        ]:
+            if _campo_nao_identificado(
+                dados.get(campo, "")
+            ):
+                dados[campo] = ""
+
+        print(
+            "[OCR FINAL]",
+            json.dumps(
+                dados,
+                ensure_ascii=False,
+                indent=2,
+            ),
+        )
+
+        return dados
+
+    except json.JSONDecodeError as e:
+        print(
+            f"[OCR ERRO] JSON inválido retornado pela OpenAI: {e}"
+        )
+
+    except Exception as e:
+        print(
+            f"[OCR ERRO GERAL] {type(e).__name__}: {e}"
+        )
+
+    return {
+        "nome": "",
+        "contato": "",
+        "fabricante": "",
+        "modelo": "",
+        "veiculo": "",
+        "chassi": "",
+        "chassi_completo": "",
+        "placa": "VERIFICAR",
+        "shaken_vencimento": "VERIFICAR",
+        "data_registro": "VERIFICAR",
+    }
+
+
+ocr_service_corrigido.py
+Exibindo ocr_service_corrigido.py.
+
