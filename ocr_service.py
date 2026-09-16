@@ -615,26 +615,26 @@ PROCEDIMENTO OBRIGATÓRIO:
 3. IGNORE completamente 初度検査年月 para o campo data_registro
 4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
 
-IMPORTANTE - POSIÇÃO ESPACIAL:
-- Cada rótulo tem sua própria data ao lado
-- NÃO use datas de outras partes do documento
-- A data de 交付年月日 está IMEDIATAMENTE ao lado do rótulo 交付年月日
-- A data de 初度検査年月 está IMEDIATAMENTE ao lado do rótulo 初度検査年月
-- NÃO troque as datas entre os rótulos
+IMPORTANTE - POSIÇÃO ESPACIAL (ESQUERDA/DIREITA):
+- No documento, há múltiplas datas dispostas horizontalmente
+- data_registro deve usar a data da ESQUERDA (ano mais recente)
+- shaken_vencimento deve usar a data da DIREITA (ano mais recente)
+- A data do MEIO (ano antigo como 平成28年) NUNCA deve ser usada
+- NÃO troque as datas entre as posições
 
 EXEMPLO CRÍTICO:
-Se o documento mostrar:
-交付年月日 = 令和8年7月23日
-初度検査年月 = 平成28年11月
-有効期間の満了する日 = 令和9年12月4日
+Se o documento mostrar 3 datas horizontalmente:
+Data ESQUERDA = 令和6年3月19日 (data_registro)
+Data MEIO = 平成28年7月27日 (NÃO USAR)
+Data DIREITA = 令和8年3月18日 (shaken_vencimento)
 
 Resultado OBRIGATÓRIO:
-data_registro = 令和8年7月23日
-shaken_vencimento = 令和9年12月4日
+data_registro = 令和6年3月19日 (data da ESQUERDA)
+shaken_vencimento = 令和8年3月18日 (data da DIREITA)
 
 NUNCA retorne:
-data_registro = 平成28年11月 (ERRADO - é 初度検査年月)
-data_registro = 令和9年12月4日 (ERRADO - é 有効期間の満了する日)
+data_registro = 平成28年7月27日 (ERRADO - é data do MEIO)
+shaken_vencimento = 平成28年7月27日 (ERRADO - é data do MEIO)
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
@@ -829,26 +829,26 @@ PROCEDIMENTO OBRIGATÓRIO:
 3. IGNORE completamente 初度検査年月 para o campo data_registro
 4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
 
-IMPORTANTE - POSIÇÃO ESPACIAL:
-- Cada rótulo tem sua própria data ao lado
-- NÃO use datas de outras partes do documento
-- A data de 交付年月日 está IMEDIATAMENTE ao lado do rótulo 交付年月日
-- A data de 初度検査年月 está IMEDIATAMENTE ao lado do rótulo 初度検査年月
-- NÃO troque as datas entre os rótulos
+IMPORTANTE - POSIÇÃO ESPACIAL (ESQUERDA/DIREITA):
+- No documento, há múltiplas datas dispostas horizontalmente
+- data_registro deve usar a data da ESQUERDA (ano mais recente)
+- shaken_vencimento deve usar a data da DIREITA (ano mais recente)
+- A data do MEIO (ano antigo como 平成28年) NUNCA deve ser usada
+- NÃO troque as datas entre as posições
 
 EXEMPLO CRÍTICO:
-Se o documento mostrar:
-交付年月日 = 令和8年7月23日
-初度検査年月 = 平成28年11月
-有効期間の満了する日 = 令和9年12月4日
+Se o documento mostrar 3 datas horizontalmente:
+Data ESQUERDA = 令和6年3月19日 (data_registro)
+Data MEIO = 平成28年7月27日 (NÃO USAR)
+Data DIREITA = 令和8年3月18日 (shaken_vencimento)
 
 Resultado OBRIGATÓRIO:
-data_registro = 令和8年7月23日
-shaken_vencimento = 令和9年12月4日
+data_registro = 令和6年3月19日 (data da ESQUERDA)
+shaken_vencimento = 令和8年3月18日 (data da DIREITA)
 
 NUNCA retorne:
-data_registro = 平成28年11月 (ERRADO - é 初度検査年月)
-data_registro = 令和9年12月4日 (ERRADO - é 有効期間の満了する日)
+data_registro = 平成28年7月27日 (ERRADO - é data do MEIO)
+shaken_vencimento = 平成28年7月27日 (ERRADO - é data do MEIO)
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
