@@ -1012,6 +1012,10 @@ def extrair_dados_do_documento(f):
             SYSTEM_PROMPT,
         )
 
+        with st.expander("DEBUG JSON Bruto da OpenAI"):
+            st.write("Dados brutos retornados pela OpenAI:")
+            st.json(dados_brutos)
+
         dados = _normalizar_dados_ocr(dados_brutos)
         dados = _converter_datas_dados(dados)
 
