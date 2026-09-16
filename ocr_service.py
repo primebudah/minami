@@ -534,30 +534,79 @@ CHASSI_COMPLETO:
 Retorne o número completo do chassi exatamente como aparece.
 
 =========================================================
-PLACA
+PLACA — LEITURA CRÍTICA DOS KANJIS
 =========================================================
 
 PLACA:
-Use exclusivamente:
+Use EXCLUSIVAMENTE o campo:
 自動車登録番号又は車両番号
 
-A placa japonesa precisa conter a estrutura completa:
+A estrutura OBRIGATÓRIA é:
+[REGIÃO EM KANJI] [CLASSIFICAÇÃO 3 DÍGITOS] [KANA] [NÚMERO]
 
-REGIÃO + CLASSIFICAÇÃO + KANA + NÚMERO
+=========================================================
+REGRA CRÍTICA: NÃO SUBSTITUIR KANJIS
+=========================================================
 
-Exemplo:
+Os dois primeiros kanjis da região DEVEM ser lidos EXATAMENTE
+como aparecem na fotografia.
+
+É PROIBIDO:
+- Substituir kanjis por cidades conhecidas
+- Trocar 豊橋 por 浜松
+- Trocar 豊 por 浜
+- Trocar 橋 por 松
+- Trocar 名古屋 por 浜松
+- Trocar 豊田 por 浜松
+- Presumir a cidade com base em probabilidade
+
+Se os kanjis não estiverem 100% claros:
+retorne VERIFICAR para a placa inteira
+
+=========================================================
+KANJIS QUE FREQUENTEMENTE SÃO CONFUNDIDOS
+=========================================================
+
+豊 (yutaka) ≠ 浜 (hama)
+橋 (hashi) ≠ 松 (matsu)
+名 (na) ≠ 浜 (hama)
+古 (furui) ≠ 松 (matsu)
+屋 (ya) ≠ 浜 (hama)
+
+Leia CADA kanji individualmente, observando:
+- Número de traços
+- Posição dos traços
+- Forma exata do caractere
+
+=========================================================
+EXEMPLOS DE PLACAS CORRETAS
+=========================================================
+
+Se a foto mostrar claramente:
+豊橋 581 り 6940
+→ Retorne: 豊橋 581 り 6940
+
+Se a foto mostrar claramente:
 浜松 581 す 4338
+→ Retorne: 浜松 581 す 4338
 
-Outro exemplo:
-名古屋 330 あ 12-34
+Se a foto mostrar claramente:
+名古屋 330 あ 1234
+→ Retorne: 名古屋 330 あ 1234
 
-Não retorne somente o número final.
-Não confunda placa com chassi.
-Não use número de tipo como placa.
-Não remova a região, classificação ou kana.
+NUNCA retorne:
+浜松 581 り 6940 (kanji da região incorreto)
+豊橋 581 す 4338 (kanji da região incorreto)
 
-Se qualquer parte da placa estiver ilegível ou ausente:
-retorne VERIFICAR.
+=========================================================
+REGRAS FINAIS
+=========================================================
+
+- Não retorne somente os números
+- Não remova os kanjis da região
+- Não traduza a cidade para português
+- Não corrija a placa baseado em suposição
+- Se houver DÚVIDA sobre qualquer kanji: retorne VERIFICAR
 
 =========================================================
 DATA DE REGISTRO
@@ -634,15 +683,73 @@ Retorne somente JSON válido:
   "data_registro": ""
 }
 
+=========================================================
+PLACA — LEITURA CRÍTICA DOS KANJIS
+=========================================================
+
 PLACA:
-Leia somente 自動車登録番号又は車両番号.
-A placa precisa ter:
-região em kanji + classificação de 3 dígitos + kana + número.
+Leia EXCLUSIVAMENTE o campo:
+自動車登録番号又は車両番号
 
-Exemplo:
+A estrutura OBRIGATÓRIA é:
+[REGIÃO EM KANJI] [CLASSIFICAÇÃO 3 DÍGITOS] [KANA] [NÚMERO]
+
+=========================================================
+REGRA CRÍTICA: NÃO SUBSTITUIR KANJIS
+=========================================================
+
+Os dois primeiros kanjis da região DEVEM ser lidos EXATAMENTE
+como aparecem na fotografia.
+
+É PROIBIDO:
+- Substituir kanjis por cidades conhecidas
+- Trocar 豊橋 por 浜松
+- Trocar 豊 por 浜
+- Trocar 橋 por 松
+- Trocar 名古屋 por 浜松
+- Trocar 豊田 por 浜松
+- Presumir a cidade com base em probabilidade
+
+Se os kanjis não estiverem 100% claros:
+retorne VERIFICAR para a placa inteira
+
+=========================================================
+KANJIS QUE FREQUENTEMENTE SÃO CONFUNDIDOS
+=========================================================
+
+豊 (yutaka) ≠ 浜 (hama)
+橋 (hashi) ≠ 松 (matsu)
+名 (na) ≠ 浜 (hama)
+古 (furui) ≠ 松 (matsu)
+屋 (ya) ≠ 浜 (hama)
+
+Leia CADA kanji individualmente, observando:
+- Número de traços
+- Posição dos traços
+- Forma exata do caractere
+
+=========================================================
+EXEMPLOS DE PLACAS CORRETAS
+=========================================================
+
+Se a foto mostrar claramente:
+豊橋 581 り 6940
+→ Retorne: 豊橋 581 り 6940
+
+Se a foto mostrar claramente:
 浜松 581 す 4338
+→ Retorne: 浜松 581 す 4338
 
-Se faltar uma parte, retorne VERIFICAR.
+Se a foto mostrar claramente:
+名古屋 330 あ 1234
+→ Retorne: 名古屋 330 あ 1234
+
+NUNCA retorne:
+浜松 581 り 6940 (kanji da região incorreto)
+豊橋 581 す 4338 (kanji da região incorreto)
+
+Se faltar qualquer parte da placa ou houver dúvida:
+retorne VERIFICAR
 
 DATA DE REGISTRO:
 Leia somente 交付年月日.
