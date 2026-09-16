@@ -267,11 +267,15 @@ def converter_data_japonesa(valor):
             mes_match = re.search(r"(\d{1,2})\s*月", texto)
             dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
+            st.write(f"Mês extraído: {mes_match.group(1) if mes_match else 'NÃO ENCONTRADO'}")
+            st.write(f"Dia extraído: {dia_match.group(1) if dia_match else 'NÃO ENCONTRADO'}")
+
             if mes_match and dia_match:
                 resultado = _formatar_data_iso(
                     ano, mes_match.group(1), dia_match.group(1)
                 )
                 st.write(f"Resultado Reiwa: {resultado}")
+                st.write(f"Compondo data: ano={ano}, mes={mes_match.group(1)}, dia={dia_match.group(1)}")
                 return resultado
 
             match_alt = re.search(
@@ -306,6 +310,9 @@ def converter_data_japonesa(valor):
                 mes_match = re.search(r"(\d{1,2})\s*月", texto)
                 dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
+                st.write(f"Mês extraído: {mes_match.group(1) if mes_match else 'NÃO ENCONTRADO'}")
+                st.write(f"Dia extraído: {dia_match.group(1) if dia_match else 'NÃO ENCONTRADO'}")
+
                 if not mes_match or not dia_match:
                     return None
 
@@ -313,6 +320,7 @@ def converter_data_japonesa(valor):
                     ano, mes_match.group(1), dia_match.group(1)
                 )
                 st.write(f"Resultado {era}: {resultado}")
+                st.write(f"Compondo data: ano={ano}, mes={mes_match.group(1)}, dia={dia_match.group(1)}")
                 return resultado
 
         numeros = re.sub(r"\D", "", texto)
@@ -944,8 +952,10 @@ def _converter_datas_dados(dados):
 
             if convertido and validar_data_convertida(convertido):
                 dados[campo] = convertido
+                st.write(f"{campo} FINAL (antes de tabela): '{convertido}'")
             else:
                 dados[campo] = "VERIFICAR"
+                st.write(f"{campo} FINAL (antes de tabela): 'VERIFICAR'")
 
     return dados
 
