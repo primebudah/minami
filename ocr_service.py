@@ -1194,7 +1194,7 @@ def _normalizar_dados_ocr(dados):
 
     resultado = {
         "nome": _normalizar_nao_identificado(dados.get("nome", "")),
-        "contato": _normalizar_nao_identificado(dados.get("contato", "")),
+        "contato": "",  # Campo contato sempre em branco, será adicionado manualmente
         "fabricante": _normalizar_nao_identificado(dados.get("fabricante", "")),
         "modelo": _normalizar_nao_identificado(dados.get("modelo", "")),
         "veiculo": _normalizar_nao_identificado(dados.get("veiculo", "")),
