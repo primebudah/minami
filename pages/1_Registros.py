@@ -660,7 +660,9 @@ with col_foto:
                             ok += 1
                             status.success(f"✅ {idx}/{total}: {f.name} processada")
                         except Exception as e:
-                            st.error(f"Erro em {f.name}: {e}")
+                            st.error(f"❌ Erro em {f.name}: {str(e)}")
+                            import traceback
+                            st.error(f"Detalhes: {traceback.format_exc()}")
                             err += 1
                         progress.progress(idx / total)
                 status.empty()
