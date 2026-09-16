@@ -677,8 +677,6 @@ with col_foto:
                 st.rerun()
 
 # Mostra logs de debug OCR (persistente)
-_mostrar_logs_debug()
-
 # =========================================================
 # FILA DE REGISTROS PENDENTES
 # =========================================================

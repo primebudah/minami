@@ -194,53 +194,6 @@ def _formatar_data_iso(ano, mes, dia):
     return f"{int(ano):04d}-{int(mes):02d}-{int(dia):02d}"
 
 
-# =========================================================
-# FUNÇÕES DE DEBUG
-# =========================================================
-
-def _debug_log(tipo, mensagem, dados=None):
-    """Armazena logs de debug no session_state para persistência"""
-    try:
-        if "debug_ocr_logs" not in st.session_state:
-            st.session_state.debug_ocr_logs = []
-        
-        log_entry = {
-            "tipo": tipo,
-            "mensagem": mensagem,
-            "timestamp": str(st.session_state.get("_debug_counter", 0))
-        }
-        
-        if dados is not None:
-            log_entry["dados"] = dados
-        
-        st.session_state.debug_ocr_logs.append(log_entry)
-        st.session_state._debug_counter = st.session_state.get("_debug_counter", 0) + 1
-    except Exception as e:
-        # Se falhar ao armazenar log, não quebra o processamento
-        print(f"[DEBUG] Erro ao armazenar log: {e}")
-
-
-def _mostrar_logs_debug():
-    """Exibe todos os logs de debug armazenados no session_state"""
-    try:
-        if "debug_ocr_logs" not in st.session_state or not st.session_state.debug_ocr_logs:
-            return
-        
-        with st.expander("🔍 Logs de Debug OCR (Persistente)", expanded=True):
-            for i, log in enumerate(st.session_state.debug_ocr_logs):
-                st.markdown(f"**[{i+1}] {log['tipo']}** - {log['mensagem']}")
-                if "dados" in log:
-                    if isinstance(log["dados"], dict):
-                        st.json(log["dados"])
-                    else:
-                        st.write(log["dados"])
-                st.divider()
-    except Exception as e:
-        st.error(f"Erro ao exibir logs de debug: {e}")
-        import traceback
-        st.error(traceback.format_exc())
-
-
 def converter_data_japonesa(valor):
     """
     Converte somente datas completas e válidas.
@@ -252,21 +205,16 @@ def converter_data_japonesa(valor):
 
     texto = str(valor).strip()
 
-    _debug_log("CONVERSOR_DATA", f"Entrada: '{texto}'")
-
     if not texto or _campo_nao_identificado(texto):
-        _debug_log("CONVERSOR_DATA", "Texto vazio ou não identificado")
         return None
 
     texto = _converter_numeros_japoneses(texto)
-    _debug_log("CONVERSOR_DATA", f"Após converter números: '{texto}'")
 
     match = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", texto)
     if match:
         resultado = _formatar_data_iso(
             match.group(1), match.group(2), match.group(3)
         )
-        _debug_log("CONVERSOR_DATA", f"Match formato ISO: {resultado}")
         return resultado
 
     match = re.fullmatch(
@@ -277,7 +225,6 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             match.group(1), match.group(2), match.group(3)
         )
-        _debug_log("CONVERSOR_DATA", f"Match formato com separadores: {resultado}")
         return resultado
 
     match = re.fullmatch(
@@ -288,7 +235,6 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             match.group(3), match.group(2), match.group(1)
         )
-        _debug_log("CONVERSOR_DATA", f"Match formato invertido: {resultado}")
         return resultado
 
     # REMOVIDO: Este match aceita "2013年6月2日" sem verificar era
@@ -301,28 +247,20 @@ def converter_data_japonesa(valor):
     #     resultado = _formatar_data_iso(
     #         match.group(1), match.group(2), match.group(3)
     #     )
-    #     _debug_log("CONVERSOR_DATA", f"Match formato japonês sem era: {resultado}")
     #     return resultado
 
     if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
-        _debug_log("CONVERSOR_DATA", "Detectada era Reiwa")
         ano = extrair_ano_reiwa_regex(texto)
-        _debug_log("CONVERSOR_DATA", f"Ano Reiwa extraído: {ano}")
         if ano is None:
             return None
 
         mes_match = re.search(r"(\d{1,2})\s*月", texto)
         dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
-        _debug_log("CONVERSOR_DATA", f"Mês extraído: {mes_match.group(1) if mes_match else 'NÃO ENCONTRADO'}")
-        _debug_log("CONVERSOR_DATA", f"Dia extraído: {dia_match.group(1) if dia_match else 'NÃO ENCONTRADO'}")
-
         if mes_match and dia_match:
             resultado = _formatar_data_iso(
                 ano, mes_match.group(1), dia_match.group(1)
             )
-            _debug_log("CONVERSOR_DATA", f"Resultado Reiwa: {resultado}")
-            _debug_log("CONVERSOR_DATA", f"Compondo data: ano={ano}, mes={mes_match.group(1)}, dia={dia_match.group(1)}")
             return resultado
 
         match_alt = re.search(
@@ -335,7 +273,6 @@ def converter_data_japonesa(valor):
             resultado = _formatar_data_iso(
                 ano, match_alt.group(1), match_alt.group(2)
             )
-            _debug_log("CONVERSOR_DATA", f"Resultado Reiwa alt: {resultado}")
             return resultado
 
         return None
@@ -347,18 +284,13 @@ def converter_data_japonesa(valor):
         ("明治", r"(?:明治|M)\s*([0-9]+)", calcular_ano_meiji),
     ]:
         if era in texto or re.search(regex, texto, re.I):
-            _debug_log("CONVERSOR_DATA", f"Detectada era {era}")
             match_ano = re.search(regex, texto, re.I)
             if not match_ano:
                 return None
 
             ano = conversor(match_ano.group(1))
-            _debug_log("CONVERSOR_DATA", f"Ano {era} extraído: {ano}")
             mes_match = re.search(r"(\d{1,2})\s*月", texto)
             dia_match = re.search(r"(\d{1,2})\s*日", texto)
-
-            _debug_log("CONVERSOR_DATA", f"Mês extraído: {mes_match.group(1) if mes_match else 'NÃO ENCONTRADO'}")
-            _debug_log("CONVERSOR_DATA", f"Dia extraído: {dia_match.group(1) if dia_match else 'NÃO ENCONTRADO'}")
 
             if not mes_match or not dia_match:
                 return None
@@ -366,8 +298,6 @@ def converter_data_japonesa(valor):
             resultado = _formatar_data_iso(
                 ano, mes_match.group(1), dia_match.group(1)
             )
-            _debug_log("CONVERSOR_DATA", f"Resultado {era}: {resultado}")
-            _debug_log("CONVERSOR_DATA", f"Compondo data: ano={ano}, mes={mes_match.group(1)}, dia={dia_match.group(1)}")
             return resultado
 
     numeros = re.sub(r"\D", "", texto)
@@ -375,10 +305,7 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             numeros[:4], numeros[4:6], numeros[6:8]
         )
-        _debug_log("CONVERSOR_DATA", f"Match apenas números: {resultado}")
         return resultado
-
-    _debug_log("CONVERSOR_DATA", "Nenhum match encontrado")
     return None
 
 
@@ -1148,22 +1075,16 @@ def _converter_datas_dados(dados):
     for campo in ["shaken_vencimento", "data_registro"]:
         valor = dados.get(campo)
 
-        _debug_log("CONVERSOR_DADOS", f"{campo} original do OCR: '{valor}'")
-
         if _campo_nao_identificado(valor):
             dados[campo] = "VERIFICAR"
             continue
 
         convertido = converter_data_japonesa(valor)
 
-        _debug_log("CONVERSOR_DADOS", f"{campo} convertido: '{convertido}'")
-
         if convertido and validar_data_convertida(convertido):
             dados[campo] = convertido
-            _debug_log("CONVERSOR_DADOS", f"{campo} FINAL (antes de tabela): '{convertido}'")
         else:
             dados[campo] = "VERIFICAR"
-            _debug_log("CONVERSOR_DADOS", f"{campo} FINAL (antes de tabela): 'VERIFICAR'")
 
     return dados
 
@@ -1178,14 +1099,11 @@ def _dados_precisam_retry(dados):
 
     # Só precisa retry se algum campo for VERIFICAR ou inválido
     if dados.get("shaken_vencimento") == "VERIFICAR" or not validar_data_convertida(dados.get("shaken_vencimento", "")):
-        _debug_log("RETRY_CHECK", "shaken_vencimento precisa de retry")
         return True
 
     if dados.get("data_registro") == "VERIFICAR" or not validar_data_convertida(dados.get("data_registro", "")):
-        _debug_log("RETRY_CHECK", "data_registro precisa de retry")
         return True
 
-    _debug_log("RETRY_CHECK", "Dados válidos, não precisa de retry")
     return False
 
 
@@ -1193,28 +1111,16 @@ def _mesclar_retry(original, retry):
     if not isinstance(retry, dict):
         return original
 
-    _debug_log("MESCLAR_RETRY", "Iniciando mesclagem de retry")
-
     # Só sobrescreve se o original for VERIFICAR ou inválido
     if original.get("shaken_vencimento") == "VERIFICAR" or not validar_data_convertida(original.get("shaken_vencimento", "")):
         shaken_retry = converter_data_japonesa(retry.get("shaken_vencimento", ""))
         if shaken_retry and validar_data_convertida(shaken_retry):
             original["shaken_vencimento"] = shaken_retry
-            _debug_log("MESCLAR_RETRY", f"Sobrescreveu shaken_vencimento com: {shaken_retry}")
-        else:
-            _debug_log("MESCLAR_RETRY", "Manteve shaken_vencimento original (retry invalido)")
-    else:
-        _debug_log("MESCLAR_RETRY", f"Manteve shaken_vencimento original: {original.get('shaken_vencimento')}")
 
     if original.get("data_registro") == "VERIFICAR" or not validar_data_convertida(original.get("data_registro", "")):
         registro_retry = converter_data_japonesa(retry.get("data_registro", ""))
         if registro_retry and validar_data_convertida(registro_retry):
             original["data_registro"] = registro_retry
-            _debug_log("MESCLAR_RETRY", f"Sobrescreveu data_registro com: {registro_retry}")
-        else:
-            _debug_log("MESCLAR_RETRY", "Manteve data_registro original (retry invalido)")
-    else:
-        _debug_log("MESCLAR_RETRY", f"Manteve data_registro original: {original.get('data_registro')}")
 
     return original
 
@@ -1280,30 +1186,21 @@ def _carregar_crop_estatico(nome_arquivo):
     """Carrega um crop estático do projeto e converte para base64."""
     caminho = os.path.join(CROPS_DIR, nome_arquivo)
     
-    _debug_log("CROP_LOAD", f"Tentando carregar crop estático: {caminho}")
-    
     if not os.path.exists(caminho):
-        _debug_log("CROP_LOAD", f"Arquivo não encontrado: {caminho}")
         return None
     
     try:
         with open(caminho, "rb") as img_file:
             imagem_bytes = img_file.read()
             imagem_b64 = base64.b64encode(imagem_bytes).decode("utf-8")
-            tamanho = len(imagem_bytes)
-            _debug_log("CROP_LOAD", f"Crop estático carregado: {nome_arquivo} ({tamanho} bytes)")
             return imagem_b64
     except Exception as e:
-        _debug_log("CROP_LOAD", f"Erro ao carregar crop estático: {e}")
         return None
 
 def _ocr_data_isolada(campo, imagem_documento_b64, crop_guia_b64, prompt):
     """Executa OCR isolado para um campo específico usando crop como guia visual."""
     if crop_guia_b64 is None:
-        _debug_log("OCR_ISOLADO", f"Sem crop guia para {campo}, usando VERIFICAR")
         return "VERIFICAR"
-    
-    _debug_log("OCR_ISOLADO", f"Iniciando OCR isolado para campo: {campo}")
     
     try:
         resposta = client.chat.completions.create(
@@ -1340,16 +1237,13 @@ def _ocr_data_isolada(campo, imagem_documento_b64, crop_guia_b64, prompt):
         )
         
         texto_bruto = resposta.choices[0].message.content
-        _debug_log("OCR_ISOLADO", f"Texto bruto retornado para {campo}: '{texto_bruto}'")
         
         # Remove aspas e espaços extras
         texto_limpo = texto_bruto.strip().strip('"').strip("'")
-        _debug_log("OCR_ISOLADO", f"Texto limpo para {campo}: '{texto_limpo}'")
         
         return texto_limpo
         
     except Exception as e:
-        _debug_log("OCR_ISOLADO", f"Erro no OCR isolado para {campo}: {e}")
         return "VERIFICAR"
 
 def extrair_dados_do_documento(f):
@@ -1363,10 +1257,6 @@ def extrair_dados_do_documento(f):
             f"{getattr(f, 'name', 'arquivo')}"
         )
 
-        # Inicializa storage de debug no session_state
-        if "debug_ocr_logs" not in st.session_state:
-            st.session_state.debug_ocr_logs = []
-
         imagem_b64 = _preparar_imagem(f)
 
         # OCR da imagem inteira para campos gerais (exceto datas)
@@ -1374,13 +1264,6 @@ def extrair_dados_do_documento(f):
             imagem_b64,
             SYSTEM_PROMPT,
         )
-
-        # Armazena JSON bruto no session_state
-        st.session_state.debug_ocr_logs.append({
-            "tipo": "JSON_BRUTO",
-            "mensagem": f"Arquivo: {getattr(f, 'name', 'arquivo')}",
-            "dados": dados_brutos
-        })
 
         dados = _normalizar_dados_ocr(dados_brutos)
 
@@ -1390,29 +1273,20 @@ def extrair_dados_do_documento(f):
 
         # Se crops estão disponíveis, usa OCR com guia visual
         if crop_data_registro_b64 or crop_shaken_vencimento_b64:
-            _debug_log("OCR_ISOLADO", "Usando crops estáticos como guia visual")
-            
             # Refaz OCR com crops como guia para datas
             if crop_data_registro_b64:
-                _debug_log("OCR_ISOLADO", "Enviando guia visual para data_registro")
                 data_registro_bruta = _ocr_data_isolada("data_registro", imagem_b64, crop_data_registro_b64, DATA_REGISTRO_PROMPT)
                 if data_registro_bruta != "VERIFICAR":
                     dados["data_registro"] = data_registro_bruta
-                    _debug_log("OCR_ISOLADO", f"data_registro atualizada com guia: '{data_registro_bruta}'")
             
             if crop_shaken_vencimento_b64:
-                _debug_log("OCR_ISOLADO", "Enviando guia visual para shaken_vencimento")
                 shaken_vencimento_bruto = _ocr_data_isolada("shaken_vencimento", imagem_b64, crop_shaken_vencimento_b64, SHAKEN_VENCIMENTO_PROMPT)
                 if shaken_vencimento_bruto != "VERIFICAR":
                     dados["shaken_vencimento"] = shaken_vencimento_bruto
-                    _debug_log("OCR_ISOLADO", f"shaken_vencimento atualizado com guia: '{shaken_vencimento_bruto}'")
-        else:
-            _debug_log("OCR_ISOLADO", "Crops estáticos não disponíveis, usando OCR da imagem inteira")
 
         # Conversão das datas
         dados = _converter_datas_dados(dados)
 
-        # Não executa retry para datas pois já vieram de crops isolados
         print("[OCR] Processamento concluído.")
         return dados
 
