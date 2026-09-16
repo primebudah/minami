@@ -123,6 +123,7 @@ def traduzir_modelo(texto):
         "DBA-L750S": "Move Conte", "L750S": "Move Conte", "DBA-L760S": "Move Conte", "L760S": "Move Conte",
         "ABA-S321G": "Tanto", "S321G": "Tanto", "ABA-S321E": "Tanto", "S321E": "Tanto", "ABA-S321F": "Tanto", "S321F": "Tanto",
         "DBA-LB800S": "Copen", "LB800S": "Copen", "DBA-LB900S": "Copen", "LB900S": "Copen",
+        "S200P": "Sonica", "CBA-S200P": "Sonica",
         
         # Mazda
         "DBA-DK5AW": "Demio", "DK5AW": "Demio", "DBA-DK3AW": "Demio", "DK3AW": "Demio",
