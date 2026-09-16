@@ -1,55 +1,5422 @@
 {
-  "database_name": "Japan Vehicle Display Model Database",
-  "version": "0.1-curated",
-  "display_rule": "Show only manufacturer + commercial model name; never display model_code in the UI.",
+  "database_name": "Japan Vehicle Commercial Model Dictionary",
+  "version": "1.0-expanded-curated",
+  "purpose": "Resolve Japanese vehicle type/chassis codes to display_name only.",
+  "ui_rule": "Display only display_name; never show model_codes in the user-facing table.",
+  "record_count": 178,
   "records": [
     {
-      "manufacturer": "DAIHATSU",
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Prius",
+      "model_name_jp": null,
       "model_codes": [
-        "GD-S200P",
-        "S200P"
+        "NHW10",
+        "NHW11",
+        "NHW20",
+        "ZVW30",
+        "ZVW35",
+        "ZVW40",
+        "ZVW41",
+        "ZVW50",
+        "ZVW51",
+        "ZVW52",
+        "ZVW55",
+        "MXWH60",
+        "MXWH65"
       ],
-      "display_name": "Daihatsu Hijet Truck"
+      "display_name": "Toyota Prius",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Aqua",
+      "model_name_jp": null,
+      "model_codes": [
+        "NHP10",
+        "MXPK10",
+        "MXPK11",
+        "MXPK15",
+        "MXPK16"
+      ],
+      "display_name": "Toyota Aqua",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Vitz/Yaris",
+      "model_name_jp": null,
+      "model_codes": [
+        "SCP10",
+        "NCP10",
+        "NCP13",
+        "KSP90",
+        "SCP90",
+        "NCP91",
+        "NCP95",
+        "KSP130",
+        "NSP130",
+        "NSP135",
+        "NHP130",
+        "MXPA10",
+        "MXPA15"
+      ],
+      "display_name": "Toyota Vitz/Yaris",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Corolla",
+      "model_name_jp": null,
+      "model_codes": [
+        "AE100",
+        "AE101",
+        "AE104",
+        "AE110",
+        "AE111",
+        "NZE120",
+        "ZZE120",
+        "NZE121",
+        "NZE124",
+        "NZE141",
+        "ZRE142",
+        "NZE161",
+        "NRE160",
+        "ZRE162",
+        "ZWE211",
+        "ZRE212"
+      ],
+      "display_name": "Toyota Corolla",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Corolla Fielder",
+      "model_name_jp": null,
+      "model_codes": [
+        "NZE121G",
+        "NZE124G",
+        "ZZE122G",
+        "ZZE123G",
+        "NZE141G",
+        "ZRE142G",
+        "NZE161G",
+        "NRE161G",
+        "ZRE162G",
+        "NKE165G"
+      ],
+      "display_name": "Toyota Corolla Fielder",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Corolla Axio",
+      "model_name_jp": null,
+      "model_codes": [
+        "NZE141",
+        "NZE144",
+        "NRE160",
+        "NRE161",
+        "NZE164",
+        "NKE165"
+      ],
+      "display_name": "Toyota Corolla Axio",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Alphard",
+      "model_name_jp": null,
+      "model_codes": [
+        "ANH10W",
+        "MNH10W",
+        "ANH15W",
+        "MNH15W",
+        "ANH20W",
+        "GGH20W",
+        "ANH25W",
+        "GGH25W",
+        "AGH30W",
+        "AGH35W",
+        "GGH30W",
+        "AYH30W"
+      ],
+      "display_name": "Toyota Alphard",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Vellfire",
+      "model_name_jp": null,
+      "model_codes": [
+        "ANH20W",
+        "GGH20W",
+        "ANH25W",
+        "GGH25W",
+        "AGH30W",
+        "AGH35W",
+        "GGH30W",
+        "AYH30W"
+      ],
+      "display_name": "Toyota Vellfire",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Voxy",
+      "model_name_jp": null,
+      "model_codes": [
+        "AZR60G",
+        "AZR65G",
+        "ZRR70G",
+        "ZRR75G",
+        "ZRR80G",
+        "ZRR85G",
+        "MZRA90W",
+        "MZRA95W"
+      ],
+      "display_name": "Toyota Voxy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Noah",
+      "model_name_jp": null,
+      "model_codes": [
+        "AZR60G",
+        "AZR65G",
+        "ZRR70G",
+        "ZRR75G",
+        "ZRR80G",
+        "ZRR85G",
+        "MZRA90W",
+        "MZRA95W"
+      ],
+      "display_name": "Toyota Noah",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Esquire",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZRR80G",
+        "ZRR85G"
+      ],
+      "display_name": "Toyota Esquire",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Sienta",
+      "model_name_jp": null,
+      "model_codes": [
+        "NCP81G",
+        "NCP85G",
+        "NSP170G",
+        "NHP170G",
+        "NCP175G",
+        "MXPL10G",
+        "MXPL15G",
+        "MXPL12G"
+      ],
+      "display_name": "Toyota Sienta",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Wish",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZNE10G",
+        "ZNE14G",
+        "ANE10G",
+        "ANE11W",
+        "ZGE20G",
+        "ZGE21G",
+        "ZGE22W"
+      ],
+      "display_name": "Toyota Wish",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Probox",
+      "model_name_jp": null,
+      "model_codes": [
+        "NCP50V",
+        "NCP51V",
+        "NCP52V",
+        "NCP55V",
+        "NCP58G",
+        "NCP160V",
+        "NCP165V",
+        "NHP160V"
+      ],
+      "display_name": "Toyota Probox",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Succeed",
+      "model_name_jp": null,
+      "model_codes": [
+        "NCP51V",
+        "NCP55V",
+        "NCP160V",
+        "NCP165V"
+      ],
+      "display_name": "Toyota Succeed",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Hiace",
+      "model_name_jp": null,
+      "model_codes": [
+        "RZH100G",
+        "RZH101G",
+        "RZH110G",
+        "KZH100G",
+        "KZH106G",
+        "KZH110G",
+        "TRH200V",
+        "TRH200K",
+        "KDH200V",
+        "KDH201V",
+        "KDH206V",
+        "GDH201V",
+        "GDH206V"
+      ],
+      "display_name": "Toyota Hiace",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota TownAce",
+      "model_name_jp": null,
+      "model_codes": [
+        "KR42V",
+        "CR42V",
+        "S402M",
+        "S412M",
+        "S403M",
+        "S413M"
+      ],
+      "display_name": "Toyota TownAce",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota LiteAce",
+      "model_name_jp": null,
+      "model_codes": [
+        "KR42V",
+        "CR42V",
+        "S402M",
+        "S412M"
+      ],
+      "display_name": "Toyota LiteAce",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Harrier",
+      "model_name_jp": null,
+      "model_codes": [
+        "ACU10W",
+        "MCU10W",
+        "ACU15W",
+        "MCU15W",
+        "ACU30W",
+        "MCU30W",
+        "GSU30W",
+        "ZSU60W",
+        "ZSU65W",
+        "ASU60W",
+        "ASU65W",
+        "MXUA80",
+        "AXUH80",
+        "AXUH85"
+      ],
+      "display_name": "Toyota Harrier",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota RAV4",
+      "model_name_jp": null,
+      "model_codes": [
+        "SXA10C",
+        "SXA10G",
+        "SXA11G",
+        "SXA15G",
+        "SXA16G",
+        "ACA20W",
+        "ACA21W",
+        "ACA31W",
+        "ACA36W",
+        "MXAA52",
+        "MXAA54",
+        "AXAH52",
+        "AXAH54"
+      ],
+      "display_name": "Toyota RAV4",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Land Cruiser Prado",
+      "model_name_jp": null,
+      "model_codes": [
+        "RZJ90W",
+        "KZJ95W",
+        "VZJ95W",
+        "TRJ120W",
+        "GRJ120W",
+        "TRJ150W",
+        "GRJ150W",
+        "GDJ150W",
+        "GDJ151W"
+      ],
+      "display_name": "Toyota Land Cruiser Prado",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Mark X",
+      "model_name_jp": null,
+      "model_codes": [
+        "GRX120",
+        "GRX121",
+        "GRX125",
+        "GRX130",
+        "GRX133",
+        "GRX135"
+      ],
+      "display_name": "Toyota Mark X",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Estima",
+      "model_name_jp": null,
+      "model_codes": [
+        "TCR10W",
+        "TCR11W",
+        "TCR20W",
+        "TCR21W",
+        "ACR30W",
+        "ACR40W",
+        "ACR50W",
+        "GSR50W",
+        "GSR55W"
+      ],
+      "display_name": "Toyota Estima",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Passo",
+      "model_name_jp": null,
+      "model_codes": [
+        "KGC10",
+        "KGC15",
+        "QNC10",
+        "KGC30",
+        "KGC35",
+        "NGC30",
+        "M700A",
+        "M710A"
+      ],
+      "display_name": "Toyota Passo",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Roomy",
+      "model_name_jp": null,
+      "model_codes": [
+        "M900A",
+        "M910A"
+      ],
+      "display_name": "Toyota Roomy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Tank",
+      "model_name_jp": null,
+      "model_codes": [
+        "M900A",
+        "M910A"
+      ],
+      "display_name": "Toyota Tank",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota bB",
+      "model_name_jp": null,
+      "model_codes": [
+        "NCP30",
+        "NCP31",
+        "NCP34",
+        "QNC20",
+        "QNC21",
+        "QNC25"
+      ],
+      "display_name": "Toyota bB",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Ractis",
+      "model_name_jp": null,
+      "model_codes": [
+        "NCP100",
+        "NCP105",
+        "SCP100",
+        "NCP120",
+        "NCP125",
+        "NSP120"
+      ],
+      "display_name": "Toyota Ractis",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Vanguard",
+      "model_name_jp": null,
+      "model_codes": [
+        "ACA33W",
+        "GSA33W"
+      ],
+      "display_name": "Toyota Vanguard",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota FJ Cruiser",
+      "model_name_jp": null,
+      "model_codes": [
+        "GSJ15W"
+      ],
+      "display_name": "Toyota FJ Cruiser",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota 86",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZN6",
+        "ZN8"
+      ],
+      "display_name": "Toyota 86",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota GR86",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZN8"
+      ],
+      "display_name": "Toyota GR86",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota JZX",
+      "model_name_jp": null,
+      "model_codes": [
+        "JZX90",
+        "JZX100",
+        "JZX110"
+      ],
+      "display_name": "Toyota JZX",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Pixis Epoch",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA300A",
+        "LA310A",
+        "LA350A",
+        "LA360A"
+      ],
+      "display_name": "Toyota Pixis Epoch",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Pixis Space",
+      "model_name_jp": null,
+      "model_codes": [
+        "L575A",
+        "L585A"
+      ],
+      "display_name": "Toyota Pixis Space",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "TOYOTA",
+      "model_name": "Toyota Pixis Mega",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA700A",
+        "LA710A"
+      ],
+      "display_name": "Toyota Pixis Mega",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda N-BOX",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JF1",
+        "DBA-JF2",
+        "JF1",
+        "JF2",
+        "6BA-JF3",
+        "6BA-JF4",
+        "JF3",
+        "JF4"
+      ],
+      "display_name": "Honda N-BOX",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda N-BOX Custom",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JF1",
+        "DBA-JF2",
+        "JF1",
+        "JF2",
+        "6BA-JF3",
+        "6BA-JF4",
+        "JF3",
+        "JF4"
+      ],
+      "display_name": "Honda N-BOX Custom",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda N-BOX+",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JF1",
+        "DBA-JF2"
+      ],
+      "display_name": "Honda N-BOX+",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda N-ONE",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JG1",
+        "DBA-JG2",
+        "JG1",
+        "JG2",
+        "6BA-JG3",
+        "6BA-JG4",
+        "JG3",
+        "JG4"
+      ],
+      "display_name": "Honda N-ONE",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda N-WGN",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JH1",
+        "DBA-JH2",
+        "JH1",
+        "JH2",
+        "6BA-JH3",
+        "6BA-JH4",
+        "JH3",
+        "JH4"
+      ],
+      "display_name": "Honda N-WGN",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda S660",
+      "model_name_jp": null,
+      "model_codes": [
+        "DBA-JW5",
+        "JW5"
+      ],
+      "display_name": "Honda S660",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Life",
+      "model_name_jp": null,
+      "model_codes": [
+        "JB1",
+        "JB2",
+        "JB5",
+        "JB6",
+        "JC1",
+        "JC2"
+      ],
+      "display_name": "Honda Life",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda That's",
+      "model_name_jp": null,
+      "model_codes": [
+        "JD1",
+        "JD2"
+      ],
+      "display_name": "Honda That's",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Zest",
+      "model_name_jp": null,
+      "model_codes": [
+        "JE1",
+        "JE2"
+      ],
+      "display_name": "Honda Zest",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Acty Truck",
+      "model_name_jp": null,
+      "model_codes": [
+        "HA1",
+        "HA2",
+        "HA3",
+        "HA4",
+        "HA5",
+        "HA6",
+        "HA7",
+        "HA8",
+        "HA9"
+      ],
+      "display_name": "Honda Acty Truck",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Acty Van",
+      "model_name_jp": null,
+      "model_codes": [
+        "HH1",
+        "HH2",
+        "HH3",
+        "HH4"
+      ],
+      "display_name": "Honda Acty Van",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Vamos",
+      "model_name_jp": null,
+      "model_codes": [
+        "HM1",
+        "HM2"
+      ],
+      "display_name": "Honda Vamos",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Fit",
+      "model_name_jp": null,
+      "model_codes": [
+        "GD1",
+        "GD2",
+        "GD3",
+        "GD4",
+        "GE6",
+        "GE7",
+        "GE8",
+        "GE9",
+        "GP1",
+        "GP4",
+        "GK3",
+        "GK4",
+        "GK5",
+        "GK6",
+        "GR1",
+        "GR2",
+        "GR3",
+        "GR4"
+      ],
+      "display_name": "Honda Fit",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Freed",
+      "model_name_jp": null,
+      "model_codes": [
+        "GB3",
+        "GB4",
+        "GB5",
+        "GB6",
+        "GP3",
+        "GP7",
+        "GP8"
+      ],
+      "display_name": "Honda Freed",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Stepwgn",
+      "model_name_jp": null,
+      "model_codes": [
+        "RF1",
+        "RF2",
+        "RF3",
+        "RF4",
+        "RF5",
+        "RF6",
+        "RF7",
+        "RF8",
+        "RK1",
+        "RK2",
+        "RK3",
+        "RK4",
+        "RK5",
+        "RK6",
+        "RP1",
+        "RP2",
+        "RP3",
+        "RP4",
+        "RP5",
+        "RP6"
+      ],
+      "display_name": "Honda Stepwgn",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Vezel",
+      "model_name_jp": null,
+      "model_codes": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RV3",
+        "RV4",
+        "RV5",
+        "RV6"
+      ],
+      "display_name": "Honda Vezel",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Stream",
+      "model_name_jp": null,
+      "model_codes": [
+        "RN1",
+        "RN2",
+        "RN3",
+        "RN4",
+        "RN5",
+        "RN6",
+        "RN7",
+        "RN8"
+      ],
+      "display_name": "Honda Stream",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Odyssey",
+      "model_name_jp": null,
+      "model_codes": [
+        "RA6",
+        "RA7",
+        "RA8",
+        "RA9",
+        "RB1",
+        "RB2",
+        "RB3",
+        "RB4",
+        "RC1",
+        "RC2"
+      ],
+      "display_name": "Honda Odyssey",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Shuttle",
+      "model_name_jp": null,
+      "model_codes": [
+        "GK8",
+        "GP7",
+        "GP8"
+      ],
+      "display_name": "Honda Shuttle",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Grace",
+      "model_name_jp": null,
+      "model_codes": [
+        "GM4",
+        "GM5",
+        "GM6",
+        "GM9"
+      ],
+      "display_name": "Honda Grace",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Civic",
+      "model_name_jp": null,
+      "model_codes": [
+        "EK2",
+        "EK3",
+        "EK4",
+        "EU1",
+        "EU2",
+        "EU3",
+        "EU4",
+        "FD1",
+        "FD2",
+        "FK7",
+        "FK8",
+        "FC1",
+        "FC2",
+        "FC3",
+        "FC4"
+      ],
+      "display_name": "Honda Civic",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Accord",
+      "model_name_jp": null,
+      "model_codes": [
+        "CF3",
+        "CF4",
+        "CF5",
+        "CL7",
+        "CL8",
+        "CL9",
+        "CU1",
+        "CU2",
+        "CU3",
+        "CU4"
+      ],
+      "display_name": "Honda Accord",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Legend",
+      "model_name_jp": null,
+      "model_codes": [
+        "KB1",
+        "KB2",
+        "KC2"
+      ],
+      "display_name": "Honda Legend",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda CR-Z",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZF1",
+        "ZF2"
+      ],
+      "display_name": "Honda CR-Z",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Insight",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZE1",
+        "ZE2"
+      ],
+      "display_name": "Honda Insight",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Airwave",
+      "model_name_jp": null,
+      "model_codes": [
+        "GJ1"
+      ],
+      "display_name": "Honda Airwave",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Mobilio",
+      "model_name_jp": null,
+      "model_codes": [
+        "GB1",
+        "GB2"
+      ],
+      "display_name": "Honda Mobilio",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HONDA",
+      "model_name": "Honda Spike",
+      "model_name_jp": null,
+      "model_codes": [
+        "GK1",
+        "GK2"
+      ],
+      "display_name": "Honda Spike",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     },
     {
       "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Wagon R",
+      "model_name_jp": null,
       "model_codes": [
-        "DBA-MH34S",
-        "MH34S"
+        "CT21S",
+        "CT51S",
+        "MC11S",
+        "MC12S",
+        "MC21S",
+        "MC22S",
+        "MH21S",
+        "MH22S",
+        "MH23S",
+        "MH34S",
+        "MH35S",
+        "MH44S",
+        "MH55S"
       ],
-      "display_name": "Suzuki Wagon R"
+      "display_name": "Suzuki Wagon R",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     },
     {
       "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Wagon R Smile",
+      "model_name_jp": null,
       "model_codes": [
-        "EBD-DA64V",
-        "DA64V"
+        "MX81S",
+        "MX91S"
       ],
-      "display_name": "Suzuki Every"
+      "display_name": "Suzuki Wagon R Smile",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Alto",
+      "model_name_jp": null,
+      "model_codes": [
+        "HA11S",
+        "HA12S",
+        "HA22S",
+        "HA23S",
+        "HA24S",
+        "HA25S",
+        "HA35S",
+        "HA36S",
+        "HA37S"
+      ],
+      "display_name": "Suzuki Alto",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Alto Lapin",
+      "model_name_jp": null,
+      "model_codes": [
+        "HE21S",
+        "HE22S",
+        "HE33S"
+      ],
+      "display_name": "Suzuki Alto Lapin",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Every",
+      "model_name_jp": null,
+      "model_codes": [
+        "DE51V",
+        "DF51V",
+        "DA52V",
+        "DA62V",
+        "DA64V",
+        "DA17V"
+      ],
+      "display_name": "Suzuki Every",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Every Wagon",
+      "model_name_jp": null,
+      "model_codes": [
+        "DA52W",
+        "DA62W",
+        "DA64W",
+        "DA17W"
+      ],
+      "display_name": "Suzuki Every Wagon",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Carry",
+      "model_name_jp": null,
+      "model_codes": [
+        "DC51T",
+        "DD51T",
+        "DA52T",
+        "DA63T",
+        "DA65T",
+        "DA16T"
+      ],
+      "display_name": "Suzuki Carry",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Jimny",
+      "model_name_jp": null,
+      "model_codes": [
+        "JA11",
+        "JA12W",
+        "JA22W",
+        "JB23W",
+        "JB64W",
+        "JB74W"
+      ],
+      "display_name": "Suzuki Jimny",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Jimny Sierra",
+      "model_name_jp": null,
+      "model_codes": [
+        "JB23W",
+        "JB43W",
+        "JB74W"
+      ],
+      "display_name": "Suzuki Jimny Sierra",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Spacia",
+      "model_name_jp": null,
+      "model_codes": [
+        "MK32S",
+        "MK42S",
+        "MK53S"
+      ],
+      "display_name": "Suzuki Spacia",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Spacia Custom",
+      "model_name_jp": null,
+      "model_codes": [
+        "MK32S",
+        "MK42S",
+        "MK53S"
+      ],
+      "display_name": "Suzuki Spacia Custom",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Hustler",
+      "model_name_jp": null,
+      "model_codes": [
+        "MR31S",
+        "MR41S",
+        "MR52S",
+        "MR92S"
+      ],
+      "display_name": "Suzuki Hustler",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Kei",
+      "model_name_jp": null,
+      "model_codes": [
+        "HN11S",
+        "HN12S",
+        "HN21S",
+        "HN22S"
+      ],
+      "display_name": "Suzuki Kei",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki MR Wagon",
+      "model_name_jp": null,
+      "model_codes": [
+        "MF21S",
+        "MF22S",
+        "MF33S"
+      ],
+      "display_name": "Suzuki MR Wagon",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Palette",
+      "model_name_jp": null,
+      "model_codes": [
+        "MK21S"
+      ],
+      "display_name": "Suzuki Palette",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Solio",
+      "model_name_jp": null,
+      "model_codes": [
+        "MA15S",
+        "MA26S",
+        "MA36S",
+        "MA46S",
+        "MA37S",
+        "MA47S"
+      ],
+      "display_name": "Suzuki Solio",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Swift",
+      "model_name_jp": null,
+      "model_codes": [
+        "HT51S",
+        "ZC11S",
+        "ZD11S",
+        "ZC21S",
+        "ZD21S",
+        "ZC31S",
+        "ZC71S",
+        "ZC72S",
+        "ZD72S",
+        "ZC83S",
+        "ZD83S",
+        "ZC53S",
+        "ZC13S"
+      ],
+      "display_name": "Suzuki Swift",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Escudo",
+      "model_name_jp": null,
+      "model_codes": [
+        "TA01W",
+        "TA02W",
+        "TD01W",
+        "TD02W",
+        "TD54W",
+        "TD94W",
+        "TDA4W",
+        "YEA1S"
+      ],
+      "display_name": "Suzuki Escudo",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Every Landy",
+      "model_name_jp": null,
+      "model_codes": [
+        "DA32W"
+      ],
+      "display_name": "Suzuki Every Landy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Landie",
+      "model_name_jp": null,
+      "model_codes": [
+        "JB23W"
+      ],
+      "display_name": "Suzuki Landie",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_name": "Suzuki Chevrolet MW",
+      "model_name_jp": null,
+      "model_codes": [
+        "ME34S",
+        "ME64S"
+      ],
+      "display_name": "Suzuki Chevrolet MW",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     },
     {
       "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Hijet Truck",
+      "model_name_jp": null,
       "model_codes": [
-        "ABA-S321G",
-        "S321G"
+        "S80P",
+        "S81P",
+        "S100P",
+        "S110P",
+        "S200P",
+        "S201P",
+        "S500P",
+        "S510P"
       ],
-      "display_name": "Daihatsu Atrai"
+      "display_name": "Daihatsu Hijet Truck",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Hijet Cargo",
+      "model_name_jp": null,
+      "model_codes": [
+        "S320V",
+        "S321V",
+        "S330V",
+        "S331V",
+        "S700V",
+        "S710V"
+      ],
+      "display_name": "Daihatsu Hijet Cargo",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Atrai",
+      "model_name_jp": null,
+      "model_codes": [
+        "S220G",
+        "S230G",
+        "S320G",
+        "S330G",
+        "S321G",
+        "S331G",
+        "S700W",
+        "S710W"
+      ],
+      "display_name": "Daihatsu Atrai",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Mira",
+      "model_name_jp": null,
+      "model_codes": [
+        "L200S",
+        "L210S",
+        "L500S",
+        "L510S",
+        "L700S",
+        "L710S",
+        "L250S",
+        "L260S",
+        "L275S",
+        "L285S"
+      ],
+      "display_name": "Daihatsu Mira",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Mira e:S",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA300S",
+        "LA310S",
+        "LA350S",
+        "LA360S"
+      ],
+      "display_name": "Daihatsu Mira e:S",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Mira Cocoa",
+      "model_name_jp": null,
+      "model_codes": [
+        "L675S",
+        "L685S"
+      ],
+      "display_name": "Daihatsu Mira Cocoa",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Mira Gino",
+      "model_name_jp": null,
+      "model_codes": [
+        "L700S",
+        "L710S",
+        "L650S",
+        "L660S"
+      ],
+      "display_name": "Daihatsu Mira Gino",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Tanto",
+      "model_name_jp": null,
+      "model_codes": [
+        "L350S",
+        "L360S",
+        "L375S",
+        "L385S",
+        "LA600S",
+        "LA610S",
+        "LA650S",
+        "LA660S"
+      ],
+      "display_name": "Daihatsu Tanto",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Move",
+      "model_name_jp": null,
+      "model_codes": [
+        "L600S",
+        "L610S",
+        "L900S",
+        "L910S",
+        "L150S",
+        "L160S",
+        "LA100S",
+        "LA110S",
+        "LA150S",
+        "LA160S"
+      ],
+      "display_name": "Daihatsu Move",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Move Canbus",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA800S",
+        "LA810S"
+      ],
+      "display_name": "Daihatsu Move Canbus",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Move Conte",
+      "model_name_jp": null,
+      "model_codes": [
+        "L575S",
+        "L585S"
+      ],
+      "display_name": "Daihatsu Move Conte",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Wake",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA700S",
+        "LA710S"
+      ],
+      "display_name": "Daihatsu Wake",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Cast",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA250S",
+        "LA260S"
+      ],
+      "display_name": "Daihatsu Cast",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Taft",
+      "model_name_jp": null,
+      "model_codes": [
+        "LA900S",
+        "LA910S"
+      ],
+      "display_name": "Daihatsu Taft",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Copen",
+      "model_name_jp": null,
+      "model_codes": [
+        "L880K",
+        "LA400K"
+      ],
+      "display_name": "Daihatsu Copen",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Rocky",
+      "model_name_jp": null,
+      "model_codes": [
+        "A200S",
+        "A210S"
+      ],
+      "display_name": "Daihatsu Rocky",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Be-go",
+      "model_name_jp": null,
+      "model_codes": [
+        "J200G",
+        "J210G"
+      ],
+      "display_name": "Daihatsu Be-go",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Thor",
+      "model_name_jp": null,
+      "model_codes": [
+        "M900S",
+        "M910S"
+      ],
+      "display_name": "Daihatsu Thor",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Coо",
+      "model_name_jp": null,
+      "model_codes": [
+        "M401S",
+        "M402S",
+        "M411S"
+      ],
+      "display_name": "Daihatsu Coо",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Boom",
+      "model_name_jp": null,
+      "model_codes": [
+        "M300S",
+        "M310S"
+      ],
+      "display_name": "Daihatsu Boom",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Esse",
+      "model_name_jp": null,
+      "model_codes": [
+        "L235S",
+        "L245S"
+      ],
+      "display_name": "Daihatsu Esse",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Max",
+      "model_name_jp": null,
+      "model_codes": [
+        "L950S",
+        "L960S"
+      ],
+      "display_name": "Daihatsu Max",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Sonica",
+      "model_name_jp": null,
+      "model_codes": [
+        "L405S",
+        "L415S"
+      ],
+      "display_name": "Daihatsu Sonica",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_name": "Daihatsu Terios Kid",
+      "model_name_jp": null,
+      "model_codes": [
+        "J111G",
+        "J131G"
+      ],
+      "display_name": "Daihatsu Terios Kid",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     },
     {
       "manufacturer": "NISSAN",
+      "model_name": "Nissan NV100 Clipper",
+      "model_name_jp": null,
       "model_codes": [
         "DR64V",
-        "DR64V型"
+        "DR17V"
       ],
-      "display_name": "Nissan NV100 Clipper"
+      "display_name": "Nissan NV100 Clipper",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     },
     {
-      "manufacturer": "SUZUKI",
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Clipper Truck",
+      "model_name_jp": null,
       "model_codes": [
-        "EBD-S321B",
-        "S321B"
+        "U71T",
+        "U72T",
+        "DR16T"
       ],
-      "display_name": "Suzuki Every"
+      "display_name": "Nissan Clipper Truck",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Dayz",
+      "model_name_jp": null,
+      "model_codes": [
+        "B21W",
+        "B44W",
+        "B45W",
+        "B46W",
+        "B47W",
+        "B48W"
+      ],
+      "display_name": "Nissan Dayz",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Dayz Roox",
+      "model_name_jp": null,
+      "model_codes": [
+        "B21A",
+        "B44A",
+        "B45A",
+        "B46A",
+        "B47A",
+        "B48A"
+      ],
+      "display_name": "Nissan Dayz Roox",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Roox",
+      "model_name_jp": null,
+      "model_codes": [
+        "ML21S",
+        "B44A",
+        "B45A",
+        "B46A",
+        "B47A",
+        "B48A"
+      ],
+      "display_name": "Nissan Roox",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Note",
+      "model_name_jp": null,
+      "model_codes": [
+        "E11",
+        "NE11",
+        "E12",
+        "NE12",
+        "E12改",
+        "E13",
+        "HE12",
+        "SNE12"
+      ],
+      "display_name": "Nissan Note",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Serena",
+      "model_name_jp": null,
+      "model_codes": [
+        "C24",
+        "NC24",
+        "CC25",
+        "NC25",
+        "C26",
+        "NC26",
+        "C27",
+        "GC27",
+        "GFC27",
+        "C28",
+        "FC28"
+      ],
+      "display_name": "Nissan Serena",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan X-Trail",
+      "model_name_jp": null,
+      "model_codes": [
+        "T30",
+        "NT30",
+        "T31",
+        "NT31",
+        "T32",
+        "NT32",
+        "T33",
+        "HT32"
+      ],
+      "display_name": "Nissan X-Trail",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Elgrand",
+      "model_name_jp": null,
+      "model_codes": [
+        "E50",
+        "NE51",
+        "ME51",
+        "E51",
+        "TE52",
+        "PE52",
+        "PNE52"
+      ],
+      "display_name": "Nissan Elgrand",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Caravan",
+      "model_name_jp": null,
+      "model_codes": [
+        "E25",
+        "E26",
+        "E24",
+        "VWE25",
+        "VWME25",
+        "CWGE25",
+        "VW6E26"
+      ],
+      "display_name": "Nissan Caravan",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan NV350 Caravan",
+      "model_name_jp": null,
+      "model_codes": [
+        "E26",
+        "VW6E26",
+        "CW8E26",
+        "KS2E26"
+      ],
+      "display_name": "Nissan NV350 Caravan",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Cube",
+      "model_name_jp": null,
+      "model_codes": [
+        "Z10",
+        "AZ10",
+        "Z12",
+        "NZ12",
+        "Z12改"
+      ],
+      "display_name": "Nissan Cube",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan March",
+      "model_name_jp": null,
+      "model_codes": [
+        "K11",
+        "AK11",
+        "K12",
+        "NK12",
+        "K13",
+        "NK13"
+      ],
+      "display_name": "Nissan March",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Juke",
+      "model_name_jp": null,
+      "model_codes": [
+        "F15",
+        "NF15",
+        "YF15"
+      ],
+      "display_name": "Nissan Juke",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Skyline",
+      "model_name_jp": null,
+      "model_codes": [
+        "V35",
+        "V36",
+        "V37",
+        "HV37"
+      ],
+      "display_name": "Nissan Skyline",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Fuga",
+      "model_name_jp": null,
+      "model_codes": [
+        "Y50",
+        "PY50",
+        "KNY51",
+        "Y51",
+        "KY51"
+      ],
+      "display_name": "Nissan Fuga",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Fairlady Z",
+      "model_name_jp": null,
+      "model_codes": [
+        "Z33",
+        "Z34",
+        "RZ34"
+      ],
+      "display_name": "Nissan Fairlady Z",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Teana",
+      "model_name_jp": null,
+      "model_codes": [
+        "J31",
+        "PJ31",
+        "TNJ31",
+        "J32",
+        "L33"
+      ],
+      "display_name": "Nissan Teana",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Tiida",
+      "model_name_jp": null,
+      "model_codes": [
+        "C11",
+        "NC11"
+      ],
+      "display_name": "Nissan Tiida",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Bluebird Sylphy",
+      "model_name_jp": null,
+      "model_codes": [
+        "G10",
+        "KG11",
+        "NG11",
+        "TB17"
+      ],
+      "display_name": "Nissan Bluebird Sylphy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan AD Van",
+      "model_name_jp": null,
+      "model_codes": [
+        "VY11",
+        "VFY11",
+        "VY12",
+        "VZNY12",
+        "Y12"
+      ],
+      "display_name": "Nissan AD Van",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Vanette",
+      "model_name_jp": null,
+      "model_codes": [
+        "SK82VN",
+        "SKP2MN",
+        "S21"
+      ],
+      "display_name": "Nissan Vanette",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Presage",
+      "model_name_jp": null,
+      "model_codes": [
+        "U30",
+        "TU30",
+        "NU30",
+        "U31",
+        "TU31",
+        "TNU31"
+      ],
+      "display_name": "Nissan Presage",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Murano",
+      "model_name_jp": null,
+      "model_codes": [
+        "PNZ50",
+        "PZ50",
+        "TZ50",
+        "TNZ51"
+      ],
+      "display_name": "Nissan Murano",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan Dualis",
+      "model_name_jp": null,
+      "model_codes": [
+        "J10",
+        "NJ10"
+      ],
+      "display_name": "Nissan Dualis",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_name": "Nissan March Box",
+      "model_name_jp": null,
+      "model_codes": [
+        "WK11"
+      ],
+      "display_name": "Nissan March Box",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Demio",
+      "model_name_jp": null,
+      "model_codes": [
+        "DW3W",
+        "DW5W",
+        "DY3W",
+        "DY5W",
+        "DE3FS",
+        "DE3AS",
+        "DE5FS",
+        "DEJFS"
+      ],
+      "display_name": "Mazda Demio",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda CX-5",
+      "model_name_jp": null,
+      "model_codes": [
+        "KE2FW",
+        "KE2AW",
+        "KE5FW",
+        "KE5AW",
+        "KF2P",
+        "KF5P"
+      ],
+      "display_name": "Mazda CX-5",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda CX-3",
+      "model_name_jp": null,
+      "model_codes": [
+        "DK5FW",
+        "DK5AW",
+        "DK8FW",
+        "DK8AW",
+        "DKEFW",
+        "DKEAW"
+      ],
+      "display_name": "Mazda CX-3",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda CX-8",
+      "model_name_jp": null,
+      "model_codes": [
+        "KG2P",
+        "KG5P"
+      ],
+      "display_name": "Mazda CX-8",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda MPV",
+      "model_name_jp": null,
+      "model_codes": [
+        "LV5W",
+        "LW3W",
+        "LW5W",
+        "LY3P"
+      ],
+      "display_name": "Mazda MPV",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Premacy",
+      "model_name_jp": null,
+      "model_codes": [
+        "CP8W",
+        "CREW",
+        "CR3W",
+        "CWEFW",
+        "CWFFW"
+      ],
+      "display_name": "Mazda Premacy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Roadster",
+      "model_name_jp": null,
+      "model_codes": [
+        "NA6CE",
+        "NA8C",
+        "NB6C",
+        "NB8C",
+        "NCEC",
+        "ND5RC",
+        "NDERC"
+      ],
+      "display_name": "Mazda Roadster",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Axela",
+      "model_name_jp": null,
+      "model_codes": [
+        "BK3P",
+        "BK5P",
+        "BKEP",
+        "BL5FP",
+        "BLEFP",
+        "BLFFW",
+        "BM5FP",
+        "BM5FS"
+      ],
+      "display_name": "Mazda Axela",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Familia Van",
+      "model_name_jp": null,
+      "model_codes": [
+        "BVY11",
+        "BVY12",
+        "BVSY10"
+      ],
+      "display_name": "Mazda Familia Van",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Scrum",
+      "model_name_jp": null,
+      "model_codes": [
+        "DG52V",
+        "DG62V",
+        "DG64V",
+        "DG17V"
+      ],
+      "display_name": "Mazda Scrum",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MAZDA",
+      "model_name": "Mazda Carol",
+      "model_name_jp": null,
+      "model_codes": [
+        "AA6PA",
+        "AC6P",
+        "HB12S",
+        "HB23S",
+        "HB24S",
+        "HB25S",
+        "HB36S"
+      ],
+      "display_name": "Mazda Carol",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi eK Wagon",
+      "model_name_jp": null,
+      "model_codes": [
+        "H81W",
+        "H82W",
+        "B11W",
+        "B33W",
+        "B36W",
+        "B37W",
+        "B38W"
+      ],
+      "display_name": "Mitsubishi eK Wagon",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi eK Space",
+      "model_name_jp": null,
+      "model_codes": [
+        "B11A",
+        "B34A",
+        "B35A",
+        "B37A",
+        "B38A"
+      ],
+      "display_name": "Mitsubishi eK Space",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi eK X",
+      "model_name_jp": null,
+      "model_codes": [
+        "B34W",
+        "B35W",
+        "B37W",
+        "B38W"
+      ],
+      "display_name": "Mitsubishi eK X",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Minicab Truck",
+      "model_name_jp": null,
+      "model_codes": [
+        "U41T",
+        "U42T",
+        "U61T",
+        "U62T",
+        "DS16T"
+      ],
+      "display_name": "Mitsubishi Minicab Truck",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Minicab Van",
+      "model_name_jp": null,
+      "model_codes": [
+        "U61V",
+        "U62V",
+        "DS17V"
+      ],
+      "display_name": "Mitsubishi Minicab Van",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Delica D:5",
+      "model_name_jp": null,
+      "model_codes": [
+        "CV5W",
+        "CV1W",
+        "CV2W",
+        "CV4W"
+      ],
+      "display_name": "Mitsubishi Delica D:5",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Delica D:2",
+      "model_name_jp": null,
+      "model_codes": [
+        "MB15S",
+        "MB36S",
+        "MB46S"
+      ],
+      "display_name": "Mitsubishi Delica D:2",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Outlander",
+      "model_name_jp": null,
+      "model_codes": [
+        "CW4W",
+        "CW5W",
+        "CW6W",
+        "GG2W",
+        "GF7W",
+        "GF8W"
+      ],
+      "display_name": "Mitsubishi Outlander",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi RVR",
+      "model_name_jp": null,
+      "model_codes": [
+        "GA3W",
+        "GA4W"
+      ],
+      "display_name": "Mitsubishi RVR",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Pajero Mini",
+      "model_name_jp": null,
+      "model_codes": [
+        "H53A",
+        "H58A"
+      ],
+      "display_name": "Mitsubishi Pajero Mini",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Pajero",
+      "model_name_jp": null,
+      "model_codes": [
+        "V23W",
+        "V24W",
+        "V25W",
+        "V26W",
+        "V43W",
+        "V45W",
+        "V46W",
+        "V73W",
+        "V75W",
+        "V77W",
+        "V78W",
+        "V83W",
+        "V87W",
+        "V88W",
+        "V93W",
+        "V97W",
+        "V98W"
+      ],
+      "display_name": "Mitsubishi Pajero",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Colt",
+      "model_name_jp": null,
+      "model_codes": [
+        "Z21A",
+        "Z22A",
+        "Z23A",
+        "Z24A",
+        "Z27A",
+        "Z27AG"
+      ],
+      "display_name": "Mitsubishi Colt",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI",
+      "model_name": "Mitsubishi Toppo",
+      "model_name_jp": null,
+      "model_codes": [
+        "H82A"
+      ],
+      "display_name": "Mitsubishi Toppo",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Stella",
+      "model_name_jp": null,
+      "model_codes": [
+        "RN1",
+        "RN2",
+        "LA100F",
+        "LA110F",
+        "LA150F",
+        "LA160F"
+      ],
+      "display_name": "Subaru Stella",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru R2",
+      "model_name_jp": null,
+      "model_codes": [
+        "RC1",
+        "RC2"
+      ],
+      "display_name": "Subaru R2",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru R1",
+      "model_name_jp": null,
+      "model_codes": [
+        "RJ1",
+        "RJ2"
+      ],
+      "display_name": "Subaru R1",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Pleо",
+      "model_name_jp": null,
+      "model_codes": [
+        "RA1",
+        "RA2",
+        "RV1",
+        "RV2"
+      ],
+      "display_name": "Subaru Pleо",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Impreza",
+      "model_name_jp": null,
+      "model_codes": [
+        "GD2",
+        "GD3",
+        "GD9",
+        "GG2",
+        "GG3",
+        "GG9",
+        "GH2",
+        "GH3",
+        "GH6",
+        "GH7",
+        "GH8",
+        "GP2",
+        "GP3",
+        "GP6",
+        "GP7",
+        "GJ2",
+        "GJ3",
+        "GJ6",
+        "GJ7"
+      ],
+      "display_name": "Subaru Impreza",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Forester",
+      "model_name_jp": null,
+      "model_codes": [
+        "SF5",
+        "SG5",
+        "SG9",
+        "SH5",
+        "SH9",
+        "SJ5",
+        "SJG",
+        "SK5",
+        "SK9"
+      ],
+      "display_name": "Subaru Forester",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Legacy",
+      "model_name_jp": null,
+      "model_codes": [
+        "BH5",
+        "BH9",
+        "BE5",
+        "BP5",
+        "BP9",
+        "BR9",
+        "BM9",
+        "BN9"
+      ],
+      "display_name": "Subaru Legacy",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru Exiga",
+      "model_name_jp": null,
+      "model_codes": [
+        "YA4",
+        "YA5",
+        "YAM"
+      ],
+      "display_name": "Subaru Exiga",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "SUBARU",
+      "model_name": "Subaru XV",
+      "model_name_jp": null,
+      "model_codes": [
+        "GP7",
+        "GP8",
+        "GT3",
+        "GT7"
+      ],
+      "display_name": "Subaru XV",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus IS",
+      "model_name_jp": null,
+      "model_codes": [
+        "GSE20",
+        "GSE21",
+        "GSE25",
+        "GSE30",
+        "GSE31",
+        "GSE35",
+        "AVE30",
+        "ASE30"
+      ],
+      "display_name": "Lexus IS",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus GS",
+      "model_name_jp": null,
+      "model_codes": [
+        "UZS190",
+        "GWS191",
+        "GRS190",
+        "GRS191",
+        "GRS196",
+        "GRL10",
+        "GRL11",
+        "AWL10"
+      ],
+      "display_name": "Lexus GS",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus LS",
+      "model_name_jp": null,
+      "model_codes": [
+        "UZS186",
+        "USF40",
+        "USF41",
+        "USF45",
+        "USF46",
+        "VXFA50",
+        "VXFA55"
+      ],
+      "display_name": "Lexus LS",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus RX",
+      "model_name_jp": null,
+      "model_codes": [
+        "AGL10",
+        "GGL10",
+        "GGL15",
+        "GGL16",
+        "AGL20",
+        "AGL25",
+        "GYL20",
+        "GYL25"
+      ],
+      "display_name": "Lexus RX",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus NX",
+      "model_name_jp": null,
+      "model_codes": [
+        "AGZ10",
+        "AGZ15",
+        "AYZ10",
+        "AYZ15",
+        "AAZA20",
+        "AAZA25"
+      ],
+      "display_name": "Lexus NX",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "LEXUS",
+      "model_name": "Lexus CT",
+      "model_name_jp": null,
+      "model_codes": [
+        "ZWA10"
+      ],
+      "display_name": "Lexus CT",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "ISUZU",
+      "model_name": "Isuzu Elf",
+      "model_name_jp": null,
+      "model_codes": [
+        "NHR55",
+        "NKR58",
+        "NKR66",
+        "NKR81",
+        "NKR85",
+        "NLR85",
+        "NPR85"
+      ],
+      "display_name": "Isuzu Elf",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "ISUZU",
+      "model_name": "Isuzu Forward",
+      "model_name_jp": null,
+      "model_codes": [
+        "FRR90",
+        "FRR33",
+        "FRR35"
+      ],
+      "display_name": "Isuzu Forward",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "HINO",
+      "model_name": "Hino Dutro",
+      "model_name_jp": null,
+      "model_codes": [
+        "XZU301",
+        "XZU302",
+        "XZU304",
+        "XZU306",
+        "XZU311",
+        "XZU321",
+        "XZU342",
+        "XZU600",
+        "XZU605"
+      ],
+      "display_name": "Hino Dutro",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
+    },
+    {
+      "manufacturer": "MITSUBISHI FUSO",
+      "model_name": "Mitsubishi Fuso Canter",
+      "model_name_jp": null,
+      "model_codes": [
+        "FE50",
+        "FE51",
+        "FE53",
+        "FE70",
+        "FE71",
+        "FE73",
+        "FE74",
+        "FEB50",
+        "FEB70",
+        "FBA20",
+        "FBA30"
+      ],
+      "display_name": "Mitsubishi Fuso Canter",
+      "notes": "Commercial model resolution; verify ambiguous shared chassis codes with additional fields."
     }
-  ]
+  ],
+  "code_index": {
+    "NHW10": [
+      "Toyota Prius"
+    ],
+    "NHW11": [
+      "Toyota Prius"
+    ],
+    "NHW20": [
+      "Toyota Prius"
+    ],
+    "ZVW30": [
+      "Toyota Prius"
+    ],
+    "ZVW35": [
+      "Toyota Prius"
+    ],
+    "ZVW40": [
+      "Toyota Prius"
+    ],
+    "ZVW41": [
+      "Toyota Prius"
+    ],
+    "ZVW50": [
+      "Toyota Prius"
+    ],
+    "ZVW51": [
+      "Toyota Prius"
+    ],
+    "ZVW52": [
+      "Toyota Prius"
+    ],
+    "ZVW55": [
+      "Toyota Prius"
+    ],
+    "MXWH60": [
+      "Toyota Prius"
+    ],
+    "MXWH65": [
+      "Toyota Prius"
+    ],
+    "NHP10": [
+      "Toyota Aqua"
+    ],
+    "MXPK10": [
+      "Toyota Aqua"
+    ],
+    "MXPK11": [
+      "Toyota Aqua"
+    ],
+    "MXPK15": [
+      "Toyota Aqua"
+    ],
+    "MXPK16": [
+      "Toyota Aqua"
+    ],
+    "SCP10": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NCP10": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NCP13": [
+      "Toyota Vitz/Yaris"
+    ],
+    "KSP90": [
+      "Toyota Vitz/Yaris"
+    ],
+    "SCP90": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NCP91": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NCP95": [
+      "Toyota Vitz/Yaris"
+    ],
+    "KSP130": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NSP130": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NSP135": [
+      "Toyota Vitz/Yaris"
+    ],
+    "NHP130": [
+      "Toyota Vitz/Yaris"
+    ],
+    "MXPA10": [
+      "Toyota Vitz/Yaris"
+    ],
+    "MXPA15": [
+      "Toyota Vitz/Yaris"
+    ],
+    "AE100": [
+      "Toyota Corolla"
+    ],
+    "AE101": [
+      "Toyota Corolla"
+    ],
+    "AE104": [
+      "Toyota Corolla"
+    ],
+    "AE110": [
+      "Toyota Corolla"
+    ],
+    "AE111": [
+      "Toyota Corolla"
+    ],
+    "NZE120": [
+      "Toyota Corolla"
+    ],
+    "ZZE120": [
+      "Toyota Corolla"
+    ],
+    "NZE121": [
+      "Toyota Corolla"
+    ],
+    "NZE124": [
+      "Toyota Corolla"
+    ],
+    "NZE141": [
+      "Toyota Corolla",
+      "Toyota Corolla Axio"
+    ],
+    "ZRE142": [
+      "Toyota Corolla"
+    ],
+    "NZE161": [
+      "Toyota Corolla"
+    ],
+    "NRE160": [
+      "Toyota Corolla",
+      "Toyota Corolla Axio"
+    ],
+    "ZRE162": [
+      "Toyota Corolla"
+    ],
+    "ZWE211": [
+      "Toyota Corolla"
+    ],
+    "ZRE212": [
+      "Toyota Corolla"
+    ],
+    "NZE121G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NZE124G": [
+      "Toyota Corolla Fielder"
+    ],
+    "ZZE122G": [
+      "Toyota Corolla Fielder"
+    ],
+    "ZZE123G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NZE141G": [
+      "Toyota Corolla Fielder"
+    ],
+    "ZRE142G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NZE161G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NRE161G": [
+      "Toyota Corolla Fielder"
+    ],
+    "ZRE162G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NKE165G": [
+      "Toyota Corolla Fielder"
+    ],
+    "NZE144": [
+      "Toyota Corolla Axio"
+    ],
+    "NRE161": [
+      "Toyota Corolla Axio"
+    ],
+    "NZE164": [
+      "Toyota Corolla Axio"
+    ],
+    "NKE165": [
+      "Toyota Corolla Axio"
+    ],
+    "ANH10W": [
+      "Toyota Alphard"
+    ],
+    "MNH10W": [
+      "Toyota Alphard"
+    ],
+    "ANH15W": [
+      "Toyota Alphard"
+    ],
+    "MNH15W": [
+      "Toyota Alphard"
+    ],
+    "ANH20W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "GGH20W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "ANH25W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "GGH25W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "AGH30W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "AGH35W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "GGH30W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "AYH30W": [
+      "Toyota Alphard",
+      "Toyota Vellfire"
+    ],
+    "AZR60G": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "AZR65G": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "ZRR70G": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "ZRR75G": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "ZRR80G": [
+      "Toyota Voxy",
+      "Toyota Noah",
+      "Toyota Esquire"
+    ],
+    "ZRR85G": [
+      "Toyota Voxy",
+      "Toyota Noah",
+      "Toyota Esquire"
+    ],
+    "MZRA90W": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "MZRA95W": [
+      "Toyota Voxy",
+      "Toyota Noah"
+    ],
+    "NCP81G": [
+      "Toyota Sienta"
+    ],
+    "NCP85G": [
+      "Toyota Sienta"
+    ],
+    "NSP170G": [
+      "Toyota Sienta"
+    ],
+    "NHP170G": [
+      "Toyota Sienta"
+    ],
+    "NCP175G": [
+      "Toyota Sienta"
+    ],
+    "MXPL10G": [
+      "Toyota Sienta"
+    ],
+    "MXPL15G": [
+      "Toyota Sienta"
+    ],
+    "MXPL12G": [
+      "Toyota Sienta"
+    ],
+    "ZNE10G": [
+      "Toyota Wish"
+    ],
+    "ZNE14G": [
+      "Toyota Wish"
+    ],
+    "ANE10G": [
+      "Toyota Wish"
+    ],
+    "ANE11W": [
+      "Toyota Wish"
+    ],
+    "ZGE20G": [
+      "Toyota Wish"
+    ],
+    "ZGE21G": [
+      "Toyota Wish"
+    ],
+    "ZGE22W": [
+      "Toyota Wish"
+    ],
+    "NCP50V": [
+      "Toyota Probox"
+    ],
+    "NCP51V": [
+      "Toyota Probox",
+      "Toyota Succeed"
+    ],
+    "NCP52V": [
+      "Toyota Probox"
+    ],
+    "NCP55V": [
+      "Toyota Probox",
+      "Toyota Succeed"
+    ],
+    "NCP58G": [
+      "Toyota Probox"
+    ],
+    "NCP160V": [
+      "Toyota Probox",
+      "Toyota Succeed"
+    ],
+    "NCP165V": [
+      "Toyota Probox",
+      "Toyota Succeed"
+    ],
+    "NHP160V": [
+      "Toyota Probox"
+    ],
+    "RZH100G": [
+      "Toyota Hiace"
+    ],
+    "RZH101G": [
+      "Toyota Hiace"
+    ],
+    "RZH110G": [
+      "Toyota Hiace"
+    ],
+    "KZH100G": [
+      "Toyota Hiace"
+    ],
+    "KZH106G": [
+      "Toyota Hiace"
+    ],
+    "KZH110G": [
+      "Toyota Hiace"
+    ],
+    "TRH200V": [
+      "Toyota Hiace"
+    ],
+    "TRH200K": [
+      "Toyota Hiace"
+    ],
+    "KDH200V": [
+      "Toyota Hiace"
+    ],
+    "KDH201V": [
+      "Toyota Hiace"
+    ],
+    "KDH206V": [
+      "Toyota Hiace"
+    ],
+    "GDH201V": [
+      "Toyota Hiace"
+    ],
+    "GDH206V": [
+      "Toyota Hiace"
+    ],
+    "KR42V": [
+      "Toyota TownAce",
+      "Toyota LiteAce"
+    ],
+    "CR42V": [
+      "Toyota TownAce",
+      "Toyota LiteAce"
+    ],
+    "S402M": [
+      "Toyota TownAce",
+      "Toyota LiteAce"
+    ],
+    "S412M": [
+      "Toyota TownAce",
+      "Toyota LiteAce"
+    ],
+    "S403M": [
+      "Toyota TownAce"
+    ],
+    "S413M": [
+      "Toyota TownAce"
+    ],
+    "ACU10W": [
+      "Toyota Harrier"
+    ],
+    "MCU10W": [
+      "Toyota Harrier"
+    ],
+    "ACU15W": [
+      "Toyota Harrier"
+    ],
+    "MCU15W": [
+      "Toyota Harrier"
+    ],
+    "ACU30W": [
+      "Toyota Harrier"
+    ],
+    "MCU30W": [
+      "Toyota Harrier"
+    ],
+    "GSU30W": [
+      "Toyota Harrier"
+    ],
+    "ZSU60W": [
+      "Toyota Harrier"
+    ],
+    "ZSU65W": [
+      "Toyota Harrier"
+    ],
+    "ASU60W": [
+      "Toyota Harrier"
+    ],
+    "ASU65W": [
+      "Toyota Harrier"
+    ],
+    "MXUA80": [
+      "Toyota Harrier"
+    ],
+    "AXUH80": [
+      "Toyota Harrier"
+    ],
+    "AXUH85": [
+      "Toyota Harrier"
+    ],
+    "SXA10C": [
+      "Toyota RAV4"
+    ],
+    "SXA10G": [
+      "Toyota RAV4"
+    ],
+    "SXA11G": [
+      "Toyota RAV4"
+    ],
+    "SXA15G": [
+      "Toyota RAV4"
+    ],
+    "SXA16G": [
+      "Toyota RAV4"
+    ],
+    "ACA20W": [
+      "Toyota RAV4"
+    ],
+    "ACA21W": [
+      "Toyota RAV4"
+    ],
+    "ACA31W": [
+      "Toyota RAV4"
+    ],
+    "ACA36W": [
+      "Toyota RAV4"
+    ],
+    "MXAA52": [
+      "Toyota RAV4"
+    ],
+    "MXAA54": [
+      "Toyota RAV4"
+    ],
+    "AXAH52": [
+      "Toyota RAV4"
+    ],
+    "AXAH54": [
+      "Toyota RAV4"
+    ],
+    "RZJ90W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "KZJ95W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "VZJ95W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "TRJ120W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "GRJ120W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "TRJ150W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "GRJ150W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "GDJ150W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "GDJ151W": [
+      "Toyota Land Cruiser Prado"
+    ],
+    "GRX120": [
+      "Toyota Mark X"
+    ],
+    "GRX121": [
+      "Toyota Mark X"
+    ],
+    "GRX125": [
+      "Toyota Mark X"
+    ],
+    "GRX130": [
+      "Toyota Mark X"
+    ],
+    "GRX133": [
+      "Toyota Mark X"
+    ],
+    "GRX135": [
+      "Toyota Mark X"
+    ],
+    "TCR10W": [
+      "Toyota Estima"
+    ],
+    "TCR11W": [
+      "Toyota Estima"
+    ],
+    "TCR20W": [
+      "Toyota Estima"
+    ],
+    "TCR21W": [
+      "Toyota Estima"
+    ],
+    "ACR30W": [
+      "Toyota Estima"
+    ],
+    "ACR40W": [
+      "Toyota Estima"
+    ],
+    "ACR50W": [
+      "Toyota Estima"
+    ],
+    "GSR50W": [
+      "Toyota Estima"
+    ],
+    "GSR55W": [
+      "Toyota Estima"
+    ],
+    "KGC10": [
+      "Toyota Passo"
+    ],
+    "KGC15": [
+      "Toyota Passo"
+    ],
+    "QNC10": [
+      "Toyota Passo"
+    ],
+    "KGC30": [
+      "Toyota Passo"
+    ],
+    "KGC35": [
+      "Toyota Passo"
+    ],
+    "NGC30": [
+      "Toyota Passo"
+    ],
+    "M700A": [
+      "Toyota Passo"
+    ],
+    "M710A": [
+      "Toyota Passo"
+    ],
+    "M900A": [
+      "Toyota Roomy",
+      "Toyota Tank"
+    ],
+    "M910A": [
+      "Toyota Roomy",
+      "Toyota Tank"
+    ],
+    "NCP30": [
+      "Toyota bB"
+    ],
+    "NCP31": [
+      "Toyota bB"
+    ],
+    "NCP34": [
+      "Toyota bB"
+    ],
+    "QNC20": [
+      "Toyota bB"
+    ],
+    "QNC21": [
+      "Toyota bB"
+    ],
+    "QNC25": [
+      "Toyota bB"
+    ],
+    "NCP100": [
+      "Toyota Ractis"
+    ],
+    "NCP105": [
+      "Toyota Ractis"
+    ],
+    "SCP100": [
+      "Toyota Ractis"
+    ],
+    "NCP120": [
+      "Toyota Ractis"
+    ],
+    "NCP125": [
+      "Toyota Ractis"
+    ],
+    "NSP120": [
+      "Toyota Ractis"
+    ],
+    "ACA33W": [
+      "Toyota Vanguard"
+    ],
+    "GSA33W": [
+      "Toyota Vanguard"
+    ],
+    "GSJ15W": [
+      "Toyota FJ Cruiser"
+    ],
+    "ZN6": [
+      "Toyota 86"
+    ],
+    "ZN8": [
+      "Toyota 86",
+      "Toyota GR86"
+    ],
+    "JZX90": [
+      "Toyota JZX"
+    ],
+    "JZX100": [
+      "Toyota JZX"
+    ],
+    "JZX110": [
+      "Toyota JZX"
+    ],
+    "LA300A": [
+      "Toyota Pixis Epoch"
+    ],
+    "LA310A": [
+      "Toyota Pixis Epoch"
+    ],
+    "LA350A": [
+      "Toyota Pixis Epoch"
+    ],
+    "LA360A": [
+      "Toyota Pixis Epoch"
+    ],
+    "L575A": [
+      "Toyota Pixis Space"
+    ],
+    "L585A": [
+      "Toyota Pixis Space"
+    ],
+    "LA700A": [
+      "Toyota Pixis Mega"
+    ],
+    "LA710A": [
+      "Toyota Pixis Mega"
+    ],
+    "DBA-JF1": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom",
+      "Honda N-BOX+"
+    ],
+    "DBA-JF2": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom",
+      "Honda N-BOX+"
+    ],
+    "JF1": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "JF2": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "6BA-JF3": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "6BA-JF4": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "JF3": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "JF4": [
+      "Honda N-BOX",
+      "Honda N-BOX Custom"
+    ],
+    "DBA-JG1": [
+      "Honda N-ONE"
+    ],
+    "DBA-JG2": [
+      "Honda N-ONE"
+    ],
+    "JG1": [
+      "Honda N-ONE"
+    ],
+    "JG2": [
+      "Honda N-ONE"
+    ],
+    "6BA-JG3": [
+      "Honda N-ONE"
+    ],
+    "6BA-JG4": [
+      "Honda N-ONE"
+    ],
+    "JG3": [
+      "Honda N-ONE"
+    ],
+    "JG4": [
+      "Honda N-ONE"
+    ],
+    "DBA-JH1": [
+      "Honda N-WGN"
+    ],
+    "DBA-JH2": [
+      "Honda N-WGN"
+    ],
+    "JH1": [
+      "Honda N-WGN"
+    ],
+    "JH2": [
+      "Honda N-WGN"
+    ],
+    "6BA-JH3": [
+      "Honda N-WGN"
+    ],
+    "6BA-JH4": [
+      "Honda N-WGN"
+    ],
+    "JH3": [
+      "Honda N-WGN"
+    ],
+    "JH4": [
+      "Honda N-WGN"
+    ],
+    "DBA-JW5": [
+      "Honda S660"
+    ],
+    "JW5": [
+      "Honda S660"
+    ],
+    "JB1": [
+      "Honda Life"
+    ],
+    "JB2": [
+      "Honda Life"
+    ],
+    "JB5": [
+      "Honda Life"
+    ],
+    "JB6": [
+      "Honda Life"
+    ],
+    "JC1": [
+      "Honda Life"
+    ],
+    "JC2": [
+      "Honda Life"
+    ],
+    "JD1": [
+      "Honda That's"
+    ],
+    "JD2": [
+      "Honda That's"
+    ],
+    "JE1": [
+      "Honda Zest"
+    ],
+    "JE2": [
+      "Honda Zest"
+    ],
+    "HA1": [
+      "Honda Acty Truck"
+    ],
+    "HA2": [
+      "Honda Acty Truck"
+    ],
+    "HA3": [
+      "Honda Acty Truck"
+    ],
+    "HA4": [
+      "Honda Acty Truck"
+    ],
+    "HA5": [
+      "Honda Acty Truck"
+    ],
+    "HA6": [
+      "Honda Acty Truck"
+    ],
+    "HA7": [
+      "Honda Acty Truck"
+    ],
+    "HA8": [
+      "Honda Acty Truck"
+    ],
+    "HA9": [
+      "Honda Acty Truck"
+    ],
+    "HH1": [
+      "Honda Acty Van"
+    ],
+    "HH2": [
+      "Honda Acty Van"
+    ],
+    "HH3": [
+      "Honda Acty Van"
+    ],
+    "HH4": [
+      "Honda Acty Van"
+    ],
+    "HM1": [
+      "Honda Vamos"
+    ],
+    "HM2": [
+      "Honda Vamos"
+    ],
+    "GD1": [
+      "Honda Fit"
+    ],
+    "GD2": [
+      "Honda Fit",
+      "Subaru Impreza"
+    ],
+    "GD3": [
+      "Honda Fit",
+      "Subaru Impreza"
+    ],
+    "GD4": [
+      "Honda Fit"
+    ],
+    "GE6": [
+      "Honda Fit"
+    ],
+    "GE7": [
+      "Honda Fit"
+    ],
+    "GE8": [
+      "Honda Fit"
+    ],
+    "GE9": [
+      "Honda Fit"
+    ],
+    "GP1": [
+      "Honda Fit"
+    ],
+    "GP4": [
+      "Honda Fit"
+    ],
+    "GK3": [
+      "Honda Fit"
+    ],
+    "GK4": [
+      "Honda Fit"
+    ],
+    "GK5": [
+      "Honda Fit"
+    ],
+    "GK6": [
+      "Honda Fit"
+    ],
+    "GR1": [
+      "Honda Fit"
+    ],
+    "GR2": [
+      "Honda Fit"
+    ],
+    "GR3": [
+      "Honda Fit"
+    ],
+    "GR4": [
+      "Honda Fit"
+    ],
+    "GB3": [
+      "Honda Freed"
+    ],
+    "GB4": [
+      "Honda Freed"
+    ],
+    "GB5": [
+      "Honda Freed"
+    ],
+    "GB6": [
+      "Honda Freed"
+    ],
+    "GP3": [
+      "Honda Freed",
+      "Subaru Impreza"
+    ],
+    "GP7": [
+      "Honda Freed",
+      "Honda Shuttle",
+      "Subaru Impreza",
+      "Subaru XV"
+    ],
+    "GP8": [
+      "Honda Freed",
+      "Honda Shuttle",
+      "Subaru XV"
+    ],
+    "RF1": [
+      "Honda Stepwgn"
+    ],
+    "RF2": [
+      "Honda Stepwgn"
+    ],
+    "RF3": [
+      "Honda Stepwgn"
+    ],
+    "RF4": [
+      "Honda Stepwgn"
+    ],
+    "RF5": [
+      "Honda Stepwgn"
+    ],
+    "RF6": [
+      "Honda Stepwgn"
+    ],
+    "RF7": [
+      "Honda Stepwgn"
+    ],
+    "RF8": [
+      "Honda Stepwgn"
+    ],
+    "RK1": [
+      "Honda Stepwgn"
+    ],
+    "RK2": [
+      "Honda Stepwgn"
+    ],
+    "RK3": [
+      "Honda Stepwgn"
+    ],
+    "RK4": [
+      "Honda Stepwgn"
+    ],
+    "RK5": [
+      "Honda Stepwgn"
+    ],
+    "RK6": [
+      "Honda Stepwgn"
+    ],
+    "RP1": [
+      "Honda Stepwgn"
+    ],
+    "RP2": [
+      "Honda Stepwgn"
+    ],
+    "RP3": [
+      "Honda Stepwgn"
+    ],
+    "RP4": [
+      "Honda Stepwgn"
+    ],
+    "RP5": [
+      "Honda Stepwgn"
+    ],
+    "RP6": [
+      "Honda Stepwgn"
+    ],
+    "RU1": [
+      "Honda Vezel"
+    ],
+    "RU2": [
+      "Honda Vezel"
+    ],
+    "RU3": [
+      "Honda Vezel"
+    ],
+    "RU4": [
+      "Honda Vezel"
+    ],
+    "RV3": [
+      "Honda Vezel"
+    ],
+    "RV4": [
+      "Honda Vezel"
+    ],
+    "RV5": [
+      "Honda Vezel"
+    ],
+    "RV6": [
+      "Honda Vezel"
+    ],
+    "RN1": [
+      "Honda Stream",
+      "Subaru Stella"
+    ],
+    "RN2": [
+      "Honda Stream",
+      "Subaru Stella"
+    ],
+    "RN3": [
+      "Honda Stream"
+    ],
+    "RN4": [
+      "Honda Stream"
+    ],
+    "RN5": [
+      "Honda Stream"
+    ],
+    "RN6": [
+      "Honda Stream"
+    ],
+    "RN7": [
+      "Honda Stream"
+    ],
+    "RN8": [
+      "Honda Stream"
+    ],
+    "RA6": [
+      "Honda Odyssey"
+    ],
+    "RA7": [
+      "Honda Odyssey"
+    ],
+    "RA8": [
+      "Honda Odyssey"
+    ],
+    "RA9": [
+      "Honda Odyssey"
+    ],
+    "RB1": [
+      "Honda Odyssey"
+    ],
+    "RB2": [
+      "Honda Odyssey"
+    ],
+    "RB3": [
+      "Honda Odyssey"
+    ],
+    "RB4": [
+      "Honda Odyssey"
+    ],
+    "RC1": [
+      "Honda Odyssey",
+      "Subaru R2"
+    ],
+    "RC2": [
+      "Honda Odyssey",
+      "Subaru R2"
+    ],
+    "GK8": [
+      "Honda Shuttle"
+    ],
+    "GM4": [
+      "Honda Grace"
+    ],
+    "GM5": [
+      "Honda Grace"
+    ],
+    "GM6": [
+      "Honda Grace"
+    ],
+    "GM9": [
+      "Honda Grace"
+    ],
+    "EK2": [
+      "Honda Civic"
+    ],
+    "EK3": [
+      "Honda Civic"
+    ],
+    "EK4": [
+      "Honda Civic"
+    ],
+    "EU1": [
+      "Honda Civic"
+    ],
+    "EU2": [
+      "Honda Civic"
+    ],
+    "EU3": [
+      "Honda Civic"
+    ],
+    "EU4": [
+      "Honda Civic"
+    ],
+    "FD1": [
+      "Honda Civic"
+    ],
+    "FD2": [
+      "Honda Civic"
+    ],
+    "FK7": [
+      "Honda Civic"
+    ],
+    "FK8": [
+      "Honda Civic"
+    ],
+    "FC1": [
+      "Honda Civic"
+    ],
+    "FC2": [
+      "Honda Civic"
+    ],
+    "FC3": [
+      "Honda Civic"
+    ],
+    "FC4": [
+      "Honda Civic"
+    ],
+    "CF3": [
+      "Honda Accord"
+    ],
+    "CF4": [
+      "Honda Accord"
+    ],
+    "CF5": [
+      "Honda Accord"
+    ],
+    "CL7": [
+      "Honda Accord"
+    ],
+    "CL8": [
+      "Honda Accord"
+    ],
+    "CL9": [
+      "Honda Accord"
+    ],
+    "CU1": [
+      "Honda Accord"
+    ],
+    "CU2": [
+      "Honda Accord"
+    ],
+    "CU3": [
+      "Honda Accord"
+    ],
+    "CU4": [
+      "Honda Accord"
+    ],
+    "KB1": [
+      "Honda Legend"
+    ],
+    "KB2": [
+      "Honda Legend"
+    ],
+    "KC2": [
+      "Honda Legend"
+    ],
+    "ZF1": [
+      "Honda CR-Z"
+    ],
+    "ZF2": [
+      "Honda CR-Z"
+    ],
+    "ZE1": [
+      "Honda Insight"
+    ],
+    "ZE2": [
+      "Honda Insight"
+    ],
+    "GJ1": [
+      "Honda Airwave"
+    ],
+    "GB1": [
+      "Honda Mobilio"
+    ],
+    "GB2": [
+      "Honda Mobilio"
+    ],
+    "GK1": [
+      "Honda Spike"
+    ],
+    "GK2": [
+      "Honda Spike"
+    ],
+    "CT21S": [
+      "Suzuki Wagon R"
+    ],
+    "CT51S": [
+      "Suzuki Wagon R"
+    ],
+    "MC11S": [
+      "Suzuki Wagon R"
+    ],
+    "MC12S": [
+      "Suzuki Wagon R"
+    ],
+    "MC21S": [
+      "Suzuki Wagon R"
+    ],
+    "MC22S": [
+      "Suzuki Wagon R"
+    ],
+    "MH21S": [
+      "Suzuki Wagon R"
+    ],
+    "MH22S": [
+      "Suzuki Wagon R"
+    ],
+    "MH23S": [
+      "Suzuki Wagon R"
+    ],
+    "MH34S": [
+      "Suzuki Wagon R"
+    ],
+    "MH35S": [
+      "Suzuki Wagon R"
+    ],
+    "MH44S": [
+      "Suzuki Wagon R"
+    ],
+    "MH55S": [
+      "Suzuki Wagon R"
+    ],
+    "MX81S": [
+      "Suzuki Wagon R Smile"
+    ],
+    "MX91S": [
+      "Suzuki Wagon R Smile"
+    ],
+    "HA11S": [
+      "Suzuki Alto"
+    ],
+    "HA12S": [
+      "Suzuki Alto"
+    ],
+    "HA22S": [
+      "Suzuki Alto"
+    ],
+    "HA23S": [
+      "Suzuki Alto"
+    ],
+    "HA24S": [
+      "Suzuki Alto"
+    ],
+    "HA25S": [
+      "Suzuki Alto"
+    ],
+    "HA35S": [
+      "Suzuki Alto"
+    ],
+    "HA36S": [
+      "Suzuki Alto"
+    ],
+    "HA37S": [
+      "Suzuki Alto"
+    ],
+    "HE21S": [
+      "Suzuki Alto Lapin"
+    ],
+    "HE22S": [
+      "Suzuki Alto Lapin"
+    ],
+    "HE33S": [
+      "Suzuki Alto Lapin"
+    ],
+    "DE51V": [
+      "Suzuki Every"
+    ],
+    "DF51V": [
+      "Suzuki Every"
+    ],
+    "DA52V": [
+      "Suzuki Every"
+    ],
+    "DA62V": [
+      "Suzuki Every"
+    ],
+    "DA64V": [
+      "Suzuki Every"
+    ],
+    "DA17V": [
+      "Suzuki Every"
+    ],
+    "DA52W": [
+      "Suzuki Every Wagon"
+    ],
+    "DA62W": [
+      "Suzuki Every Wagon"
+    ],
+    "DA64W": [
+      "Suzuki Every Wagon"
+    ],
+    "DA17W": [
+      "Suzuki Every Wagon"
+    ],
+    "DC51T": [
+      "Suzuki Carry"
+    ],
+    "DD51T": [
+      "Suzuki Carry"
+    ],
+    "DA52T": [
+      "Suzuki Carry"
+    ],
+    "DA63T": [
+      "Suzuki Carry"
+    ],
+    "DA65T": [
+      "Suzuki Carry"
+    ],
+    "DA16T": [
+      "Suzuki Carry"
+    ],
+    "JA11": [
+      "Suzuki Jimny"
+    ],
+    "JA12W": [
+      "Suzuki Jimny"
+    ],
+    "JA22W": [
+      "Suzuki Jimny"
+    ],
+    "JB23W": [
+      "Suzuki Jimny",
+      "Suzuki Jimny Sierra",
+      "Suzuki Landie"
+    ],
+    "JB64W": [
+      "Suzuki Jimny"
+    ],
+    "JB74W": [
+      "Suzuki Jimny",
+      "Suzuki Jimny Sierra"
+    ],
+    "JB43W": [
+      "Suzuki Jimny Sierra"
+    ],
+    "MK32S": [
+      "Suzuki Spacia",
+      "Suzuki Spacia Custom"
+    ],
+    "MK42S": [
+      "Suzuki Spacia",
+      "Suzuki Spacia Custom"
+    ],
+    "MK53S": [
+      "Suzuki Spacia",
+      "Suzuki Spacia Custom"
+    ],
+    "MR31S": [
+      "Suzuki Hustler"
+    ],
+    "MR41S": [
+      "Suzuki Hustler"
+    ],
+    "MR52S": [
+      "Suzuki Hustler"
+    ],
+    "MR92S": [
+      "Suzuki Hustler"
+    ],
+    "HN11S": [
+      "Suzuki Kei"
+    ],
+    "HN12S": [
+      "Suzuki Kei"
+    ],
+    "HN21S": [
+      "Suzuki Kei"
+    ],
+    "HN22S": [
+      "Suzuki Kei"
+    ],
+    "MF21S": [
+      "Suzuki MR Wagon"
+    ],
+    "MF22S": [
+      "Suzuki MR Wagon"
+    ],
+    "MF33S": [
+      "Suzuki MR Wagon"
+    ],
+    "MK21S": [
+      "Suzuki Palette"
+    ],
+    "MA15S": [
+      "Suzuki Solio"
+    ],
+    "MA26S": [
+      "Suzuki Solio"
+    ],
+    "MA36S": [
+      "Suzuki Solio"
+    ],
+    "MA46S": [
+      "Suzuki Solio"
+    ],
+    "MA37S": [
+      "Suzuki Solio"
+    ],
+    "MA47S": [
+      "Suzuki Solio"
+    ],
+    "HT51S": [
+      "Suzuki Swift"
+    ],
+    "ZC11S": [
+      "Suzuki Swift"
+    ],
+    "ZD11S": [
+      "Suzuki Swift"
+    ],
+    "ZC21S": [
+      "Suzuki Swift"
+    ],
+    "ZD21S": [
+      "Suzuki Swift"
+    ],
+    "ZC31S": [
+      "Suzuki Swift"
+    ],
+    "ZC71S": [
+      "Suzuki Swift"
+    ],
+    "ZC72S": [
+      "Suzuki Swift"
+    ],
+    "ZD72S": [
+      "Suzuki Swift"
+    ],
+    "ZC83S": [
+      "Suzuki Swift"
+    ],
+    "ZD83S": [
+      "Suzuki Swift"
+    ],
+    "ZC53S": [
+      "Suzuki Swift"
+    ],
+    "ZC13S": [
+      "Suzuki Swift"
+    ],
+    "TA01W": [
+      "Suzuki Escudo"
+    ],
+    "TA02W": [
+      "Suzuki Escudo"
+    ],
+    "TD01W": [
+      "Suzuki Escudo"
+    ],
+    "TD02W": [
+      "Suzuki Escudo"
+    ],
+    "TD54W": [
+      "Suzuki Escudo"
+    ],
+    "TD94W": [
+      "Suzuki Escudo"
+    ],
+    "TDA4W": [
+      "Suzuki Escudo"
+    ],
+    "YEA1S": [
+      "Suzuki Escudo"
+    ],
+    "DA32W": [
+      "Suzuki Every Landy"
+    ],
+    "ME34S": [
+      "Suzuki Chevrolet MW"
+    ],
+    "ME64S": [
+      "Suzuki Chevrolet MW"
+    ],
+    "S80P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S81P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S100P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S110P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S200P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S201P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S500P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S510P": [
+      "Daihatsu Hijet Truck"
+    ],
+    "S320V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S321V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S330V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S331V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S700V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S710V": [
+      "Daihatsu Hijet Cargo"
+    ],
+    "S220G": [
+      "Daihatsu Atrai"
+    ],
+    "S230G": [
+      "Daihatsu Atrai"
+    ],
+    "S320G": [
+      "Daihatsu Atrai"
+    ],
+    "S330G": [
+      "Daihatsu Atrai"
+    ],
+    "S321G": [
+      "Daihatsu Atrai"
+    ],
+    "S331G": [
+      "Daihatsu Atrai"
+    ],
+    "S700W": [
+      "Daihatsu Atrai"
+    ],
+    "S710W": [
+      "Daihatsu Atrai"
+    ],
+    "L200S": [
+      "Daihatsu Mira"
+    ],
+    "L210S": [
+      "Daihatsu Mira"
+    ],
+    "L500S": [
+      "Daihatsu Mira"
+    ],
+    "L510S": [
+      "Daihatsu Mira"
+    ],
+    "L700S": [
+      "Daihatsu Mira",
+      "Daihatsu Mira Gino"
+    ],
+    "L710S": [
+      "Daihatsu Mira",
+      "Daihatsu Mira Gino"
+    ],
+    "L250S": [
+      "Daihatsu Mira"
+    ],
+    "L260S": [
+      "Daihatsu Mira"
+    ],
+    "L275S": [
+      "Daihatsu Mira"
+    ],
+    "L285S": [
+      "Daihatsu Mira"
+    ],
+    "LA300S": [
+      "Daihatsu Mira e:S"
+    ],
+    "LA310S": [
+      "Daihatsu Mira e:S"
+    ],
+    "LA350S": [
+      "Daihatsu Mira e:S"
+    ],
+    "LA360S": [
+      "Daihatsu Mira e:S"
+    ],
+    "L675S": [
+      "Daihatsu Mira Cocoa"
+    ],
+    "L685S": [
+      "Daihatsu Mira Cocoa"
+    ],
+    "L650S": [
+      "Daihatsu Mira Gino"
+    ],
+    "L660S": [
+      "Daihatsu Mira Gino"
+    ],
+    "L350S": [
+      "Daihatsu Tanto"
+    ],
+    "L360S": [
+      "Daihatsu Tanto"
+    ],
+    "L375S": [
+      "Daihatsu Tanto"
+    ],
+    "L385S": [
+      "Daihatsu Tanto"
+    ],
+    "LA600S": [
+      "Daihatsu Tanto"
+    ],
+    "LA610S": [
+      "Daihatsu Tanto"
+    ],
+    "LA650S": [
+      "Daihatsu Tanto"
+    ],
+    "LA660S": [
+      "Daihatsu Tanto"
+    ],
+    "L600S": [
+      "Daihatsu Move"
+    ],
+    "L610S": [
+      "Daihatsu Move"
+    ],
+    "L900S": [
+      "Daihatsu Move"
+    ],
+    "L910S": [
+      "Daihatsu Move"
+    ],
+    "L150S": [
+      "Daihatsu Move"
+    ],
+    "L160S": [
+      "Daihatsu Move"
+    ],
+    "LA100S": [
+      "Daihatsu Move"
+    ],
+    "LA110S": [
+      "Daihatsu Move"
+    ],
+    "LA150S": [
+      "Daihatsu Move"
+    ],
+    "LA160S": [
+      "Daihatsu Move"
+    ],
+    "LA800S": [
+      "Daihatsu Move Canbus"
+    ],
+    "LA810S": [
+      "Daihatsu Move Canbus"
+    ],
+    "L575S": [
+      "Daihatsu Move Conte"
+    ],
+    "L585S": [
+      "Daihatsu Move Conte"
+    ],
+    "LA700S": [
+      "Daihatsu Wake"
+    ],
+    "LA710S": [
+      "Daihatsu Wake"
+    ],
+    "LA250S": [
+      "Daihatsu Cast"
+    ],
+    "LA260S": [
+      "Daihatsu Cast"
+    ],
+    "LA900S": [
+      "Daihatsu Taft"
+    ],
+    "LA910S": [
+      "Daihatsu Taft"
+    ],
+    "L880K": [
+      "Daihatsu Copen"
+    ],
+    "LA400K": [
+      "Daihatsu Copen"
+    ],
+    "A200S": [
+      "Daihatsu Rocky"
+    ],
+    "A210S": [
+      "Daihatsu Rocky"
+    ],
+    "J200G": [
+      "Daihatsu Be-go"
+    ],
+    "J210G": [
+      "Daihatsu Be-go"
+    ],
+    "M900S": [
+      "Daihatsu Thor"
+    ],
+    "M910S": [
+      "Daihatsu Thor"
+    ],
+    "M401S": [
+      "Daihatsu Coо"
+    ],
+    "M402S": [
+      "Daihatsu Coо"
+    ],
+    "M411S": [
+      "Daihatsu Coо"
+    ],
+    "M300S": [
+      "Daihatsu Boom"
+    ],
+    "M310S": [
+      "Daihatsu Boom"
+    ],
+    "L235S": [
+      "Daihatsu Esse"
+    ],
+    "L245S": [
+      "Daihatsu Esse"
+    ],
+    "L950S": [
+      "Daihatsu Max"
+    ],
+    "L960S": [
+      "Daihatsu Max"
+    ],
+    "L405S": [
+      "Daihatsu Sonica"
+    ],
+    "L415S": [
+      "Daihatsu Sonica"
+    ],
+    "J111G": [
+      "Daihatsu Terios Kid"
+    ],
+    "J131G": [
+      "Daihatsu Terios Kid"
+    ],
+    "DR64V": [
+      "Nissan NV100 Clipper"
+    ],
+    "DR17V": [
+      "Nissan NV100 Clipper"
+    ],
+    "U71T": [
+      "Nissan Clipper Truck"
+    ],
+    "U72T": [
+      "Nissan Clipper Truck"
+    ],
+    "DR16T": [
+      "Nissan Clipper Truck"
+    ],
+    "B21W": [
+      "Nissan Dayz"
+    ],
+    "B44W": [
+      "Nissan Dayz"
+    ],
+    "B45W": [
+      "Nissan Dayz"
+    ],
+    "B46W": [
+      "Nissan Dayz"
+    ],
+    "B47W": [
+      "Nissan Dayz"
+    ],
+    "B48W": [
+      "Nissan Dayz"
+    ],
+    "B21A": [
+      "Nissan Dayz Roox"
+    ],
+    "B44A": [
+      "Nissan Dayz Roox",
+      "Nissan Roox"
+    ],
+    "B45A": [
+      "Nissan Dayz Roox",
+      "Nissan Roox"
+    ],
+    "B46A": [
+      "Nissan Dayz Roox",
+      "Nissan Roox"
+    ],
+    "B47A": [
+      "Nissan Dayz Roox",
+      "Nissan Roox"
+    ],
+    "B48A": [
+      "Nissan Dayz Roox",
+      "Nissan Roox"
+    ],
+    "ML21S": [
+      "Nissan Roox"
+    ],
+    "E11": [
+      "Nissan Note"
+    ],
+    "NE11": [
+      "Nissan Note"
+    ],
+    "E12": [
+      "Nissan Note"
+    ],
+    "NE12": [
+      "Nissan Note"
+    ],
+    "E12改": [
+      "Nissan Note"
+    ],
+    "E13": [
+      "Nissan Note"
+    ],
+    "HE12": [
+      "Nissan Note"
+    ],
+    "SNE12": [
+      "Nissan Note"
+    ],
+    "C24": [
+      "Nissan Serena"
+    ],
+    "NC24": [
+      "Nissan Serena"
+    ],
+    "CC25": [
+      "Nissan Serena"
+    ],
+    "NC25": [
+      "Nissan Serena"
+    ],
+    "C26": [
+      "Nissan Serena"
+    ],
+    "NC26": [
+      "Nissan Serena"
+    ],
+    "C27": [
+      "Nissan Serena"
+    ],
+    "GC27": [
+      "Nissan Serena"
+    ],
+    "GFC27": [
+      "Nissan Serena"
+    ],
+    "C28": [
+      "Nissan Serena"
+    ],
+    "FC28": [
+      "Nissan Serena"
+    ],
+    "T30": [
+      "Nissan X-Trail"
+    ],
+    "NT30": [
+      "Nissan X-Trail"
+    ],
+    "T31": [
+      "Nissan X-Trail"
+    ],
+    "NT31": [
+      "Nissan X-Trail"
+    ],
+    "T32": [
+      "Nissan X-Trail"
+    ],
+    "NT32": [
+      "Nissan X-Trail"
+    ],
+    "T33": [
+      "Nissan X-Trail"
+    ],
+    "HT32": [
+      "Nissan X-Trail"
+    ],
+    "E50": [
+      "Nissan Elgrand"
+    ],
+    "NE51": [
+      "Nissan Elgrand"
+    ],
+    "ME51": [
+      "Nissan Elgrand"
+    ],
+    "E51": [
+      "Nissan Elgrand"
+    ],
+    "TE52": [
+      "Nissan Elgrand"
+    ],
+    "PE52": [
+      "Nissan Elgrand"
+    ],
+    "PNE52": [
+      "Nissan Elgrand"
+    ],
+    "E25": [
+      "Nissan Caravan"
+    ],
+    "E26": [
+      "Nissan Caravan",
+      "Nissan NV350 Caravan"
+    ],
+    "E24": [
+      "Nissan Caravan"
+    ],
+    "VWE25": [
+      "Nissan Caravan"
+    ],
+    "VWME25": [
+      "Nissan Caravan"
+    ],
+    "CWGE25": [
+      "Nissan Caravan"
+    ],
+    "VW6E26": [
+      "Nissan Caravan",
+      "Nissan NV350 Caravan"
+    ],
+    "CW8E26": [
+      "Nissan NV350 Caravan"
+    ],
+    "KS2E26": [
+      "Nissan NV350 Caravan"
+    ],
+    "Z10": [
+      "Nissan Cube"
+    ],
+    "AZ10": [
+      "Nissan Cube"
+    ],
+    "Z12": [
+      "Nissan Cube"
+    ],
+    "NZ12": [
+      "Nissan Cube"
+    ],
+    "Z12改": [
+      "Nissan Cube"
+    ],
+    "K11": [
+      "Nissan March"
+    ],
+    "AK11": [
+      "Nissan March"
+    ],
+    "K12": [
+      "Nissan March"
+    ],
+    "NK12": [
+      "Nissan March"
+    ],
+    "K13": [
+      "Nissan March"
+    ],
+    "NK13": [
+      "Nissan March"
+    ],
+    "F15": [
+      "Nissan Juke"
+    ],
+    "NF15": [
+      "Nissan Juke"
+    ],
+    "YF15": [
+      "Nissan Juke"
+    ],
+    "V35": [
+      "Nissan Skyline"
+    ],
+    "V36": [
+      "Nissan Skyline"
+    ],
+    "V37": [
+      "Nissan Skyline"
+    ],
+    "HV37": [
+      "Nissan Skyline"
+    ],
+    "Y50": [
+      "Nissan Fuga"
+    ],
+    "PY50": [
+      "Nissan Fuga"
+    ],
+    "KNY51": [
+      "Nissan Fuga"
+    ],
+    "Y51": [
+      "Nissan Fuga"
+    ],
+    "KY51": [
+      "Nissan Fuga"
+    ],
+    "Z33": [
+      "Nissan Fairlady Z"
+    ],
+    "Z34": [
+      "Nissan Fairlady Z"
+    ],
+    "RZ34": [
+      "Nissan Fairlady Z"
+    ],
+    "J31": [
+      "Nissan Teana"
+    ],
+    "PJ31": [
+      "Nissan Teana"
+    ],
+    "TNJ31": [
+      "Nissan Teana"
+    ],
+    "J32": [
+      "Nissan Teana"
+    ],
+    "L33": [
+      "Nissan Teana"
+    ],
+    "C11": [
+      "Nissan Tiida"
+    ],
+    "NC11": [
+      "Nissan Tiida"
+    ],
+    "G10": [
+      "Nissan Bluebird Sylphy"
+    ],
+    "KG11": [
+      "Nissan Bluebird Sylphy"
+    ],
+    "NG11": [
+      "Nissan Bluebird Sylphy"
+    ],
+    "TB17": [
+      "Nissan Bluebird Sylphy"
+    ],
+    "VY11": [
+      "Nissan AD Van"
+    ],
+    "VFY11": [
+      "Nissan AD Van"
+    ],
+    "VY12": [
+      "Nissan AD Van"
+    ],
+    "VZNY12": [
+      "Nissan AD Van"
+    ],
+    "Y12": [
+      "Nissan AD Van"
+    ],
+    "SK82VN": [
+      "Nissan Vanette"
+    ],
+    "SKP2MN": [
+      "Nissan Vanette"
+    ],
+    "S21": [
+      "Nissan Vanette"
+    ],
+    "U30": [
+      "Nissan Presage"
+    ],
+    "TU30": [
+      "Nissan Presage"
+    ],
+    "NU30": [
+      "Nissan Presage"
+    ],
+    "U31": [
+      "Nissan Presage"
+    ],
+    "TU31": [
+      "Nissan Presage"
+    ],
+    "TNU31": [
+      "Nissan Presage"
+    ],
+    "PNZ50": [
+      "Nissan Murano"
+    ],
+    "PZ50": [
+      "Nissan Murano"
+    ],
+    "TZ50": [
+      "Nissan Murano"
+    ],
+    "TNZ51": [
+      "Nissan Murano"
+    ],
+    "J10": [
+      "Nissan Dualis"
+    ],
+    "NJ10": [
+      "Nissan Dualis"
+    ],
+    "WK11": [
+      "Nissan March Box"
+    ],
+    "DW3W": [
+      "Mazda Demio"
+    ],
+    "DW5W": [
+      "Mazda Demio"
+    ],
+    "DY3W": [
+      "Mazda Demio"
+    ],
+    "DY5W": [
+      "Mazda Demio"
+    ],
+    "DE3FS": [
+      "Mazda Demio"
+    ],
+    "DE3AS": [
+      "Mazda Demio"
+    ],
+    "DE5FS": [
+      "Mazda Demio"
+    ],
+    "DEJFS": [
+      "Mazda Demio"
+    ],
+    "KE2FW": [
+      "Mazda CX-5"
+    ],
+    "KE2AW": [
+      "Mazda CX-5"
+    ],
+    "KE5FW": [
+      "Mazda CX-5"
+    ],
+    "KE5AW": [
+      "Mazda CX-5"
+    ],
+    "KF2P": [
+      "Mazda CX-5"
+    ],
+    "KF5P": [
+      "Mazda CX-5"
+    ],
+    "DK5FW": [
+      "Mazda CX-3"
+    ],
+    "DK5AW": [
+      "Mazda CX-3"
+    ],
+    "DK8FW": [
+      "Mazda CX-3"
+    ],
+    "DK8AW": [
+      "Mazda CX-3"
+    ],
+    "DKEFW": [
+      "Mazda CX-3"
+    ],
+    "DKEAW": [
+      "Mazda CX-3"
+    ],
+    "KG2P": [
+      "Mazda CX-8"
+    ],
+    "KG5P": [
+      "Mazda CX-8"
+    ],
+    "LV5W": [
+      "Mazda MPV"
+    ],
+    "LW3W": [
+      "Mazda MPV"
+    ],
+    "LW5W": [
+      "Mazda MPV"
+    ],
+    "LY3P": [
+      "Mazda MPV"
+    ],
+    "CP8W": [
+      "Mazda Premacy"
+    ],
+    "CREW": [
+      "Mazda Premacy"
+    ],
+    "CR3W": [
+      "Mazda Premacy"
+    ],
+    "CWEFW": [
+      "Mazda Premacy"
+    ],
+    "CWFFW": [
+      "Mazda Premacy"
+    ],
+    "NA6CE": [
+      "Mazda Roadster"
+    ],
+    "NA8C": [
+      "Mazda Roadster"
+    ],
+    "NB6C": [
+      "Mazda Roadster"
+    ],
+    "NB8C": [
+      "Mazda Roadster"
+    ],
+    "NCEC": [
+      "Mazda Roadster"
+    ],
+    "ND5RC": [
+      "Mazda Roadster"
+    ],
+    "NDERC": [
+      "Mazda Roadster"
+    ],
+    "BK3P": [
+      "Mazda Axela"
+    ],
+    "BK5P": [
+      "Mazda Axela"
+    ],
+    "BKEP": [
+      "Mazda Axela"
+    ],
+    "BL5FP": [
+      "Mazda Axela"
+    ],
+    "BLEFP": [
+      "Mazda Axela"
+    ],
+    "BLFFW": [
+      "Mazda Axela"
+    ],
+    "BM5FP": [
+      "Mazda Axela"
+    ],
+    "BM5FS": [
+      "Mazda Axela"
+    ],
+    "BVY11": [
+      "Mazda Familia Van"
+    ],
+    "BVY12": [
+      "Mazda Familia Van"
+    ],
+    "BVSY10": [
+      "Mazda Familia Van"
+    ],
+    "DG52V": [
+      "Mazda Scrum"
+    ],
+    "DG62V": [
+      "Mazda Scrum"
+    ],
+    "DG64V": [
+      "Mazda Scrum"
+    ],
+    "DG17V": [
+      "Mazda Scrum"
+    ],
+    "AA6PA": [
+      "Mazda Carol"
+    ],
+    "AC6P": [
+      "Mazda Carol"
+    ],
+    "HB12S": [
+      "Mazda Carol"
+    ],
+    "HB23S": [
+      "Mazda Carol"
+    ],
+    "HB24S": [
+      "Mazda Carol"
+    ],
+    "HB25S": [
+      "Mazda Carol"
+    ],
+    "HB36S": [
+      "Mazda Carol"
+    ],
+    "H81W": [
+      "Mitsubishi eK Wagon"
+    ],
+    "H82W": [
+      "Mitsubishi eK Wagon"
+    ],
+    "B11W": [
+      "Mitsubishi eK Wagon"
+    ],
+    "B33W": [
+      "Mitsubishi eK Wagon"
+    ],
+    "B36W": [
+      "Mitsubishi eK Wagon"
+    ],
+    "B37W": [
+      "Mitsubishi eK Wagon",
+      "Mitsubishi eK X"
+    ],
+    "B38W": [
+      "Mitsubishi eK Wagon",
+      "Mitsubishi eK X"
+    ],
+    "B11A": [
+      "Mitsubishi eK Space"
+    ],
+    "B34A": [
+      "Mitsubishi eK Space"
+    ],
+    "B35A": [
+      "Mitsubishi eK Space"
+    ],
+    "B37A": [
+      "Mitsubishi eK Space"
+    ],
+    "B38A": [
+      "Mitsubishi eK Space"
+    ],
+    "B34W": [
+      "Mitsubishi eK X"
+    ],
+    "B35W": [
+      "Mitsubishi eK X"
+    ],
+    "U41T": [
+      "Mitsubishi Minicab Truck"
+    ],
+    "U42T": [
+      "Mitsubishi Minicab Truck"
+    ],
+    "U61T": [
+      "Mitsubishi Minicab Truck"
+    ],
+    "U62T": [
+      "Mitsubishi Minicab Truck"
+    ],
+    "DS16T": [
+      "Mitsubishi Minicab Truck"
+    ],
+    "U61V": [
+      "Mitsubishi Minicab Van"
+    ],
+    "U62V": [
+      "Mitsubishi Minicab Van"
+    ],
+    "DS17V": [
+      "Mitsubishi Minicab Van"
+    ],
+    "CV5W": [
+      "Mitsubishi Delica D:5"
+    ],
+    "CV1W": [
+      "Mitsubishi Delica D:5"
+    ],
+    "CV2W": [
+      "Mitsubishi Delica D:5"
+    ],
+    "CV4W": [
+      "Mitsubishi Delica D:5"
+    ],
+    "MB15S": [
+      "Mitsubishi Delica D:2"
+    ],
+    "MB36S": [
+      "Mitsubishi Delica D:2"
+    ],
+    "MB46S": [
+      "Mitsubishi Delica D:2"
+    ],
+    "CW4W": [
+      "Mitsubishi Outlander"
+    ],
+    "CW5W": [
+      "Mitsubishi Outlander"
+    ],
+    "CW6W": [
+      "Mitsubishi Outlander"
+    ],
+    "GG2W": [
+      "Mitsubishi Outlander"
+    ],
+    "GF7W": [
+      "Mitsubishi Outlander"
+    ],
+    "GF8W": [
+      "Mitsubishi Outlander"
+    ],
+    "GA3W": [
+      "Mitsubishi RVR"
+    ],
+    "GA4W": [
+      "Mitsubishi RVR"
+    ],
+    "H53A": [
+      "Mitsubishi Pajero Mini"
+    ],
+    "H58A": [
+      "Mitsubishi Pajero Mini"
+    ],
+    "V23W": [
+      "Mitsubishi Pajero"
+    ],
+    "V24W": [
+      "Mitsubishi Pajero"
+    ],
+    "V25W": [
+      "Mitsubishi Pajero"
+    ],
+    "V26W": [
+      "Mitsubishi Pajero"
+    ],
+    "V43W": [
+      "Mitsubishi Pajero"
+    ],
+    "V45W": [
+      "Mitsubishi Pajero"
+    ],
+    "V46W": [
+      "Mitsubishi Pajero"
+    ],
+    "V73W": [
+      "Mitsubishi Pajero"
+    ],
+    "V75W": [
+      "Mitsubishi Pajero"
+    ],
+    "V77W": [
+      "Mitsubishi Pajero"
+    ],
+    "V78W": [
+      "Mitsubishi Pajero"
+    ],
+    "V83W": [
+      "Mitsubishi Pajero"
+    ],
+    "V87W": [
+      "Mitsubishi Pajero"
+    ],
+    "V88W": [
+      "Mitsubishi Pajero"
+    ],
+    "V93W": [
+      "Mitsubishi Pajero"
+    ],
+    "V97W": [
+      "Mitsubishi Pajero"
+    ],
+    "V98W": [
+      "Mitsubishi Pajero"
+    ],
+    "Z21A": [
+      "Mitsubishi Colt"
+    ],
+    "Z22A": [
+      "Mitsubishi Colt"
+    ],
+    "Z23A": [
+      "Mitsubishi Colt"
+    ],
+    "Z24A": [
+      "Mitsubishi Colt"
+    ],
+    "Z27A": [
+      "Mitsubishi Colt"
+    ],
+    "Z27AG": [
+      "Mitsubishi Colt"
+    ],
+    "H82A": [
+      "Mitsubishi Toppo"
+    ],
+    "LA100F": [
+      "Subaru Stella"
+    ],
+    "LA110F": [
+      "Subaru Stella"
+    ],
+    "LA150F": [
+      "Subaru Stella"
+    ],
+    "LA160F": [
+      "Subaru Stella"
+    ],
+    "RJ1": [
+      "Subaru R1"
+    ],
+    "RJ2": [
+      "Subaru R1"
+    ],
+    "RA1": [
+      "Subaru Pleо"
+    ],
+    "RA2": [
+      "Subaru Pleо"
+    ],
+    "RV1": [
+      "Subaru Pleо"
+    ],
+    "RV2": [
+      "Subaru Pleо"
+    ],
+    "GD9": [
+      "Subaru Impreza"
+    ],
+    "GG2": [
+      "Subaru Impreza"
+    ],
+    "GG3": [
+      "Subaru Impreza"
+    ],
+    "GG9": [
+      "Subaru Impreza"
+    ],
+    "GH2": [
+      "Subaru Impreza"
+    ],
+    "GH3": [
+      "Subaru Impreza"
+    ],
+    "GH6": [
+      "Subaru Impreza"
+    ],
+    "GH7": [
+      "Subaru Impreza"
+    ],
+    "GH8": [
+      "Subaru Impreza"
+    ],
+    "GP2": [
+      "Subaru Impreza"
+    ],
+    "GP6": [
+      "Subaru Impreza"
+    ],
+    "GJ2": [
+      "Subaru Impreza"
+    ],
+    "GJ3": [
+      "Subaru Impreza"
+    ],
+    "GJ6": [
+      "Subaru Impreza"
+    ],
+    "GJ7": [
+      "Subaru Impreza"
+    ],
+    "SF5": [
+      "Subaru Forester"
+    ],
+    "SG5": [
+      "Subaru Forester"
+    ],
+    "SG9": [
+      "Subaru Forester"
+    ],
+    "SH5": [
+      "Subaru Forester"
+    ],
+    "SH9": [
+      "Subaru Forester"
+    ],
+    "SJ5": [
+      "Subaru Forester"
+    ],
+    "SJG": [
+      "Subaru Forester"
+    ],
+    "SK5": [
+      "Subaru Forester"
+    ],
+    "SK9": [
+      "Subaru Forester"
+    ],
+    "BH5": [
+      "Subaru Legacy"
+    ],
+    "BH9": [
+      "Subaru Legacy"
+    ],
+    "BE5": [
+      "Subaru Legacy"
+    ],
+    "BP5": [
+      "Subaru Legacy"
+    ],
+    "BP9": [
+      "Subaru Legacy"
+    ],
+    "BR9": [
+      "Subaru Legacy"
+    ],
+    "BM9": [
+      "Subaru Legacy"
+    ],
+    "BN9": [
+      "Subaru Legacy"
+    ],
+    "YA4": [
+      "Subaru Exiga"
+    ],
+    "YA5": [
+      "Subaru Exiga"
+    ],
+    "YAM": [
+      "Subaru Exiga"
+    ],
+    "GT3": [
+      "Subaru XV"
+    ],
+    "GT7": [
+      "Subaru XV"
+    ],
+    "GSE20": [
+      "Lexus IS"
+    ],
+    "GSE21": [
+      "Lexus IS"
+    ],
+    "GSE25": [
+      "Lexus IS"
+    ],
+    "GSE30": [
+      "Lexus IS"
+    ],
+    "GSE31": [
+      "Lexus IS"
+    ],
+    "GSE35": [
+      "Lexus IS"
+    ],
+    "AVE30": [
+      "Lexus IS"
+    ],
+    "ASE30": [
+      "Lexus IS"
+    ],
+    "UZS190": [
+      "Lexus GS"
+    ],
+    "GWS191": [
+      "Lexus GS"
+    ],
+    "GRS190": [
+      "Lexus GS"
+    ],
+    "GRS191": [
+      "Lexus GS"
+    ],
+    "GRS196": [
+      "Lexus GS"
+    ],
+    "GRL10": [
+      "Lexus GS"
+    ],
+    "GRL11": [
+      "Lexus GS"
+    ],
+    "AWL10": [
+      "Lexus GS"
+    ],
+    "UZS186": [
+      "Lexus LS"
+    ],
+    "USF40": [
+      "Lexus LS"
+    ],
+    "USF41": [
+      "Lexus LS"
+    ],
+    "USF45": [
+      "Lexus LS"
+    ],
+    "USF46": [
+      "Lexus LS"
+    ],
+    "VXFA50": [
+      "Lexus LS"
+    ],
+    "VXFA55": [
+      "Lexus LS"
+    ],
+    "AGL10": [
+      "Lexus RX"
+    ],
+    "GGL10": [
+      "Lexus RX"
+    ],
+    "GGL15": [
+      "Lexus RX"
+    ],
+    "GGL16": [
+      "Lexus RX"
+    ],
+    "AGL20": [
+      "Lexus RX"
+    ],
+    "AGL25": [
+      "Lexus RX"
+    ],
+    "GYL20": [
+      "Lexus RX"
+    ],
+    "GYL25": [
+      "Lexus RX"
+    ],
+    "AGZ10": [
+      "Lexus NX"
+    ],
+    "AGZ15": [
+      "Lexus NX"
+    ],
+    "AYZ10": [
+      "Lexus NX"
+    ],
+    "AYZ15": [
+      "Lexus NX"
+    ],
+    "AAZA20": [
+      "Lexus NX"
+    ],
+    "AAZA25": [
+      "Lexus NX"
+    ],
+    "ZWA10": [
+      "Lexus CT"
+    ],
+    "NHR55": [
+      "Isuzu Elf"
+    ],
+    "NKR58": [
+      "Isuzu Elf"
+    ],
+    "NKR66": [
+      "Isuzu Elf"
+    ],
+    "NKR81": [
+      "Isuzu Elf"
+    ],
+    "NKR85": [
+      "Isuzu Elf"
+    ],
+    "NLR85": [
+      "Isuzu Elf"
+    ],
+    "NPR85": [
+      "Isuzu Elf"
+    ],
+    "FRR90": [
+      "Isuzu Forward"
+    ],
+    "FRR33": [
+      "Isuzu Forward"
+    ],
+    "FRR35": [
+      "Isuzu Forward"
+    ],
+    "XZU301": [
+      "Hino Dutro"
+    ],
+    "XZU302": [
+      "Hino Dutro"
+    ],
+    "XZU304": [
+      "Hino Dutro"
+    ],
+    "XZU306": [
+      "Hino Dutro"
+    ],
+    "XZU311": [
+      "Hino Dutro"
+    ],
+    "XZU321": [
+      "Hino Dutro"
+    ],
+    "XZU342": [
+      "Hino Dutro"
+    ],
+    "XZU600": [
+      "Hino Dutro"
+    ],
+    "XZU605": [
+      "Hino Dutro"
+    ],
+    "FE50": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE51": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE53": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE70": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE71": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE73": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FE74": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FEB50": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FEB70": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FBA20": [
+      "Mitsubishi Fuso Canter"
+    ],
+    "FBA30": [
+      "Mitsubishi Fuso Canter"
+    ]
+  },
+  "important_note": "Some chassis codes are shared by variants/OEM rebadges. For ambiguous codes, use manufacturer plus type designation/classification number where available."
 }
