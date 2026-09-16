@@ -524,13 +524,38 @@ Não use:
 初度検査年月
 有効期間の満了する日
 
-Preserve a era japonesa quando ela aparecer.
-Exemplos:
-平成8年 = não confundir com 令和8年
-令和8年 = não confundir com 平成8年
+=========================================================
+CONVERSÃO DE ERAS JAPONESAS
+=========================================================
 
-Nunca retorne somente um número isolado quando a era estiver visível.
-Não transforme 平成8年 em 令和8年.
+É CRÍTICO identificar corretamente a ERA japonesa:
+
+令和 (Reiwa): Começou em 2019
+令和元年 = 2019
+令和8年 = 2027
+
+平成 (Heisei): 1988 até 2019
+平成元年 = 1989
+平成8年 = 1996
+平成25年 = 2013
+
+昭和 (Showa): 1926 até 1989
+昭和元年 = 1926
+昭和63年 = 1988
+
+NUNCA confunda:
+平成8年 (1996) com 令和8年 (2027)
+平成25年 (2013) com 令和5年 (2023)
+
+Leia o caractere da ERA com atenção:
+令 = Reiwa
+平 = Heisei
+昭 = Showa
+明 = Meiji
+大 = Taisho
+
+Se a era não estiver 100% clara:
+retorne VERIFICAR
 
 Não invente mês ou dia.
 Não complete datas incompletas.
@@ -655,8 +680,43 @@ NUNCA retorne:
 Se faltar qualquer parte da placa ou houver dúvida:
 retorne VERIFICAR
 
+=========================================================
+DATA DE REGISTRO
+=========================================================
+
 DATA DE REGISTRO:
 Leia somente 交付年月日.
+
+=========================================================
+CONVERSÃO DE ERAS JAPONESAS
+=========================================================
+
+É CRÍTICO identificar corretamente a ERA japonesa:
+
+令和 (Reiwa): Começou em 2019
+令和元年 = 2019
+令和8年 = 2027
+
+平成 (Heisei): 1988 até 2019
+平成元年 = 1989
+平成8年 = 1996
+平成25年 = 2013
+
+昭和 (Showa): 1926 até 1989
+昭和元年 = 1926
+昭和63年 = 1988
+
+NUNCA confunda:
+平成8年 (1996) com 令和8年 (2027)
+平成25年 (2013) com 令和5年 (2023)
+
+Leia o caractere da ERA com atenção:
+令 = Reiwa
+平 = Heisei
+昭 = Showa
+
+Se a era não estiver 100% clara:
+retorne VERIFICAR
 
 VENCIMENTO:
 Leia somente 有効期間の満了する日.
