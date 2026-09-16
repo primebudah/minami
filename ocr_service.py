@@ -1231,10 +1231,10 @@ def _normalizar_dados_ocr(dados):
                 # Se a primeira parte do display_name for o fabricante, remove
                 if display_name_parts and display_name_parts[0].lower() == fabricante_lower:
                     nome_modelo = ' '.join(display_name_parts[1:])
-                    resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} {nome_modelo}"
+                    resultado["veiculo"] = f"{resultado['veiculo']} {nome_modelo}"
                 else:
                     # Se o fabricante não está no display_name, usa o display_name completo
-                    resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} {modelo_traduzido}"
+                    resultado["veiculo"] = f"{resultado['veiculo']} {modelo_traduzido}"
             else:
                 resultado["veiculo"] = modelo_traduzido
         else:
