@@ -1074,7 +1074,7 @@ def extrair_dados_do_documento(f):
         # Armazena JSON bruto no session_state
         st.session_state.debug_ocr_logs.append({
             "tipo": "JSON_BRUTO",
-            "arquivo": getattr(f, 'name', 'arquivo'),
+            "mensagem": f"Arquivo: {getattr(f, 'name', 'arquivo')}",
             "dados": dados_brutos
         })
 
