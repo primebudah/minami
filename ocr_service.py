@@ -204,124 +204,125 @@ def converter_data_japonesa(valor):
 
     texto = str(valor).strip()
 
-    st.write(f"[DEBUG converter_data_japonesa] Entrada: '{texto}'")
+    with st.expander(f"DEBUG converter_data_japonesa: '{texto}'"):
+        st.write(f"Entrada: '{texto}'")
 
-    if not texto or _campo_nao_identificado(texto):
-        st.write(f"[DEBUG converter_data_japonesa] Texto vazio ou não identificado")
-        return None
-
-    texto = _converter_numeros_japoneses(texto)
-    st.write(f"[DEBUG converter_data_japonesa] Após converter números: '{texto}'")
-
-    match = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", texto)
-    if match:
-        resultado = _formatar_data_iso(
-            match.group(1), match.group(2), match.group(3)
-        )
-        st.write(f"[DEBUG converter_data_japonesa] Match formato ISO: {resultado}")
-        return resultado
-
-    match = re.fullmatch(
-        r"(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})",
-        texto,
-    )
-    if match:
-        resultado = _formatar_data_iso(
-            match.group(1), match.group(2), match.group(3)
-        )
-        st.write(f"[DEBUG converter_data_japonesa] Match formato com separadores: {resultado}")
-        return resultado
-
-    match = re.fullmatch(
-        r"(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})",
-        texto,
-    )
-    if match:
-        resultado = _formatar_data_iso(
-            match.group(3), match.group(2), match.group(1)
-        )
-        st.write(f"[DEBUG converter_data_japonesa] Match formato invertido: {resultado}")
-        return resultado
-
-    match = re.fullmatch(
-        r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?",
-        texto,
-    )
-    if match:
-        resultado = _formatar_data_iso(
-            match.group(1), match.group(2), match.group(3)
-        )
-        st.write(f"[DEBUG converter_data_japonesa] Match formato japonês sem era: {resultado}")
-        return resultado
-
-    if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
-        st.write(f"[DEBUG converter_data_japonesa] Detectada era Reiwa")
-        ano = extrair_ano_reiwa_regex(texto)
-        st.write(f"[DEBUG converter_data_japonesa] Ano Reiwa extraído: {ano}")
-        if ano is None:
+        if not texto or _campo_nao_identificado(texto):
+            st.write("Texto vazio ou não identificado")
             return None
 
-        mes_match = re.search(r"(\d{1,2})\s*月", texto)
-        dia_match = re.search(r"(\d{1,2})\s*日", texto)
+        texto = _converter_numeros_japoneses(texto)
+        st.write(f"Após converter números: '{texto}'")
 
-        if mes_match and dia_match:
+        match = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", texto)
+        if match:
             resultado = _formatar_data_iso(
-                ano, mes_match.group(1), dia_match.group(1)
+                match.group(1), match.group(2), match.group(3)
             )
-            st.write(f"[DEBUG converter_data_japonesa] Resultado Reiwa: {resultado}")
+            st.write(f"Match formato ISO: {resultado}")
             return resultado
 
-        match_alt = re.search(
-            r"(?:令和|R)\s*\d+\s*[\/.\-]\s*(\d{1,2})"
-            r"\s*[\/.\-]\s*(\d{1,2})",
+        match = re.fullmatch(
+            r"(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})",
             texto,
-            re.I,
         )
-        if match_alt:
+        if match:
             resultado = _formatar_data_iso(
-                ano, match_alt.group(1), match_alt.group(2)
+                match.group(1), match.group(2), match.group(3)
             )
-            st.write(f"[DEBUG converter_data_japonesa] Resultado Reiwa alt: {resultado}")
+            st.write(f"Match formato com separadores: {resultado}")
             return resultado
 
-        return None
+        match = re.fullmatch(
+            r"(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})",
+            texto,
+        )
+        if match:
+            resultado = _formatar_data_iso(
+                match.group(3), match.group(2), match.group(1)
+            )
+            st.write(f"Match formato invertido: {resultado}")
+            return resultado
 
-    for era, regex, conversor in [
-        ("平成", r"(?:平成|H)\s*([0-9]+)", calcular_ano_heisei),
-        ("昭和", r"(?:昭和|S)\s*([0-9]+)", calcular_ano_showa),
-        ("大正", r"(?:大正|T)\s*([0-9]+)", calcular_ano_taisho),
-        ("明治", r"(?:明治|M)\s*([0-9]+)", calcular_ano_meiji),
-    ]:
-        if era in texto or re.search(regex, texto, re.I):
-            st.write(f"[DEBUG converter_data_japonesa] Detectada era {era}")
-            match_ano = re.search(regex, texto, re.I)
-            if not match_ano:
+        match = re.fullmatch(
+            r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?",
+            texto,
+        )
+        if match:
+            resultado = _formatar_data_iso(
+                match.group(1), match.group(2), match.group(3)
+            )
+            st.write(f"Match formato japonês sem era: {resultado}")
+            return resultado
+
+        if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
+            st.write("Detectada era Reiwa")
+            ano = extrair_ano_reiwa_regex(texto)
+            st.write(f"Ano Reiwa extraído: {ano}")
+            if ano is None:
                 return None
 
-            ano = conversor(match_ano.group(1))
-            st.write(f"[DEBUG converter_data_japonesa] Ano {era} extraído: {ano}")
             mes_match = re.search(r"(\d{1,2})\s*月", texto)
             dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
-            if not mes_match or not dia_match:
-                return None
+            if mes_match and dia_match:
+                resultado = _formatar_data_iso(
+                    ano, mes_match.group(1), dia_match.group(1)
+                )
+                st.write(f"Resultado Reiwa: {resultado}")
+                return resultado
 
-            resultado = _formatar_data_iso(
-                ano, mes_match.group(1), dia_match.group(1)
+            match_alt = re.search(
+                r"(?:令和|R)\s*\d+\s*[\/.\-]\s*(\d{1,2})"
+                r"\s*[\/.\-]\s*(\d{1,2})",
+                texto,
+                re.I,
             )
-            st.write(f"[DEBUG converter_data_japonesa] Resultado {era}: {resultado}")
+            if match_alt:
+                resultado = _formatar_data_iso(
+                    ano, match_alt.group(1), match_alt.group(2)
+                )
+                st.write(f"Resultado Reiwa alt: {resultado}")
+                return resultado
+
+            return None
+
+        for era, regex, conversor in [
+            ("平成", r"(?:平成|H)\s*([0-9]+)", calcular_ano_heisei),
+            ("昭和", r"(?:昭和|S)\s*([0-9]+)", calcular_ano_showa),
+            ("大正", r"(?:大正|T)\s*([0-9]+)", calcular_ano_taisho),
+            ("明治", r"(?:明治|M)\s*([0-9]+)", calcular_ano_meiji),
+        ]:
+            if era in texto or re.search(regex, texto, re.I):
+                st.write(f"Detectada era {era}")
+                match_ano = re.search(regex, texto, re.I)
+                if not match_ano:
+                    return None
+
+                ano = conversor(match_ano.group(1))
+                st.write(f"Ano {era} extraído: {ano}")
+                mes_match = re.search(r"(\d{1,2})\s*月", texto)
+                dia_match = re.search(r"(\d{1,2})\s*日", texto)
+
+                if not mes_match or not dia_match:
+                    return None
+
+                resultado = _formatar_data_iso(
+                    ano, mes_match.group(1), dia_match.group(1)
+                )
+                st.write(f"Resultado {era}: {resultado}")
+                return resultado
+
+        numeros = re.sub(r"\D", "", texto)
+        if len(numeros) == 8 and 1900 <= int(numeros[:4]) <= 2100:
+            resultado = _formatar_data_iso(
+                numeros[:4], numeros[4:6], numeros[6:8]
+            )
+            st.write(f"Match apenas números: {resultado}")
             return resultado
 
-    numeros = re.sub(r"\D", "", texto)
-    if len(numeros) == 8 and 1900 <= int(numeros[:4]) <= 2100:
-        resultado = _formatar_data_iso(
-            numeros[:4], numeros[4:6], numeros[6:8]
-        )
-        st.write(f"[DEBUG converter_data_japonesa] Match apenas números: {resultado}")
-        return resultado
-
-    st.write(f"[DEBUG converter_data_japonesa] Nenhum match encontrado")
-    return None
+        st.write("Nenhum match encontrado")
+        return None
 
 
 def validar_data_convertida(valor):
@@ -884,23 +885,24 @@ def _normalizar_dados_ocr(dados):
 
 
 def _converter_datas_dados(dados):
-    for campo in ["shaken_vencimento", "data_registro"]:
-        valor = dados.get(campo)
+    with st.expander("DEBUG Conversão de Datas"):
+        for campo in ["shaken_vencimento", "data_registro"]:
+            valor = dados.get(campo)
 
-        st.write(f"[DEBUG] {campo} original do OCR: '{valor}'")
+            st.write(f"{campo} original do OCR: '{valor}'")
 
-        if _campo_nao_identificado(valor):
-            dados[campo] = "VERIFICAR"
-            continue
+            if _campo_nao_identificado(valor):
+                dados[campo] = "VERIFICAR"
+                continue
 
-        convertido = converter_data_japonesa(valor)
+            convertido = converter_data_japonesa(valor)
 
-        st.write(f"[DEBUG] {campo} convertido: '{convertido}'")
+            st.write(f"{campo} convertido: '{convertido}'")
 
-        if convertido and validar_data_convertida(convertido):
-            dados[campo] = convertido
-        else:
-            dados[campo] = "VERIFICAR"
+            if convertido and validar_data_convertida(convertido):
+                dados[campo] = convertido
+            else:
+                dados[campo] = "VERIFICAR"
 
     return dados
 
