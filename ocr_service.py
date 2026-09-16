@@ -532,8 +532,8 @@ CONVERSÃO DE ERAS JAPONESAS
 
 令和 (Reiwa): Começou em 2019
 令和元年 = 2019
-令和8年 = 2027
-令和10年 = 2029
+令和8年 = 2026
+令和10年 = 2028
 
 平成 (Heisei): 1988 até 2019
 平成元年 = 1989
@@ -546,8 +546,8 @@ CONVERSÃO DE ERAS JAPONESAS
 昭和63年 = 1988
 
 NUNCA confunda:
-平成8年 (1996) com 令和8年 (2027)
-平成10年 (1998) com 令和10年 (2029)
+平成8年 (1996) com 令和8年 (2026)
+平成10年 (1998) com 令和10年 (2028)
 平成25年 (2013) com 令和5年 (2023)
 
 Leia o caractere da ERA com atenção:
@@ -711,8 +711,8 @@ CONVERSÃO DE ERAS JAPONESAS
 
 令和 (Reiwa): Começou em 2019
 令和元年 = 2019
-令和8年 = 2027
-令和10年 = 2029
+令和8年 = 2026
+令和10年 = 2028
 
 平成 (Heisei): 1988 até 2019
 平成元年 = 1989
@@ -725,8 +725,8 @@ CONVERSÃO DE ERAS JAPONESAS
 昭和63年 = 1988
 
 NUNCA confunda:
-平成8年 (1996) com 令和8年 (2027)
-平成10年 (1998) com 令和10年 (2029)
+平成8年 (1996) com 令和8年 (2026)
+平成10年 (1998) com 令和10年 (2028)
 平成25年 (2013) com 令和5年 (2023)
 
 Leia o caractere da ERA com atenção:
