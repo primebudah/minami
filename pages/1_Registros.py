@@ -11,7 +11,7 @@ import pandas as pd
 import streamlit as st
 
 from database import inicializar_banco, salvar_cliente, listar_clientes, atualizar_cliente, deletar_cliente, desfazer_ultima_acao
-from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
+from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo, _mostrar_logs_debug
 from ui_base import inject_base_css
 from auth import require_login, can, logout_button, _load_config
 
@@ -673,6 +673,9 @@ with col_foto:
                     st.session_state._fila_editor_v += 1
                     st.session_state.uploader_key = st.session_state.get('uploader_key', 0) + 1
                 st.rerun()
+
+# Mostra logs de debug OCR (persistente)
+_mostrar_logs_debug()
 
 # =========================================================
 # FILA DE REGISTROS PENDENTES
