@@ -41,44 +41,27 @@ except Exception as e:
     print(f"[DEBUG] OpenAI indisponível: {e}")
 
 
-# =========================================================
-# TRADUÇÃO DE VEÍCULOS
-# =========================================================
-
-_VEICULO_TRADUCAO = {
-    "普通乗用": "Passeio",
-    "小型乗用": "Passeio",
-    "軽乗用": "Kei",
-    "軽自動車": "Kei",
-    "普通貨物": "Carga",
-    "小型貨物": "Carga",
-    "軽貨物": "Kei Carga",
-    "乗用": "Passeio",
-    "貨物": "Carga",
-    "特殊": "Especial",
-    "大型特殊": "Especial",
-    "二輪": "Motocicleta",
-    "側車付二輪": "Motocicleta",
-    "原付": "Ciclomotor",
-    "小型二輪": "Motocicleta",
-    "普通二輪": "Motocicleta",
-}
-
-
 def traduzir_veiculo(valor):
-    if valor is None:
-        return ""
+    if not valor:
+        return "VERIFICAR"
 
     texto = str(valor).strip()
 
-    if not texto:
-        return ""
+    fabricantes = {
+        "スズキ": "Suzuki",
+        "トヨタ": "Toyota",
+        "ホンダ": "Honda",
+        "日産": "Nissan",
+        "ニッサン": "Nissan",
+        "ダイハツ": "Daihatsu",
+        "マツダ": "Mazda",
+        "三菱": "Mitsubishi",
+        "スバル": "Subaru",
+        "いすゞ": "Isuzu",
+        "日野": "Hino",
+    }
 
-    for japones, portugues in _VEICULO_TRADUCAO.items():
-        if japones in texto:
-            return portugues
-
-    return texto
+    return fabricantes.get(texto, texto)
 
 
 # =========================================================
@@ -171,7 +154,14 @@ def extrair_ano_reiwa_regex(texto):
 
         if match:
             try:
-                return calcular_ano_reiwa(int(match.group(1)))
+                numero = int(match.group(1))
+
+                # Reiwa válida: anos 1 em diante
+                if numero < 1:
+                    return None
+
+                return calcular_ano_reiwa(numero)
+
             except Exception:
                 return None
 
@@ -415,7 +405,8 @@ Você é especialista em leitura de documentos japoneses de veículos.
 O documento normalmente é:
 自動車検査証記録事項
 
-Retorne somente JSON válido com estas chaves:
+Analise visualmente a foto inteira do documento e retorne somente JSON válido
+com exatamente estas chaves:
 
 {
   "nome": "",
@@ -430,60 +421,193 @@ Retorne somente JSON válido com estas chaves:
   "data_registro": ""
 }
 
-REGRAS:
+=========================================================
+IDENTIFICAÇÃO DO VEÍCULO
+=========================================================
 
 FABRICANTE:
-Use 車名.
+Extraia o fabricante/marca real do veículo usando principalmente o campo:
+車名
+
+Exemplos de fabricantes:
+スズキ = Suzuki
+トヨタ = Toyota
+ホンダ = Honda
+日産 / ニッサン = Nissan
+ダイハツ = Daihatsu
+マツダ = Mazda
+三菱 = Mitsubishi
+スバル = Subaru
+
+Não confunda fabricante com categoria do veículo.
 
 MODELO:
-Use 型式.
+Extraia o modelo real do veículo quando estiver claramente visível
+na foto do documento.
+
+Procure o nome/modelo comercial do carro no documento.
+Exemplos:
+Wagon R
+Alto
+Jimny
+Prius
+Aqua
+N-BOX
+Tanto
+Move
+Serena
+Hiace
+
+Não invente o modelo.
+Se o modelo comercial não estiver claramente legível, use VERIFICAR.
+
+VEICULO:
+Este campo deve conter o FABRICANTE + MODELO REAL do veículo,
+quando ambos estiverem identificáveis na foto.
+
+Exemplos corretos:
+Suzuki Wagon R
+Toyota Prius
+Honda N-BOX
+Daihatsu Tanto
+Nissan Serena
+Suzuki Alto
+
+Se somente o fabricante estiver claramente identificado:
+Suzuki
+Toyota
+Honda
+Nissan
+
+NUNCA preencher "veiculo" com categorias ou classificações como:
+Kei
+Carga
+Passageiro
+Caminhão
+Ônibus
+Veículo leve
+軽
+軽自動車
+貨物
+乗用
+乗合
+
+Essas palavras são categorias/classificações do veículo e NÃO são
+o fabricante nem o modelo.
+
+O campo 車名 normalmente identifica o fabricante.
+O modelo deve ser extraído somente quando estiver realmente visível
+ou claramente identificável na foto.
+
+=========================================================
+CHASSI
+=========================================================
 
 CHASSI:
-Use 車台番号.
-Não confunda com número de tipo, modelo ou placa.
+Use exclusivamente o campo:
+車台番号
+
+Não confunda com:
+- 型式
+- número de tipo
+- número de classificação
+- placa
+- número de registro
+
+CHASSI_COMPLETO:
+Retorne o número completo do chassi exatamente como aparece.
+
+=========================================================
+PLACA
+=========================================================
 
 PLACA:
-Use exclusivamente 自動車登録番号又は車両番号.
+Use exclusivamente:
+自動車登録番号又は車両番号
 
-A placa precisa conter quatro partes:
+A placa japonesa precisa conter a estrutura completa:
+
 REGIÃO + CLASSIFICAÇÃO + KANA + NÚMERO
 
 Exemplo:
 浜松 581 す 4338
 
-Outro:
+Outro exemplo:
 名古屋 330 あ 12-34
 
-Não retorne somente números.
-Não remova a estrutura.
-Não confunda chassi com placa.
-Se qualquer parte estiver ilegível, retorne VERIFICAR.
+Não retorne somente o número final.
+Não confunda placa com chassi.
+Não use número de tipo como placa.
+Não remova a região, classificação ou kana.
+
+Se qualquer parte da placa estiver ilegível ou ausente:
+retorne VERIFICAR.
+
+=========================================================
+DATA DE REGISTRO
+=========================================================
 
 DATA DE REGISTRO:
-Use somente 交付年月日.
+Use exclusivamente:
+交付年月日
 
-Não use 初度検査年月.
-Não use 有効期間の満了する日.
+Não use:
+初度検査年月
+有効期間の満了する日
 
-VENCIMENTO DO SHAKEN:
-Use somente 有効期間の満了する日.
+Preserve a era japonesa quando ela aparecer.
+Exemplos:
+平成8年 = não confundir com 令和8年
+令和8年 = não confundir com 平成8年
 
-DATAS:
-Retorne exatamente como aparecem no documento.
+Nunca retorne somente um número isolado quando a era estiver visível.
+Não transforme 平成8年 em 令和8年.
+
 Não invente mês ou dia.
 Não complete datas incompletas.
-Se não estiver completamente legível, retorne VERIFICAR.
+Se a data não estiver completamente legível:
+retorne VERIFICAR.
+
+=========================================================
+VENCIMENTO DO SHAKEN
+=========================================================
+
+SHAKEN_VENCIMENTO:
+Use exclusivamente:
+有効期間の満了する日
+
+Não confunda com:
+交付年月日
+初度検査年月
+data de primeira inspeção
+data de registro
+
+=========================================================
+NOME E CONTATO
+=========================================================
 
 NOME:
-Extraia o proprietário quando estiver visível.
+Extraia o nome do proprietário somente quando estiver visível.
 
 CONTATO:
-Extraia telefone somente se estiver visível.
+Extraia telefone somente quando estiver visível.
 
-Para qualquer campo ilegível, use VERIFICAR.
+=========================================================
+REGRAS GERAIS
+=========================================================
+
+- Retorne somente JSON válido.
+- Não escreva explicações fora do JSON.
+- Não invente informações.
+- Não faça suposições.
+- Para qualquer campo ilegível, ausente ou duvidoso, use VERIFICAR.
+- Preserve os dados exatamente como aparecem no documento.
+- Diferencie cuidadosamente fabricante, modelo, classificação, placa,
+  chassi, data de registro e vencimento do shaken.
 """
 
 RETRY_PROMPT = r"""
+
 Faça uma segunda conferência visual deste documento japonês.
 
 Retorne somente JSON válido:
