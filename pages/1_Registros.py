@@ -11,7 +11,7 @@ import pandas as pd
 import streamlit as st
 
 from database import inicializar_banco, salvar_cliente, listar_clientes, atualizar_cliente, deletar_cliente, desfazer_ultima_acao
-from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo
+from ocr_service import extrair_dados_do_documento, converter_data_japonesa, traduzir_veiculo, traduzir_modelo
 from ui_base import inject_base_css
 from auth import require_login, can, logout_button, _load_config
 

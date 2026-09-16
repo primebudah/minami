@@ -65,6 +65,199 @@ def traduzir_veiculo(valor):
     return fabricantes.get(texto, texto)
 
 
+def traduzir_modelo(texto):
+    """Traduz códigos de modelo para nomes comerciais em português."""
+    if not texto:
+        return texto
+    
+    texto = str(texto).strip().upper()
+    
+    # Dicionário de modelos por fabricante
+    modelos = {
+        # Suzuki
+        "CBA-HA36S": "Wagon R",
+        "MH23S": "Wagon R",
+        "MH21S": "Wagon R",
+        "CBA-MH21S": "Wagon R",
+        "CBA-MH23S": "Wagon R",
+        "CBA-HA25S": "Alto",
+        "HA25S": "Alto",
+        "JB23W": "Jimny",
+        "JB33W": "Jimny",
+        "JB43W": "Jimny",
+        "JB64W": "Jimny",
+        "CBA-JB64W": "Jimny",
+        "CBA-JB23W": "Jimny",
+        "CBA-JB33W": "Jimny",
+        "CBA-JB43W": "Jimny",
+        "MA15S": "Alto",
+        "CBA-MA15S": "Alto",
+        "AB15S": "Alto",
+        "CBA-AB15S": "Alto",
+        "MC21S": "Wagon R",
+        "MC22S": "Wagon R",
+        "MC12S": "Wagon R",
+        
+        # Toyota
+        "NHP130": "Prius",
+        "ZVW30": "Prius",
+        "ZVW50": "Prius",
+        "NHP10": "Prius",
+        "NHP20": "Prius",
+        "MNH10": "Aqua",
+        "MNH20": "Aqua",
+        "MNH30": "Aqua",
+        "NCP100": "Vitz",
+        "NCP120": "Vitz",
+        "NCP130": "Vitz",
+        "NCP150": "Vitz",
+        "KSP130": "Porte",
+        "KSP210": "Porte",
+        "NSP130": "Porte",
+        "NSP210": "Porte",
+        "DBA-KSP210": "Porte",
+        "DBA-NSP210": "Porte",
+        "DBA-KSP130": "Porte",
+        "DBA-NSP130": "Porte",
+        "TRH200": "Hiace",
+        "TRH290": "Hiace",
+        "TRH290K": "Hiace",
+        "TRH200K": "Hiace",
+        "CBA-TRH200": "Hiace",
+        "CBA-TRH290": "Hiace",
+        "CBA-TRH200K": "Hiace",
+        "CBA-TRH290K": "Hiace",
+        "KDH200": "Hiace",
+        "KDH290": "Hiace",
+        "KDH200K": "Hiace",
+        "KDH290K": "Hiace",
+        "CBA-KDH200": "Hiace",
+        "CBA-KDH290": "Hiace",
+        "CBA-KDH200K": "Hiace",
+        "CBA-KDH290K": "Hiace",
+        
+        # Honda
+        "DBA-JF1": "N-BOX",
+        "JF1": "N-BOX",
+        "JF2": "N-BOX",
+        "DBA-JF2": "N-BOX",
+        "DBA-JF3": "N-BOX Custom",
+        "JF3": "N-BOX Custom",
+        "DBA-JF4": "N-BOX Custom",
+        "JF4": "N-BOX Custom",
+        "DBA-GK5": "Fit",
+        "GK5": "Fit",
+        "GK3": "Fit",
+        "DBA-GK3": "Fit",
+        "DBA-GP5": "Fit",
+        "GP5": "Fit",
+        "GP3": "Fit",
+        "DBA-GP3": "Fit",
+        "DBA-GB5": "Fit",
+        "GB5": "Fit",
+        "GB3": "Fit",
+        "DBA-GB3": "Fit",
+        "DBA-GR9": "Freed",
+        "GR9": "Freed",
+        "DBA-GB7": "Freed",
+        "GB7": "Freed",
+        
+        # Nissan
+        "DBA-C26": "Serena",
+        "C26": "Serena",
+        "DBA-C25": "Serena",
+        "C25": "Serena",
+        "DBA-C27": "Serena",
+        "C27": "Serena",
+        "DBA-NV200": "NV200",
+        "NV200": "NV200",
+        "DBA-E25": "Note",
+        "E25": "Note",
+        "DBA-E12": "Note",
+        "E12": "Note",
+        "DBA-HG35": "Dayz",
+        "HG35": "Dayz",
+        "DBA-HG36": "Dayz",
+        "HG36": "Dayz",
+        
+        # Daihatsu
+        "DBA-L575S": "Tanto",
+        "L575S": "Tanto",
+        "DBA-L585S": "Tanto",
+        "L585S": "Tanto",
+        "DBA-L590S": "Tanto Custom",
+        "L590S": "Tanto Custom",
+        "DBA-L600S": "Tanto Custom",
+        "L600S": "Tanto Custom",
+        "DBA-LA600S": "Tanto Custom",
+        "LA600S": "Tanto Custom",
+        "DBA-LA590S": "Tanto Custom",
+        "LA590S": "Tanto Custom",
+        "DBA-LA585S": "Tanto",
+        "LA585S": "Tanto",
+        "DBA-LA575S": "Tanto",
+        "LA575S": "Tanto",
+        "DBA-M400S": "Move",
+        "M400S": "Move",
+        "DBA-M401S": "Move",
+        "M401S": "Move",
+        "DBA-L700S": "Move",
+        "L700S": "Move",
+        "DBA-L710S": "Move",
+        "L710S": "Move",
+        "DBA-L750S": "Move Conte",
+        "L750S": "Move Conte",
+        "DBA-L760S": "Move Conte",
+        "L760S": "Move Conte",
+        
+        # Mazda
+        "DBA-DK5AW": "Demio",
+        "DK5AW": "Demio",
+        "DBA-DK3AW": "Demio",
+        "DK3AW": "Demio",
+        "DBA-DK5FW": "Demio",
+        "DK5FW": "Demio",
+        "DBA-DK3FW": "Demio",
+        "DK3FW": "Demio",
+        "DBA-CB5AW": "Axela",
+        "CB5AW": "Axela",
+        "DBA-CB3AW": "Axela",
+        "CB3AW": "Axela",
+        
+        # Mitsubishi
+        "DBA-A000W": "eK",
+        "A000W": "eK",
+        "DBA-A001W": "eK",
+        "A001W": "eK",
+        "DBA-A002W": "eK",
+        "A002W": "eK",
+        "DBA-A003W": "eK",
+        "A003W": "eK",
+        "DBA-A100W": "eK",
+        "A100W": "eK",
+        "DBA-A101W": "eK",
+        "A101W": "eK",
+        "DBA-A102W": "eK",
+        "A102W": "eK",
+        "DBA-A103W": "eK",
+        "A103W": "eK",
+        
+        # Subaru
+        "DBA-A1A": "Stella",
+        "A1A": "Stella",
+        "DBA-A2A": "Stella",
+        "A2A": "Stella",
+        "DBA-A3A": "Stella",
+        "A3A": "Stella",
+        "DBA-A4A": "Stella",
+        "A4A": "Stella",
+        "DBA-A5A": "Stella",
+        "A5A": "Stella",
+    }
+    
+    return modelos.get(texto, texto)
+
+
 # =========================================================
 # NORMALIZAÇÃO
 # =========================================================
@@ -1063,6 +1256,10 @@ def _normalizar_dados_ocr(dados):
 
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
+    
+    # Traduz código do modelo para nome comercial
+    if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
+        resultado["modelo"] = traduzir_modelo(resultado["modelo"])
     
     # Combina fabricante + modelo na coluna veiculo
     if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
