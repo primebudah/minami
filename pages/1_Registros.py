@@ -625,10 +625,11 @@ with col_foto:
             "Selecione até 5 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
-            key=f"uploader_{st.session_state.get('uploader_key', 0)}"
+            key="uploader_fotos"
         )
 
         if files:
+            print(f"[DEBUG] {len(files)} fotos carregadas: {[f.name for f in files]}")
             # Limita a 5 fotos
             if len(files) > 5:
                 st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 5 fotos por vez. Processando apenas as 5 primeiras.")
