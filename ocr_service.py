@@ -1214,16 +1214,20 @@ def _normalizar_dados_ocr(dados):
         
         # Se o modelo foi traduzido para algo diferente do código original
         if modelo_traduzido != resultado["modelo"]:
-            # O display_name já inclui o fabricante (ex: "Daihatsu Hijet Truck")
-            # Se já tiver o fabricante no display_name, usa direto
+            # O display_name já inclui o fabricante (ex: "Suzuki Every")
+            # Extrai apenas o nome do modelo (remove o fabricante se já estiver no veiculo)
             if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
-                # Se o display_name já tem o fabricante, usa ele
-                # Se não, combina fabricante + modelo
+                # Remove o fabricante do display_name se ele já estiver no campo veiculo
                 fabricante_lower = resultado["veiculo"].lower()
-                if fabricante_lower in modelo_traduzido.lower():
-                    resultado["veiculo"] = modelo_traduzido
+                display_name_parts = modelo_traduzido.split()
+                
+                # Se a primeira parte do display_name for o fabricante, remove
+                if display_name_parts and display_name_parts[0].lower() == fabricante_lower:
+                    nome_modelo = ' '.join(display_name_parts[1:])
+                    resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} {nome_modelo}"
                 else:
-                    resultado["veiculo"] = f"{resultado['veiculo']} {modelo_traduzido}"
+                    # Se o fabricante não está no display_name, usa o display_name completo
+                    resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} {modelo_traduzido}"
             else:
                 resultado["veiculo"] = modelo_traduzido
 
