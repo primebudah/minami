@@ -1269,6 +1269,20 @@ def _converter_datas_dados(dados):
             dados[campo] = convertido
         else:
             dados[campo] = "VERIFICAR"
+    
+    # Validação lógica: shaken_vencimento deve ser posterior a data_registro
+    # Se não for, troca as datas (OCR pode ter invertido)
+    if dados.get("shaken_vencimento") != "VERIFICAR" and dados.get("data_registro") != "VERIFICAR":
+        try:
+            from datetime import datetime
+            shaken = datetime.strptime(dados["shaken_vencimento"], "%Y-%m-%d")
+            registro = datetime.strptime(dados["data_registro"], "%Y-%m-%d")
+            
+            # Se shaken é anterior ou igual a registro, troca
+            if shaken <= registro:
+                dados["shaken_vencimento"], dados["data_registro"] = dados["data_registro"], dados["shaken_vencimento"]
+        except Exception:
+            pass
 
     return dados
 
