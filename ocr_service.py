@@ -315,85 +315,101 @@ def validar_data_convertida(valor):
     )
 
 
-# =========================================================
-# PLACAS
-# =========================================================
+=========================================================
+PLACA — LEITURA CARACTERE POR CARACTERE
+=========================================================
 
-def _normalizar_placa_texto(texto):
-    if not texto:
-        return ""
+PLACA:
+Leia EXCLUSIVAMENTE o campo japonês:
 
-    texto = str(texto).strip()
-    texto = texto.replace("　", " ")
-    texto = texto.replace("—", "-").replace("－", "-").replace("–", "-")
-    texto = re.sub(r"\s+", " ", texto)
+自動車登録番号又は車両番号
 
-    return texto.strip()
+A placa deve ser lida visualmente, caractere por caractere,
+sem completar, corrigir ou presumir informações.
 
+A estrutura obrigatória é:
 
-def validar_placa_japonesa(placa):
-    if not placa:
-        return False
+[REGIÃO EM KANJI] [CLASSIFICAÇÃO] [HIRAGANA/KANA] [NÚMERO]
 
-    texto = _normalizar_placa_texto(placa)
+Exemplo de estrutura:
+豊橋 581 り 6940
 
-    if texto.upper() in {"VERIFICAR", "NÃO IDENTIFICADO", "NAO IDENTIFICADO"}:
-        return False
+IMPORTANTE:
+Não escolha a cidade com base em probabilidade, localização,
+frequência ou conhecimento prévio.
 
-    regiao = r"[一-龯々ヶ]{1,8}"
-    classificacao = r"\d{3}"
-    kana = r"[あ-んア-ンゑヱ]"
-    numero = r"(?:\d{1,4}|\d{1,2}-\d{2})"
+Não substitua automaticamente uma cidade por outra.
 
-    padroes = [
-        rf"^{regiao}\s+{classificacao}\s+{kana}\s+{numero}$",
-        rf"^{regiao}\s*{classificacao}\s*{kana}\s*{numero}$",
-    ]
+Não confunda:
+豊橋 com 浜松
+豊 com 浜
+橋 com 松
 
-    return any(re.fullmatch(p, texto) for p in padroes)
+Os dois primeiros kanji devem ser copiados exatamente como
+aparecem no documento.
 
+=========================================================
+LEITURA DO KANA
+=========================================================
 
-def extrair_placa(texto):
-    if not texto:
-        return "VERIFICAR"
+O kana deve ser identificado visualmente, não por contexto.
 
-    texto = _normalizar_placa_texto(texto)
+Diferencie cuidadosamente:
 
-    padroes = [
-        r"([一-龯々ヶ]{1,8}\s+\d{3}\s+[あ-んア-ンゑヱ]\s+(?:\d{1,2}-\d{2}|\d{1,4}))",
-        r"([一-龯々ヶ]{1,8}\s*\d{3}\s*[あ-んア-ンゑヱ]\s*(?:\d{1,2}-\d{2}|\d{1,4}))",
-    ]
+り = ri
+る = ru
+れ = re
+ろ = ro
+ら = ra
 
-    for padrao in padroes:
-        match = re.search(padrao, texto)
-        if match:
-            placa = _normalizar_placa_texto(match.group(1))
-            if validar_placa_japonesa(placa):
-                return placa
+Também diferencie:
+せ = se
+そ = so
+さ = sa
+す = su
 
-    tokens = texto.split()
-    for i in range(len(tokens) - 3):
-        candidata = " ".join(tokens[i:i + 4])
-        if validar_placa_japonesa(candidata):
-            return candidata
+Nunca transforme り em る.
+Nunca transforme る em り.
+Nunca escolha um kana apenas porque ele é mais comum.
 
-    return "VERIFICAR"
+Observe o formato real do caractere na imagem.
 
+Se o kana não puder ser distinguido com segurança:
+retorne VERIFICAR para a placa inteira.
 
-def normalizar_placa_final(valor):
-    if _campo_nao_identificado(valor):
-        return "VERIFICAR"
+=========================================================
+REGRA DE CONFERÊNCIA DA PLACA
+=========================================================
 
-    placa = _normalizar_placa_texto(valor)
-    if validar_placa_japonesa(placa):
-        return placa
+Antes de retornar a placa, faça mentalmente duas leituras:
 
-    placa_extraida = extrair_placa(placa)
-    if validar_placa_japonesa(placa_extraida):
-        return placa_extraida
+PRIMEIRA LEITURA:
+Leia normalmente todos os caracteres.
 
-    return "VERIFICAR"
+SEGUNDA LEITURA:
+Confira individualmente:
+1. Primeiro kanji da região;
+2. Segundo kanji da região;
+3. Cada dígito da classificação;
+4. Kana;
+5. Cada número final.
 
+Somente retorne a placa se as duas leituras forem compatíveis.
+
+Não corrija a leitura para uma cidade ou kana presumido.
+
+Se houver dúvida entre dois caracteres semelhantes,
+retorne VERIFICAR em vez de inventar.
+
+A placa deve preservar exatamente:
+- kanji da região;
+- classificação;
+- kana;
+- número final.
+
+Não retorne somente os números.
+Não remova os kanji.
+Não traduza a cidade para português.
 
 # =========================================================
 # PROMPTS
@@ -728,8 +744,6 @@ def _normalizar_dados_ocr(dados):
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
 
-    resultado["placa"] = normalizar_placa_final(resultado["placa"])
-
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
             resultado[campo] = re.sub(r"\s+", "", str(resultado[campo])).upper()
@@ -763,9 +777,6 @@ def _dados_precisam_retry(dados):
     if not dados:
         return True
 
-    if not validar_placa_japonesa(dados.get("placa", "")):
-        return True
-
     if not validar_data_convertida(dados.get("shaken_vencimento", "")):
         return True
 
@@ -787,10 +798,6 @@ def _dados_precisam_retry(dados):
 def _mesclar_retry(original, retry):
     if not isinstance(retry, dict):
         return original
-
-    placa_retry = normalizar_placa_final(retry.get("placa", ""))
-    if validar_placa_japonesa(placa_retry):
-        original["placa"] = placa_retry
 
     shaken_retry = converter_data_japonesa(retry.get("shaken_vencimento", ""))
     if shaken_retry and validar_data_convertida(shaken_retry):
