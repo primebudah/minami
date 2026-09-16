@@ -42,6 +42,61 @@ except Exception as e:
     print(f"[DEBUG] OpenAI indisponível: {e}")
 
 
+# =========================================================
+# BASE DE DADOS DE MODELOS (JSON)
+# =========================================================
+
+_model_database_cache = None
+
+def _carregar_database_modelos():
+    """Carrega o JSON de modelos de veículos e cria cache de código -> display_name."""
+    global _model_database_cache
+    
+    if _model_database_cache is not None:
+        return _model_database_cache
+    
+    try:
+        # Tenta carregar do arquivo no projeto
+        caminho_json = os.path.join(os.path.dirname(__file__), "japan_vehicle_model_database.json")
+        
+        if os.path.exists(caminho_json):
+            with open(caminho_json, 'r', encoding='utf-8') as f:
+                dados = json.load(f)
+            
+            # Cria cache: código -> display_name
+            cache = {}
+            for registro in dados.get("records", []):
+                display_name = registro.get("display_name", "")
+                for codigo in registro.get("model_codes", []):
+                    cache[codigo.upper()] = display_name
+            
+            _model_database_cache = cache
+            return cache
+        else:
+            print(f"[AVISO] Arquivo de modelos não encontrado: {caminho_json}")
+            _model_database_cache = {}
+            return {}
+    except Exception as e:
+        print(f"[ERRO] Ao carregar database de modelos: {e}")
+        _model_database_cache = {}
+        return {}
+
+
+def traduzir_codigo_modelo(codigo):
+    """Traduz código de modelo para display_name usando o JSON."""
+    if not codigo:
+        return codigo
+    
+    cache = _carregar_database_modelos()
+    codigo_upper = str(codigo).strip().upper()
+    
+    return cache.get(codigo_upper, codigo)
+
+
+# =========================================================
+# TRADUÇÃO DE FABRICANTE
+# =========================================================
+
 def traduzir_veiculo(valor):
     if not valor:
         return "VERIFICAR"
@@ -1152,6 +1207,25 @@ def _normalizar_dados_ocr(dados):
 
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
+    
+    # Traduz código do modelo usando o JSON e combina com fabricante
+    if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
+        modelo_traduzido = traduzir_codigo_modelo(resultado["modelo"])
+        
+        # Se o modelo foi traduzido para algo diferente do código original
+        if modelo_traduzido != resultado["modelo"]:
+            # O display_name já inclui o fabricante (ex: "Daihatsu Hijet Truck")
+            # Se já tiver o fabricante no display_name, usa direto
+            if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
+                # Se o display_name já tem o fabricante, usa ele
+                # Se não, combina fabricante + modelo
+                fabricante_lower = resultado["veiculo"].lower()
+                if fabricante_lower in modelo_traduzido.lower():
+                    resultado["veiculo"] = modelo_traduzido
+                else:
+                    resultado["veiculo"] = f"{resultado['veiculo']} {modelo_traduzido}"
+            else:
+                resultado["veiculo"] = modelo_traduzido
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":

@@ -1,0 +1,55 @@
+{
+  "database_name": "Japan Vehicle Display Model Database",
+  "version": "0.1-curated",
+  "display_rule": "Show only manufacturer + commercial model name; never display model_code in the UI.",
+  "records": [
+    {
+      "manufacturer": "DAIHATSU",
+      "model_codes": [
+        "GD-S200P",
+        "S200P"
+      ],
+      "display_name": "Daihatsu Hijet Truck"
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_codes": [
+        "DBA-MH34S",
+        "MH34S"
+      ],
+      "display_name": "Suzuki Wagon R"
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_codes": [
+        "EBD-DA64V",
+        "DA64V"
+      ],
+      "display_name": "Suzuki Every"
+    },
+    {
+      "manufacturer": "DAIHATSU",
+      "model_codes": [
+        "ABA-S321G",
+        "S321G"
+      ],
+      "display_name": "Daihatsu Atrai"
+    },
+    {
+      "manufacturer": "NISSAN",
+      "model_codes": [
+        "DR64V",
+        "DR64V型"
+      ],
+      "display_name": "Nissan NV100 Clipper"
+    },
+    {
+      "manufacturer": "SUZUKI",
+      "model_codes": [
+        "EBD-S321B",
+        "S321B"
+      ],
+      "display_name": "Suzuki Every"
+    }
+  ]
+}
