@@ -1246,6 +1246,7 @@ def _normalizar_dados_ocr(dados):
     else:
         # Se não há modelo, mostra apenas fabricante
         # Não adiciona VERIFICAR
+        pass
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
