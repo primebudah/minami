@@ -1063,6 +1063,13 @@ def _normalizar_dados_ocr(dados):
 
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
+    
+    # Combina fabricante + modelo na coluna veiculo
+    if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
+        if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
+            resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']}"
+        else:
+            resultado["veiculo"] = resultado["modelo"]
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
