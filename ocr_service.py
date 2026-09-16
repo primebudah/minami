@@ -7,6 +7,7 @@ import io
 import base64
 import json
 import re
+import os
 from datetime import date
 
 from PIL import Image
@@ -1219,6 +1220,114 @@ def _mesclar_retry(original, retry):
 
 
 # =========================================================
+# OCR ISOLADO PARA DATAS
+# =========================================================
+
+PASTA_CROPS = r"C:\Users\uni_t\OneDrive\Desktop\UNI3\apps"
+
+DATA_REGISTRO_PROMPT = r"""
+Esta imagem contém EXCLUSIVAMENTE o campo japonês 交付年月日.
+Leia SOMENTE a data visível neste recorte.
+Não procure outras datas.
+Não use contexto externo.
+Não use ano de fabricação.
+Não use 初度検査年月.
+Não use 有効期間の満了する日.
+Retorne somente a data exatamente como aparece, incluindo a era japonesa.
+Se ilegível, retorne VERIFICAR.
+"""
+
+SHAKEN_VENCIMENTO_PROMPT = r"""
+Esta imagem contém EXCLUSIVAMENTE o campo japonês 有効期間の満了する日.
+Leia SOMENTE a data visível neste recorte.
+Não procure outras datas.
+Não use 交付年月日.
+Não use 初度検査年月.
+Retorne somente a data exatamente como aparece, incluindo a era japonesa.
+Se ilegível, retorne VERIFICAR.
+"""
+
+def _carregar_crop(nome_arquivo):
+    """Carrega um crop da pasta de crops e converte para base64."""
+    caminho = os.path.join(PASTA_CROPS, nome_arquivo)
+    
+    _debug_log("CROP_LOAD", f"Tentando carregar crop: {caminho}")
+    
+    if not os.path.exists(caminho):
+        _debug_log("CROP_LOAD", f"Arquivo não encontrado: {caminho}")
+        return None
+    
+    try:
+        with open(caminho, "rb") as img_file:
+            imagem_bytes = img_file.read()
+            imagem_b64 = base64.b64encode(imagem_bytes).decode("utf-8")
+            tamanho = len(imagem_bytes)
+            _debug_log("CROP_LOAD", f"Crop carregado: {nome_arquivo} ({tamanho} bytes)")
+            return imagem_b64
+    except Exception as e:
+        _debug_log("CROP_LOAD", f"Erro ao carregar crop: {e}")
+        return None
+
+def _ocr_data_isolada(campo, prompt):
+    """Executa OCR isolado para um campo específico usando crop."""
+    nome_crop = {
+        "data_registro": "data de registro.png",
+        "shaken_vencimento": "vencimento shaken.png"
+    }.get(campo)
+    
+    if not nome_crop:
+        _debug_log("OCR_ISOLADO", f"Campo desconhecido: {campo}")
+        return "VERIFICAR"
+    
+    _debug_log("OCR_ISOLADO", f"Iniciando OCR isolado para campo: {campo}")
+    _debug_log("OCR_ISOLADO", f"Crop a ser usado: {nome_crop}")
+    
+    imagem_b64 = _carregar_crop(nome_crop)
+    if not imagem_b64:
+        _debug_log("OCR_ISOLADO", f"Não foi possível carregar crop para {campo}")
+        return "VERIFICAR"
+    
+    try:
+        resposta = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt,
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Leia a data e retorne somente o texto da data.",
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": "data:image/jpeg;base64," + imagem_b64,
+                                "detail": "high",
+                            },
+                        },
+                    ],
+                },
+            ],
+        )
+        
+        texto_bruto = resposta.choices[0].message.content
+        _debug_log("OCR_ISOLADO", f"Texto bruto retornado para {campo}: '{texto_bruto}'")
+        
+        # Remove aspas e espaços extras
+        texto_limpo = texto_bruto.strip().strip('"').strip("'")
+        _debug_log("OCR_ISOLADO", f"Texto limpo para {campo}: '{texto_limpo}'")
+        
+        return texto_limpo
+        
+    except Exception as e:
+        _debug_log("OCR_ISOLADO", f"Erro no OCR isolado para {campo}: {e}")
+        return "VERIFICAR"
+
+# =========================================================
 # FUNÇÃO PRINCIPAL
 # =========================================================
 
@@ -1238,6 +1347,7 @@ def extrair_dados_do_documento(f):
 
         imagem_b64 = _preparar_imagem(f)
 
+        # OCR da imagem inteira para campos gerais (exceto datas)
         dados_brutos = _chamar_openai(
             imagem_b64,
             SYSTEM_PROMPT,
@@ -1251,19 +1361,29 @@ def extrair_dados_do_documento(f):
         })
 
         dados = _normalizar_dados_ocr(dados_brutos)
+
+        # OCR ISOLADO para datas usando crops
+        _debug_log("OCR_ISOLADO", "Iniciando OCR isolado para data_registro")
+        data_registro_bruta = _ocr_data_isolada("data_registro", DATA_REGISTRO_PROMPT)
+        dados["data_registro"] = data_registro_bruta
+        _debug_log("OCR_ISOLADO", f"data_registro definida como: '{data_registro_bruta}'")
+
+        _debug_log("OCR_ISOLADO", "Iniciando OCR isolado para shaken_vencimento")
+        shaken_vencimento_bruto = _ocr_data_isolada("shaken_vencimento", SHAKEN_VENCIMENTO_PROMPT)
+        dados["shaken_vencimento"] = shaken_vencimento_bruto
+        _debug_log("OCR_ISOLADO", f"shaken_vencimento definido como: '{shaken_vencimento_bruto}'")
+
+        # Conversão das datas
         dados = _converter_datas_dados(dados)
 
-        if _dados_precisam_retry(dados):
-            print("[OCR] Executando segunda conferência...")
-            retry_bruto = _chamar_openai(imagem_b64, RETRY_PROMPT)
-            dados = _mesclar_retry(dados, retry_bruto)
-            dados = _converter_datas_dados(dados)
-
+        # Não executa retry para datas pois já vieram de crops isolados
         print("[OCR] Processamento concluído.")
         return dados
 
     except Exception as e:
         print(f"[OCR] Erro no processamento: {e}")
+        import traceback
+        print(traceback.format_exc())
 
         return {
             "nome": "VERIFICAR",
