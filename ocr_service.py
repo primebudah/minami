@@ -209,6 +209,12 @@ def traduzir_modelo(texto):
         "L750S": "Move Conte",
         "DBA-L760S": "Move Conte",
         "L760S": "Move Conte",
+        "ABA-S321G": "Tanto",
+        "S321G": "Tanto",
+        "ABA-S321E": "Tanto",
+        "S321E": "Tanto",
+        "ABA-S321F": "Tanto",
+        "S321F": "Tanto",
         
         # Mazda
         "DBA-DK5AW": "Demio",
@@ -1259,14 +1265,20 @@ def _normalizar_dados_ocr(dados):
     
     # Traduz código do modelo para nome comercial
     if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
-        resultado["modelo"] = traduzir_modelo(resultado["modelo"])
-    
-    # Combina fabricante + modelo na coluna veiculo
-    if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
-        if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
-            resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']}"
+        modelo_original = resultado["modelo"]
+        modelo_traduzido = traduzir_modelo(resultado["modelo"])
+        
+        # Só usa o modelo se foi traduzido para algo diferente do código
+        if modelo_traduzido != modelo_original:
+            resultado["modelo"] = modelo_traduzido
+            # Combina fabricante + modelo na coluna veiculo
+            if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
+                resultado["veiculo"] = f"{resultado['veiculo']} {modelo_traduzido}"
+            else:
+                resultado["veiculo"] = modelo_traduzido
         else:
-            resultado["veiculo"] = resultado["modelo"]
+            # Se não foi traduzido, não duplica o código
+            resultado["modelo"] = "VERIFICAR"
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
