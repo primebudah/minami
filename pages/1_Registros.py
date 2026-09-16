@@ -625,7 +625,7 @@ with col_foto:
             "Selecione até 5 fotos",
             accept_multiple_files=True,
             type=["jpg", "jpeg", "png"],
-            key="uploader_fotos"
+            key=f"uploader_{st.session_state.get('uploader_key', 0)}"
         )
 
         if files:
