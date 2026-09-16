@@ -1262,6 +1262,21 @@ def _normalizar_dados_ocr(dados):
 
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
+        
+        # Remove códigos de modelo do campo veiculo
+        # Padrões: CBA-XXX, DBA-XXX, ABA-XXX, XXX-XXX, XXXXXXX
+        padrao_codigo = re.compile(r'\b[A-Z]{2,4}-[A-Z0-9]{3,6}\b|\b[A-Z]{2,4}[A-Z0-9]{3,6}\b')
+        # Remove qualquer código que pareça código de modelo
+        veiculo_limpo = padrao_codigo.sub('', resultado["veiculo"])
+        # Remove espaços extras
+        veiculo_limpo = ' '.join(veiculo_limpo.split())
+        
+        # Se após limpar ainda tiver conteúdo, usa o limpo
+        if veiculo_limpo and veiculo_limpo != resultado["veiculo"]:
+            resultado["veiculo"] = veiculo_limpo
+        # Se ficou vazio ou era só código, usa apenas o fabricante
+        elif padrao_codigo.search(resultado["veiculo"]):
+            resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
     
     # Traduz código do modelo para nome comercial
     if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
