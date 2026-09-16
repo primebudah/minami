@@ -862,11 +862,15 @@ def _converter_datas_dados(dados):
     for campo in ["shaken_vencimento", "data_registro"]:
         valor = dados.get(campo)
 
+        print(f"[DEBUG] {campo} original do OCR: '{valor}'")
+
         if _campo_nao_identificado(valor):
             dados[campo] = "VERIFICAR"
             continue
 
         convertido = converter_data_japonesa(valor)
+
+        print(f"[DEBUG] {campo} convertido: '{convertido}'")
 
         if convertido and validar_data_convertida(convertido):
             dados[campo] = convertido
