@@ -694,15 +694,42 @@ retorne VERIFICAR.
 VENCIMENTO DO SHAKEN
 =========================================================
 
-SHAKEN_VENCIMENTO:
-Use exclusivamente:
+VENCIMENTO DO SHAKEN:
+Use EXCLUSIVAMENTE o campo:
 有効期間の満了する日
 
-Não confunda com:
-交付年月日
-初度検査年月
-data de primeira inspeção
-data de registro
+INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
+1. O rótulo 有効期間の満了する日 significa "Data de Expiração do Shaken"
+2. NUNCA confunda com outros rótulos de data
+3. shaken_vencimento DEVE vir de 有効期間の満了する日
+4. shaken_vencimento NUNCA deve vir de 初度検査年月
+5. shaken_vencimento NUNCA deve vir de 交付年月日
+
+PROCEDIMENTO OBRIGATÓRIO:
+1. Procure VISUALMENTE o rótulo 有効期間の満了する日 no documento
+2. Leia SOMENTE a data que está IMEDIATAMENTE ao lado/abaixo de 有効期間の満了する日
+3. IGNORE completamente 初度検査年月 e 交付年月日 para o campo shaken_vencimento
+4. Se 有効期間の満了する日 não estiver visível ou legível, retorne VERIFICAR
+
+IMPORTANTE - POSIÇÃO ESPACIAL:
+- Cada rótulo tem sua própria data ao lado
+- NÃO use datas de outras partes do documento
+- A data de 有効期間の満了する日 está IMEDIATAMENTE ao lado do rótulo 有効期間の満了する日
+- NÃO troque as datas entre os rótulos
+
+EXEMPLO CRÍTICO:
+Se o documento mostrar:
+交付年月日 = 令和6年3月19日 (data_registro)
+有効期間の満了する日 = 令和8年3月18日 (shaken_vencimento)
+初度検査年月 = 平成28年7月27日 (NÃO USAR)
+
+Resultado OBRIGATÓRIO:
+data_registro = 令和6年3月19日
+shaken_vencimento = 令和8年3月18日
+
+NUNCA retorne:
+shaken_vencimento = 平成28年7月27日 (ERRADO - é 初度検査年月)
+shaken_vencimento = 令和6年3月19日 (ERRADO - é 交付年月日)
 
 =========================================================
 NOME E CONTATO
@@ -901,13 +928,42 @@ Não presuma a era com base no ano.
 Não complete datas incompletas.
 Se houver dúvida, retorne VERIFICAR
 
-VENCIMENTO:
-Leia somente 有効期間の満了する日.
+VENCIMENTO DO SHAKEN:
+Use EXCLUSIVAMENTE o campo:
+有効期間の満了する日
 
-Não use 初度検査年月.
-Não invente datas.
-Não complete mês ou dia.
-Se houver dúvida, retorne VERIFICAR.
+INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
+1. O rótulo 有効期間の満了する日 significa "Data de Expiração do Shaken"
+2. NUNCA confunda com outros rótulos de data
+3. shaken_vencimento DEVE vir de 有効期間の満了する日
+4. shaken_vencimento NUNCA deve vir de 初度検査年月
+5. shaken_vencimento NUNCA deve vir de 交付年月日
+
+PROCEDIMENTO OBRIGATÓRIO:
+1. Procure VISUALMENTE o rótulo 有効期間の満了する日 no documento
+2. Leia SOMENTE a data que está IMEDIATAMENTE ao lado/abaixo de 有効期間の満了する日
+3. IGNORE completamente 初度検査年月 e 交付年月日 para o campo shaken_vencimento
+4. Se 有効期間の満了する日 não estiver visível ou legível, retorne VERIFICAR
+
+IMPORTANTE - POSIÇÃO ESPACIAL:
+- Cada rótulo tem sua própria data ao lado
+- NÃO use datas de outras partes do documento
+- A data de 有効期間の満了する日 está IMEDIATAMENTE ao lado do rótulo 有効期間の満了する日
+- NÃO troque as datas entre os rótulos
+
+EXEMPLO CRÍTICO:
+Se o documento mostrar:
+交付年月日 = 令和6年3月19日 (data_registro)
+有効期間の満了する日 = 令和8年3月18日 (shaken_vencimento)
+初度検査年月 = 平成28年7月27日 (NÃO USAR)
+
+Resultado OBRIGATÓRIO:
+data_registro = 令和6年3月19日
+shaken_vencimento = 令和8年3月18日
+
+NUNCA retorne:
+shaken_vencimento = 平成28年7月27日 (ERRADO - é 初度検査年月)
+shaken_vencimento = 令和6年3月19日 (ERRADO - é 交付年月日)
 """
 
 
