@@ -244,16 +244,18 @@ def converter_data_japonesa(valor):
             st.write(f"Match formato invertido: {resultado}")
             return resultado
 
-        match = re.fullmatch(
-            r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?",
-            texto,
-        )
-        if match:
-            resultado = _formatar_data_iso(
-                match.group(1), match.group(2), match.group(3)
-            )
-            st.write(f"Match formato japonês sem era: {resultado}")
-            return resultado
+        # REMOVIDO: Este match aceita "2013年6月2日" sem verificar era
+        # Deve verificar eras japonesas primeiro antes de aceitar formato com "年"
+        # match = re.fullmatch(
+        #     r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?",
+        #     texto,
+        # )
+        # if match:
+        #     resultado = _formatar_data_iso(
+        #         match.group(1), match.group(2), match.group(3)
+        #     )
+        #     st.write(f"Match formato japonês sem era: {resultado}")
+        #     return resultado
 
         if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
             st.write("Detectada era Reiwa")
@@ -543,12 +545,32 @@ DATA DE REGISTRO
 =========================================================
 
 DATA DE REGISTRO:
-Use exclusivamente:
+Use EXCLUSIVAMENTE o campo:
 交付年月日
 
-Não use:
+INSTRUÇÃO CRÍTICA:
+1. Primeiro, localize VISUALMENTE o rótulo 交付年月日 no documento
+2. Leia SOMENTE a data que está dentro da mesma célula/linha do rótulo 交付年月日
+3. NÃO use datas de outras células vizinhas
+
+NUNCA use para data_registro:
 初度検査年月
 有効期間の満了する日
+qualquer outra data do documento
+
+EXEMPLO CRÍTICO:
+Se o documento mostrar:
+交付年月日 = 令和8年7月23日
+初度検査年月 = 平成28年11月
+有効期間の満了する日 = 令和9年12月4日
+
+Resultado OBRIGATÓRIO:
+data_registro = 令和8年7月23日
+shaken_vencimento = 令和9年12月4日
+
+NUNCA retorne:
+data_registro = 平成28年11月 (errado - é 初度検査年月)
+data_registro = 令和9年12月4日 (errado - é 有効期間の満了する日)
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
@@ -727,7 +749,28 @@ DATA DE REGISTRO
 =========================================================
 
 DATA DE REGISTRO:
-Leia somente 交付年月日.
+Use EXCLUSIVAMENTE o campo:
+交付年月日
+
+INSTRUÇÃO CRÍTICA:
+1. Primeiro, localize VISUALMENTE o rótulo 交付年月日 no documento
+2. Leia SOMENTE a data que está dentro da mesma célula/linha do rótulo 交付年月日
+3. NÃO use datas de outras células vizinhas
+
+NUNCA use para data_registro:
+初度検査年月
+有効期間の満了する日
+qualquer outra data do documento
+
+EXEMPLO CRÍTICO:
+Se o documento mostrar:
+交付年月日 = 令和8年7月23日
+初度検査年月 = 平成28年11月
+有効期間の満了する日 = 令和9年12月4日
+
+Resultado OBRIGATÓRIO:
+data_registro = 令和8年7月23日
+shaken_vencimento = 令和9年12月4日
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
