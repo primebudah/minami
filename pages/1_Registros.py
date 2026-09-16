@@ -791,14 +791,24 @@ else:
     if st.session_state.fila_delete_mode:
         _col_cfg["Apagar"] = st.column_config.CheckboxColumn("🗑️", default=False)
 
-    # Mostra tabela como apenas leitura
-    tabela_fila = st.dataframe(
-        df_fila_view,
-        use_container_width=True,
-        height=400,
-        column_config=_col_cfg,
-        hide_index=True
-    )
+    # Mostra tabela como apenas leitura ou editor (modo exclusão)
+    if st.session_state.fila_delete_mode:
+        tabela_fila = st.data_editor(
+            df_fila_view,
+            use_container_width=True,
+            height=400,
+            column_config=_col_cfg,
+            hide_index=True,
+            key="fila_delete_editor"
+        )
+    else:
+        tabela_fila = st.dataframe(
+            df_fila_view,
+            use_container_width=True,
+            height=400,
+            column_config=_col_cfg,
+            hide_index=True
+        )
 
     # Processa cliques nos botões de edição
     if st.session_state.fila_editando_indice is not None:
@@ -855,8 +865,28 @@ else:
     
     # Processa exclusão selecionada (modo exclusão)
     if st.session_state.fila_delete_mode and st.session_state.get("_fila_excluir_btn"):
-        # Na nova abordagem, precisamos de checkboxes separados
-        st.warning("Para excluir, use os checkboxes na tabela")
+        # Obtém os dados da tabela editor
+        edited_data = st.session_state.get("fila_delete_editor", {"edited_rows": {}})
+        edited_rows = edited_data.get("edited_rows", {})
+        
+        # Identifica linhas marcadas para exclusão
+        indices_para_excluir = []
+        for idx, row_data in edited_rows.items():
+            if row_data.get("Apagar", False):
+                indices_para_excluir.append(idx)
+        
+        if indices_para_excluir:
+            # Remove registros (ordem inversa para não afetar índices)
+            for idx in sorted(indices_para_excluir, reverse=True):
+                if 0 <= idx < len(st.session_state.fila_registros):
+                    st.session_state.fila_registros.pop(idx)
+            
+            _salvar_fila_em_disco()
+            st.success(f"✅ {len(indices_para_excluir)} registro(s) excluído(s)!")
+        else:
+            st.warning("⚠️ Nenhum registro selecionado para exclusão.")
+        
+        # Reseta modo exclusão
         st.session_state.fila_delete_mode = False
         st.session_state._fila_excluir_btn = False
         st.rerun()
