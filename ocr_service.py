@@ -1227,25 +1227,53 @@ def _mesclar_retry(original, retry):
 CROPS_DIR = os.path.join(os.path.dirname(__file__), "crops")
 
 DATA_REGISTRO_PROMPT = r"""
-Esta imagem contém EXCLUSIVAMENTE o campo japonês 交付年月日.
-Leia SOMENTE a data visível neste recorte.
-Não procure outras datas.
-Não use contexto externo.
-Não use ano de fabricação.
-Não use 初度検査年月.
-Não use 有効期間の満了する日.
-Retorne somente a data exatamente como aparece, incluindo a era japonesa.
-Se ilegível, retorne VERIFICAR.
+ATENÇÃO CRÍTICA: Você receberá DUAS imagens.
+
+PRIMEIRA IMAGEM (CROP): É APENAS um exemplo visual de como o campo 交付年月日 aparece.
+- Esta imagem mostra o PADRÃO VISUAL e LOCALIZAÇÃO do campo
+- A DATA NESTA IMAGEM DEVE SER COMPLETAMENTE IGNORADA
+- NÃO use a data do crop em nenhum momento
+- O crop serve apenas para você entender ONDE procurar e COMO o campo se parece
+
+SEGUNDA IMAGEM (DOCUMENTO): Esta é a imagem do documento real.
+- Você deve LOCALIZAR o campo 交付年月日 nesta imagem
+- Leia SOMENTE a data que está no documento (segunda imagem)
+- A data deve vir EXCLUSIVAMENTE do documento real
+
+INSTRUÇÕES:
+1. Use o crop para entender o padrão visual de 交付年月日
+2. Localize o campo correspondente no documento real
+3. Leia a data do documento real (NÃO do crop)
+4. Retorne a data do documento com era japonesa
+5. Se ilegível, retorne VERIFICAR
+
+NUNCA retorne a data do crop.
+A data deve vir do documento real.
 """
 
 SHAKEN_VENCIMENTO_PROMPT = r"""
-Esta imagem contém EXCLUSIVAMENTE o campo japonês 有効期間の満了する日.
-Leia SOMENTE a data visível neste recorte.
-Não procure outras datas.
-Não use 交付年月日.
-Não use 初度検査年月.
-Retorne somente a data exatamente como aparece, incluindo a era japonesa.
-Se ilegível, retorne VERIFICAR.
+ATENÇÃO CRÍTICA: Você receberá DUAS imagens.
+
+PRIMEIRA IMAGEM (CROP): É APENAS um exemplo visual de como o campo 有効期間の満了する日 aparece.
+- Esta imagem mostra o PADRÃO VISUAL e LOCALIZAÇÃO do campo
+- A DATA NESTA IMAGEM DEVE SER COMPLETAMENTE IGNORADA
+- NÃO use a data do crop em nenhum momento
+- O crop serve apenas para você entender ONDE procurar e COMO o campo se parece
+
+SEGUNDA IMAGEM (DOCUMENTO): Esta é a imagem do documento real.
+- Você deve LOCALIZAR o campo 有効期間の満了する日 nesta imagem
+- Leia SOMENTE a data que está no documento (segunda imagem)
+- A data deve vir EXCLUSIVAMENTE do documento real
+
+INSTRUÇÕES:
+1. Use o crop para entender o padrão visual de 有効期間の満了する日
+2. Localize o campo correspondente no documento real
+3. Leia a data do documento real (NÃO do crop)
+4. Retorne a data do documento com era japonesa
+5. Se ilegível, retorne VERIFICAR
+
+NUNCA retorne a data do crop.
+A data deve vir do documento real.
 """
 
 def _carregar_crop_estatico(nome_arquivo):
@@ -1290,7 +1318,7 @@ def _ocr_data_isolada(campo, imagem_documento_b64, crop_guia_b64, prompt):
                     "content": [
                         {
                             "type": "text",
-                            "text": "PRIMEIRA IMAGEM: Este é um exemplo de como o campo deve aparecer. Use como guia visual para entender o padrão e localização.\n\nSEGUNDA IMAGEM: Esta é a imagem do documento. Localize o campo correspondente ao exemplo e leia SOMENTE a data deste campo.",
+                            "text": "PRIMEIRA IMAGEM (CROP): Este é APENAS um exemplo visual de como o campo deve aparecer. IGNORE completamente a data desta imagem. Use apenas para entender o padrão visual e localização.\n\nSEGUNDA IMAGEM (DOCUMENTO): Esta é a imagem do documento real. Localize o campo correspondente ao exemplo e leia SOMENTE a data desta segunda imagem (o documento real). NUNCA use a data do crop.",
                         },
                         {
                             "type": "image_url",
