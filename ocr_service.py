@@ -1037,21 +1037,16 @@ def _dados_precisam_retry(dados):
     if not dados:
         return True
 
-    if not validar_data_convertida(dados.get("shaken_vencimento", "")):
+    # Só precisa retry se algum campo for VERIFICAR ou inválido
+    if dados.get("shaken_vencimento") == "VERIFICAR" or not validar_data_convertida(dados.get("shaken_vencimento", "")):
+        _debug_log("RETRY_CHECK", "shaken_vencimento precisa de retry")
         return True
 
-    if not validar_data_convertida(dados.get("data_registro", "")):
+    if dados.get("data_registro") == "VERIFICAR" or not validar_data_convertida(dados.get("data_registro", "")):
+        _debug_log("RETRY_CHECK", "data_registro precisa de retry")
         return True
 
-    try:
-        ano_shaken = int(str(dados["shaken_vencimento"])[:4])
-        ano_registro = int(str(dados["data_registro"])[:4])
-
-        if abs(ano_shaken - ano_registro) > 5:
-            return True
-    except Exception:
-        return True
-
+    _debug_log("RETRY_CHECK", "Dados válidos, não precisa de retry")
     return False
 
 
@@ -1059,13 +1054,28 @@ def _mesclar_retry(original, retry):
     if not isinstance(retry, dict):
         return original
 
-    shaken_retry = converter_data_japonesa(retry.get("shaken_vencimento", ""))
-    if shaken_retry and validar_data_convertida(shaken_retry):
-        original["shaken_vencimento"] = shaken_retry
+    _debug_log("MESCLAR_RETRY", "Iniciando mesclagem de retry")
 
-    registro_retry = converter_data_japonesa(retry.get("data_registro", ""))
-    if registro_retry and validar_data_convertida(registro_retry):
-        original["data_registro"] = registro_retry
+    # Só sobrescreve se o original for VERIFICAR ou inválido
+    if original.get("shaken_vencimento") == "VERIFICAR" or not validar_data_convertida(original.get("shaken_vencimento", "")):
+        shaken_retry = converter_data_japonesa(retry.get("shaken_vencimento", ""))
+        if shaken_retry and validar_data_convertida(shaken_retry):
+            original["shaken_vencimento"] = shaken_retry
+            _debug_log("MESCLAR_RETRY", f"Sobrescreveu shaken_vencimento com: {shaken_retry}")
+        else:
+            _debug_log("MESCLAR_RETRY", "Manteve shaken_vencimento original (retry invalido)")
+    else:
+        _debug_log("MESCLAR_RETRY", f"Manteve shaken_vencimento original: {original.get('shaken_vencimento')}")
+
+    if original.get("data_registro") == "VERIFICAR" or not validar_data_convertida(original.get("data_registro", "")):
+        registro_retry = converter_data_japonesa(retry.get("data_registro", ""))
+        if registro_retry and validar_data_convertida(registro_retry):
+            original["data_registro"] = registro_retry
+            _debug_log("MESCLAR_RETRY", f"Sobrescreveu data_registro com: {registro_retry}")
+        else:
+            _debug_log("MESCLAR_RETRY", "Manteve data_registro original (retry invalido)")
+    else:
+        _debug_log("MESCLAR_RETRY", f"Manteve data_registro original: {original.get('data_registro')}")
 
     return original
 
