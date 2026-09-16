@@ -204,21 +204,21 @@ def converter_data_japonesa(valor):
 
     texto = str(valor).strip()
 
-    print(f"[DEBUG converter_data_japonesa] Entrada: '{texto}'")
+    st.write(f"[DEBUG converter_data_japonesa] Entrada: '{texto}'")
 
     if not texto or _campo_nao_identificado(texto):
-        print(f"[DEBUG converter_data_japonesa] Texto vazio ou não identificado")
+        st.write(f"[DEBUG converter_data_japonesa] Texto vazio ou não identificado")
         return None
 
     texto = _converter_numeros_japoneses(texto)
-    print(f"[DEBUG converter_data_japonesa] Após converter números: '{texto}'")
+    st.write(f"[DEBUG converter_data_japonesa] Após converter números: '{texto}'")
 
     match = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", texto)
     if match:
         resultado = _formatar_data_iso(
             match.group(1), match.group(2), match.group(3)
         )
-        print(f"[DEBUG converter_data_japonesa] Match formato ISO: {resultado}")
+        st.write(f"[DEBUG converter_data_japonesa] Match formato ISO: {resultado}")
         return resultado
 
     match = re.fullmatch(
@@ -229,7 +229,7 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             match.group(1), match.group(2), match.group(3)
         )
-        print(f"[DEBUG converter_data_japonesa] Match formato com separadores: {resultado}")
+        st.write(f"[DEBUG converter_data_japonesa] Match formato com separadores: {resultado}")
         return resultado
 
     match = re.fullmatch(
@@ -240,7 +240,7 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             match.group(3), match.group(2), match.group(1)
         )
-        print(f"[DEBUG converter_data_japonesa] Match formato invertido: {resultado}")
+        st.write(f"[DEBUG converter_data_japonesa] Match formato invertido: {resultado}")
         return resultado
 
     match = re.fullmatch(
@@ -251,13 +251,13 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             match.group(1), match.group(2), match.group(3)
         )
-        print(f"[DEBUG converter_data_japonesa] Match formato japonês sem era: {resultado}")
+        st.write(f"[DEBUG converter_data_japonesa] Match formato japonês sem era: {resultado}")
         return resultado
 
     if "令和" in texto or re.search(r"\bR\s*\d+", texto, re.I):
-        print(f"[DEBUG converter_data_japonesa] Detectada era Reiwa")
+        st.write(f"[DEBUG converter_data_japonesa] Detectada era Reiwa")
         ano = extrair_ano_reiwa_regex(texto)
-        print(f"[DEBUG converter_data_japonesa] Ano Reiwa extraído: {ano}")
+        st.write(f"[DEBUG converter_data_japonesa] Ano Reiwa extraído: {ano}")
         if ano is None:
             return None
 
@@ -268,7 +268,7 @@ def converter_data_japonesa(valor):
             resultado = _formatar_data_iso(
                 ano, mes_match.group(1), dia_match.group(1)
             )
-            print(f"[DEBUG converter_data_japonesa] Resultado Reiwa: {resultado}")
+            st.write(f"[DEBUG converter_data_japonesa] Resultado Reiwa: {resultado}")
             return resultado
 
         match_alt = re.search(
@@ -281,7 +281,7 @@ def converter_data_japonesa(valor):
             resultado = _formatar_data_iso(
                 ano, match_alt.group(1), match_alt.group(2)
             )
-            print(f"[DEBUG converter_data_japonesa] Resultado Reiwa alt: {resultado}")
+            st.write(f"[DEBUG converter_data_japonesa] Resultado Reiwa alt: {resultado}")
             return resultado
 
         return None
@@ -293,13 +293,13 @@ def converter_data_japonesa(valor):
         ("明治", r"(?:明治|M)\s*([0-9]+)", calcular_ano_meiji),
     ]:
         if era in texto or re.search(regex, texto, re.I):
-            print(f"[DEBUG converter_data_japonesa] Detectada era {era}")
+            st.write(f"[DEBUG converter_data_japonesa] Detectada era {era}")
             match_ano = re.search(regex, texto, re.I)
             if not match_ano:
                 return None
 
             ano = conversor(match_ano.group(1))
-            print(f"[DEBUG converter_data_japonesa] Ano {era} extraído: {ano}")
+            st.write(f"[DEBUG converter_data_japonesa] Ano {era} extraído: {ano}")
             mes_match = re.search(r"(\d{1,2})\s*月", texto)
             dia_match = re.search(r"(\d{1,2})\s*日", texto)
 
@@ -309,7 +309,7 @@ def converter_data_japonesa(valor):
             resultado = _formatar_data_iso(
                 ano, mes_match.group(1), dia_match.group(1)
             )
-            print(f"[DEBUG converter_data_japonesa] Resultado {era}: {resultado}")
+            st.write(f"[DEBUG converter_data_japonesa] Resultado {era}: {resultado}")
             return resultado
 
     numeros = re.sub(r"\D", "", texto)
@@ -317,10 +317,10 @@ def converter_data_japonesa(valor):
         resultado = _formatar_data_iso(
             numeros[:4], numeros[4:6], numeros[6:8]
         )
-        print(f"[DEBUG converter_data_japonesa] Match apenas números: {resultado}")
+        st.write(f"[DEBUG converter_data_japonesa] Match apenas números: {resultado}")
         return resultado
 
-    print(f"[DEBUG converter_data_japonesa] Nenhum match encontrado")
+    st.write(f"[DEBUG converter_data_japonesa] Nenhum match encontrado")
     return None
 
 
@@ -887,7 +887,7 @@ def _converter_datas_dados(dados):
     for campo in ["shaken_vencimento", "data_registro"]:
         valor = dados.get(campo)
 
-        print(f"[DEBUG] {campo} original do OCR: '{valor}'")
+        st.write(f"[DEBUG] {campo} original do OCR: '{valor}'")
 
         if _campo_nao_identificado(valor):
             dados[campo] = "VERIFICAR"
@@ -895,7 +895,7 @@ def _converter_datas_dados(dados):
 
         convertido = converter_data_japonesa(valor)
 
-        print(f"[DEBUG] {campo} convertido: '{convertido}'")
+        st.write(f"[DEBUG] {campo} convertido: '{convertido}'")
 
         if convertido and validar_data_convertida(convertido):
             dados[campo] = convertido
