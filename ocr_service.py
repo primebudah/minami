@@ -1238,15 +1238,14 @@ def _normalizar_dados_ocr(dados):
             else:
                 resultado["veiculo"] = modelo_traduzido
         else:
-            # Se o modelo não foi traduzido, adiciona VERIFICAR
+            # Se o modelo não foi traduzido, mostra apenas fabricante + código
             if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
-                resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} VERIFICAR"
+                resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']}"
             else:
-                resultado["veiculo"] = f"{resultado['modelo']} VERIFICAR"
+                resultado["veiculo"] = resultado["modelo"]
     else:
-        # Se não há modelo, adiciona VERIFICAR ao fabricante
-        if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
-            resultado["veiculo"] = f"{resultado['veiculo']} VERIFICAR"
+        # Se não há modelo, mostra apenas fabricante
+        # Não adiciona VERIFICAR
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
