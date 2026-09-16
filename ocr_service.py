@@ -602,15 +602,18 @@ DATA DE REGISTRO:
 Use EXCLUSIVAMENTE o campo:
 交付年月日
 
-INSTRUÇÃO CRÍTICA:
-1. Primeiro, localize VISUALMENTE o rótulo 交付年月日 no documento
-2. Leia SOMENTE a data que está dentro da mesma célula/linha do rótulo 交付年月日
-3. NÃO use datas de outras células vizinhas
+INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
+1. O rótulo 交付年月日 significa "Data de Entrega/Registro"
+2. O rótulo 初度検査年月 significa "Data da Primeira Inspeção"
+3. NUNCA confunda estes dois rótulos
+4. data_registro DEVE vir de 交付年月日
+5. data_registro NUNCA deve vir de 初度検査年月
 
-NUNCA use para data_registro:
-初度検査年月
-有効期間の満了する日
-qualquer outra data do documento
+PROCEDIMENTO OBRIGATÓRIO:
+1. Procure VISUALMENTE o rótulo 交付年月日 no documento
+2. Leia SOMENTE a data que está ao lado/abaixo de 交付年月日
+3. IGNORE completamente 初度検査年月 para o campo data_registro
+4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
 
 EXEMPLO CRÍTICO:
 Se o documento mostrar:
@@ -623,8 +626,8 @@ data_registro = 令和8年7月23日
 shaken_vencimento = 令和9年12月4日
 
 NUNCA retorne:
-data_registro = 平成28年11月 (errado - é 初度検査年月)
-data_registro = 令和9年12月4日 (errado - é 有効期間の満了する日)
+data_registro = 平成28年11月 (ERRADO - é 初度検査年月)
+data_registro = 令和9年12月4日 (ERRADO - é 有効期間の満了する日)
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
@@ -806,15 +809,18 @@ DATA DE REGISTRO:
 Use EXCLUSIVAMENTE o campo:
 交付年月日
 
-INSTRUÇÃO CRÍTICA:
-1. Primeiro, localize VISUALMENTE o rótulo 交付年月日 no documento
-2. Leia SOMENTE a data que está dentro da mesma célula/linha do rótulo 交付年月日
-3. NÃO use datas de outras células vizinhas
+INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
+1. O rótulo 交付年月日 significa "Data de Entrega/Registro"
+2. O rótulo 初度検査年月 significa "Data da Primeira Inspeção"
+3. NUNCA confunda estes dois rótulos
+4. data_registro DEVE vir de 交付年月日
+5. data_registro NUNCA deve vir de 初度検査年月
 
-NUNCA use para data_registro:
-初度検査年月
-有効期間の満了する日
-qualquer outra data do documento
+PROCEDIMENTO OBRIGATÓRIO:
+1. Procure VISUALMENTE o rótulo 交付年月日 no documento
+2. Leia SOMENTE a data que está ao lado/abaixo de 交付年月日
+3. IGNORE completamente 初度検査年月 para o campo data_registro
+4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
 
 EXEMPLO CRÍTICO:
 Se o documento mostrar:
@@ -825,6 +831,10 @@ Se o documento mostrar:
 Resultado OBRIGATÓRIO:
 data_registro = 令和8年7月23日
 shaken_vencimento = 令和9年12月4日
+
+NUNCA retorne:
+data_registro = 平成28年11月 (ERRADO - é 初度検査年月)
+data_registro = 令和9年12月4日 (ERRADO - é 有効期間の満了する日)
 
 =========================================================
 CONVERSÃO DE ERAS JAPONESAS
