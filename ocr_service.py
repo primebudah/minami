@@ -611,9 +611,16 @@ INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
 
 PROCEDIMENTO OBRIGATÓRIO:
 1. Procure VISUALMENTE o rótulo 交付年月日 no documento
-2. Leia SOMENTE a data que está ao lado/abaixo de 交付年月日
+2. Leia SOMENTE a data que está IMEDIATAMENTE ao lado/abaixo de 交付年月日
 3. IGNORE completamente 初度検査年月 para o campo data_registro
 4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
+
+IMPORTANTE - POSIÇÃO ESPACIAL:
+- Cada rótulo tem sua própria data ao lado
+- NÃO use datas de outras partes do documento
+- A data de 交付年月日 está IMEDIATAMENTE ao lado do rótulo 交付年月日
+- A data de 初度検査年月 está IMEDIATAMENTE ao lado do rótulo 初度検査年月
+- NÃO troque as datas entre os rótulos
 
 EXEMPLO CRÍTICO:
 Se o documento mostrar:
@@ -818,9 +825,16 @@ INSTRUÇÃO CRÍTICA - LEIA COM ATENÇÃO:
 
 PROCEDIMENTO OBRIGATÓRIO:
 1. Procure VISUALMENTE o rótulo 交付年月日 no documento
-2. Leia SOMENTE a data que está ao lado/abaixo de 交付年月日
+2. Leia SOMENTE a data que está IMEDIATAMENTE ao lado/abaixo de 交付年月日
 3. IGNORE completamente 初度検査年月 para o campo data_registro
 4. Se 交付年月日 não estiver visível ou legível, retorne VERIFICAR
+
+IMPORTANTE - POSIÇÃO ESPACIAL:
+- Cada rótulo tem sua própria data ao lado
+- NÃO use datas de outras partes do documento
+- A data de 交付年月日 está IMEDIATAMENTE ao lado do rótulo 交付年月日
+- A data de 初度検査年月 está IMEDIATAMENTE ao lado do rótulo 初度検査年月
+- NÃO troque as datas entre os rótulos
 
 EXEMPLO CRÍTICO:
 Se o documento mostrar:
