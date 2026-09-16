@@ -1207,6 +1207,13 @@ def _normalizar_dados_ocr(dados):
 
     if resultado["veiculo"] != "VERIFICAR":
         resultado["veiculo"] = traduzir_veiculo(resultado["veiculo"])
+        
+        # Remove códigos de modelo do campo veiculo (padrão: XXX-XXXXX ou XXXXXXXX)
+        padrao_codigo = re.compile(r'\b[A-Z]{2,4}-[A-Z0-9]{3,6}\b|\b[A-Z]{2,4}[A-Z0-9]{3,6}\b')
+        veiculo_limpo = padrao_codigo.sub('', resultado["veiculo"])
+        veiculo_limpo = ' '.join(veiculo_limpo.split())
+        if veiculo_limpo:
+            resultado["veiculo"] = veiculo_limpo
     
     # Traduz código do modelo usando o JSON e combina com fabricante
     if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
@@ -1230,6 +1237,16 @@ def _normalizar_dados_ocr(dados):
                     resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} {modelo_traduzido}"
             else:
                 resultado["veiculo"] = modelo_traduzido
+        else:
+            # Se o modelo não foi traduzido, adiciona VERIFICAR
+            if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
+                resultado["veiculo"] = f"{resultado['veiculo']} {resultado['modelo']} VERIFICAR"
+            else:
+                resultado["veiculo"] = f"{resultado['modelo']} VERIFICAR"
+    else:
+        # Se não há modelo, adiciona VERIFICAR ao fabricante
+        if resultado["veiculo"] and resultado["veiculo"] != "VERIFICAR":
+            resultado["veiculo"] = f"{resultado['veiculo']} VERIFICAR"
 
     for campo in ["chassi", "chassi_completo"]:
         if resultado[campo] != "VERIFICAR":
