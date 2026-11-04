@@ -619,28 +619,29 @@ if st.session_state._form_etapa == "concluido" and st.session_state._form_dados_
 
 # ---------- REGISTRO POR FOTO ----------
 with col_foto:
-    with st.expander("📸 Registro por Foto", expanded=False):
-        st.caption("📱 Selecione até **5 fotos por vez**. Pode repetir várias vezes — todas vão para a fila.")
+    with st.expander("📸 Registro por Foto/PDF", expanded=False):
+        st.caption("📱 Selecione até **5 arquivos por vez** (fotos ou PDF). Pode repetir várias vezes — todos vão para a fila.")
+        st.caption("📄 PDFs são convertidos automaticamente para imagens a 300 DPI para melhor leitura.")
         files = st.file_uploader(
-            "Selecione até 5 fotos",
+            "Selecione até 5 arquivos (fotos ou PDF)",
             accept_multiple_files=True,
-            type=["jpg", "jpeg", "png"],
+            type=["jpg", "jpeg", "png", "pdf"],
             key=f"uploader_{st.session_state.get('uploader_key', 0)}"
         )
 
         if files:
-            print(f"[DEBUG] {len(files)} fotos carregadas: {[f.name for f in files]}")
-            # Limita a 5 fotos
+            print(f"[DEBUG] {len(files)} arquivos carregados: {[f.name for f in files]}")
+            # Limita a 5 arquivos
             if len(files) > 5:
-                st.warning(f"⚠️ Você selecionou {len(files)} fotos. O limite é 5 fotos por vez. Processando apenas as 5 primeiras.")
+                st.warning(f"⚠️ Você selecionou {len(files)} arquivos. O limite é 5 por vez. Processando apenas os 5 primeiros.")
                 files = files[:5]
 
-            if st.button("🔍 Processar Fotos"):
+            if st.button("🔍 Processar Arquivos"):
                 ok, err = 0, 0
                 progress = st.progress(0)
                 status = st.empty()
                 total = len(files)
-                with st.spinner("Processando fotos..."):
+                with st.spinner("Processando arquivos..."):
                     for idx, f in enumerate(files, start=1):
                         status.info(f"Processando {idx}/{total}: {f.name}")
                         try:
@@ -654,11 +655,11 @@ with col_foto:
                                 if re.match(r"^\d{4}-\d{2}-\d{2}$", dr):
                                     if not (1900 <= int(dr[:4]) <= 2100):
                                         d["data_registro"] = str(date.today())
-                            d["_origem"] = f"foto:{f.name}"
+                            d["_origem"] = f"arquivo:{f.name}"
                             st.session_state.fila_registros.append(d)
                             _salvar_fila_em_disco()  # Salva backup automaticamente
                             ok += 1
-                            status.success(f"✅ {idx}/{total}: {f.name} processada")
+                            status.success(f"✅ {idx}/{total}: {f.name} processado")
                         except Exception as e:
                             st.error(f"❌ Erro em {f.name}: {str(e)}")
                             import traceback
@@ -667,7 +668,7 @@ with col_foto:
                         progress.progress(idx / total)
                 status.empty()
                 if ok:
-                    st.success(f"{ok} foto(s) processada(s) e adicionada(s) à fila.")
+                    st.success(f"{ok} arquivo(s) processado(s) e adicionado(s) à fila.")
                 if err:
                     st.warning(f"{err} erro(s).")
                 

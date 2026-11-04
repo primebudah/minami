@@ -9,9 +9,67 @@ import json
 import re
 import os
 from datetime import date
+from typing import List, Union
 
 from PIL import Image
 import streamlit as st
+
+
+# =========================================================
+# CONVERSÃO DE PDF PARA IMAGEM
+# =========================================================
+
+def converter_pdf_para_imagens(pdf_bytes: bytes, dpi: int = 300) -> List[Image.Image]:
+    """
+    Converte um PDF em bytes para uma lista de imagens PIL.
+    
+    Args:
+        pdf_bytes: Bytes do arquivo PDF
+        dpi: Resolução em DPI (padrão: 300)
+    
+    Returns:
+        Lista de imagens PIL (uma por página do PDF)
+    """
+    try:
+        from pdf2image import convert_from_bytes
+        imagens = convert_from_bytes(pdf_bytes, dpi=dpi)
+        return imagens
+    except ImportError:
+        raise RuntimeError("pdf2image não está instalado. Execute: pip install pdf2image")
+    except Exception as e:
+        raise RuntimeError(f"Erro ao converter PDF para imagens: {e}")
+
+
+def converter_arquivo_para_imagem(arquivo: Union[bytes, str], dpi: int = 300) -> List[Image.Image]:
+    """
+    Converte um arquivo (imagem ou PDF) para uma lista de imagens PIL.
+    
+    Args:
+        arquivo: Bytes do arquivo ou caminho do arquivo
+        dpi: Resolução em DPI para conversão de PDF (padrão: 300)
+    
+    Returns:
+        Lista de imagens PIL
+    """
+    # Se for bytes, verifica se é PDF ou imagem
+    if isinstance(arquivo, bytes):
+        # Verifica se é PDF pelos primeiros bytes (magic number)
+        if arquivo[:4] == b'%PDF':
+            return converter_pdf_para_imagens(arquivo, dpi=dpi)
+        else:
+            # Assume que é uma imagem
+            return [Image.open(io.BytesIO(arquivo))]
+    
+    # Se for caminho de arquivo
+    elif isinstance(arquivo, str):
+        if arquivo.lower().endswith('.pdf'):
+            with open(arquivo, 'rb') as f:
+                return converter_pdf_para_imagens(f.read(), dpi=dpi)
+        else:
+            return [Image.open(arquivo)]
+    
+    else:
+        raise ValueError("Tipo de arquivo não suportado")
 
 
 # =========================================================
@@ -1147,19 +1205,41 @@ shaken_vencimento = 令和6年3月19日 (ERRADO - é 交付年月日)
 # =========================================================
 
 def _preparar_imagem(f):
+    """
+    Prepara um arquivo (imagem ou PDF) para envio à API OpenAI.
+    Se for PDF, converte para imagens a 300 DPI e retorna a primeira página.
+    Se for imagem, processa normalmente.
+    """
     if hasattr(f, "seek"):
         f.seek(0)
-
-    imagem = Image.open(f)
-
+    
+    # Lê os bytes do arquivo
+    arquivo_bytes = f.read()
+    
+    # Verifica se é PDF pelos primeiros bytes
+    if arquivo_bytes[:4] == b'%PDF':
+        # Converte PDF para imagens
+        try:
+            imagens = converter_pdf_para_imagens(arquivo_bytes, dpi=300)
+            if imagens:
+                # Usa a primeira página do PDF
+                imagem = imagens[0]
+            else:
+                raise RuntimeError("PDF não contém páginas")
+        except Exception as e:
+            raise RuntimeError(f"Erro ao converter PDF: {e}")
+    else:
+        # É uma imagem normal
+        imagem = Image.open(io.BytesIO(arquivo_bytes))
+    
     if imagem.mode != "RGB":
         imagem = imagem.convert("RGB")
-
+    
     imagem.thumbnail((3000, 3000))
-
+    
     buffer = io.BytesIO()
     imagem.save(buffer, format="JPEG", quality=90, optimize=True)
-
+    
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
