@@ -617,8 +617,26 @@ como aparecem na fotografia.
 - Trocar 名古屋 por 浜松
 - Trocar 豊田 por 浜松
 - Presumir a cidade com base em probabilidade
+- Inventar kanjis se não estiverem claros
 
 Se os kanjis não estiverem 100% claros:
+retorne VERIFICAR para a placa inteira
+
+=========================================================
+ATENÇÃO À LEITURA DE KANA
+=========================================================
+
+O caractere KANA (terceira parte da placa) é CRÍTICO.
+Pode ser HIRAGANA ou KATAKANA.
+
+Leia com EXTREMA CUIDADO:
+- り (ri) ≠ れ (re)
+- す (su) ≠ ず (zu)
+- あ (a) ≠ お (o)
+- や (ya) ≠ ゆ (yu)
+- わ (wa) ≠ ね (ne)
+
+Se o kana não estiver 100% claro:
 retorne VERIFICAR para a placa inteira
 
 =========================================================
@@ -655,6 +673,7 @@ Se a foto mostrar claramente:
 NUNCA retorne:
 浜松 581 り 6940 (kanji da região incorreto)
 豊橋 581 す 4338 (kanji da região incorreto)
+名古屋 330 お 1234 (kana incorreto)
 
 =========================================================
 REGRAS FINAIS
@@ -665,6 +684,8 @@ REGRAS FINAIS
 - Não traduza a cidade para português
 - Não corrija a placa baseado em suposição
 - Se houver DÚVIDA sobre qualquer kanji: retorne VERIFICAR
+- Se houver DÚVIDA sobre o kana: retorne VERIFICAR
+- A precisão é mais importante que preencher o campo
 
 =========================================================
 VENCIMENTO DO SHAKEN - PRIORIDADE MÁXIMA
@@ -1215,6 +1236,22 @@ def _normalizar_dados_ocr(dados):
         if veiculo_limpo:
             resultado["veiculo"] = veiculo_limpo
     
+    # Validação de formato de placa
+    if resultado["placa"] and resultado["placa"] != "VERIFICAR":
+        # Verifica se a placa tem o formato esperado: kanji + 3 dígitos + kana + número
+        # Exemplo: 豊橋 581 り 6940
+        partes = resultado["placa"].split()
+        # Deve ter pelo menos 4 partes: região (kanji), classificação (3 dígitos), kana, número
+        if len(partes) < 4:
+            resultado["placa"] = "VERIFICAR"
+        else:
+            # Verifica se a segunda parte são 3 dígitos
+            if not re.match(r'^\d{3}$', partes[1]):
+                resultado["placa"] = "VERIFICAR"
+            # Verifica se a terceira parte é um caractere kana (hiragana ou katakana)
+            if not re.match(r'^[\u3040-\u309F\u30A0-\u30FF]$', partes[2]):
+                resultado["placa"] = "VERIFICAR"
+    
     # Traduz código do modelo usando o JSON e combina com fabricante
     if resultado["modelo"] and resultado["modelo"] != "VERIFICAR":
         modelo_traduzido = traduzir_codigo_modelo(resultado["modelo"])
@@ -1269,6 +1306,18 @@ def _converter_datas_dados(dados):
             dados[campo] = convertido
         else:
             dados[campo] = "VERIFICAR"
+    
+    # Validação de datas antigas (antes de 2000 são provavelmente erros)
+    for campo in ["shaken_vencimento", "data_registro"]:
+        if dados.get(campo) != "VERIFICAR":
+            try:
+                from datetime import datetime
+                data = datetime.strptime(dados[campo], "%Y-%m-%d")
+                # Se data for anterior a 2000, marca como VERIFICAR
+                if data.year < 2000:
+                    dados[campo] = "VERIFICAR"
+            except Exception:
+                pass
     
     # Validação lógica: shaken_vencimento deve ser posterior a data_registro
     # Se não for, troca as datas (OCR pode ter invertido)
