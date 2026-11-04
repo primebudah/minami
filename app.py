@@ -1618,12 +1618,16 @@ if not df.empty:
                         if col == "contato" and not _rejeitar:
                             _v = val_salvar.strip()
                             _v_digits = re.sub(r"[\s\-]", "", _v)
-                            _ok_cel  = bool(re.match(r"^0[789]0\d{8}$", _v_digits))
-                            _ok_fixo = bool(re.match(r"^0\d{9,10}$", _v_digits))
-                            if _v and not (_ok_cel or _ok_fixo):
+                            # Validação mais flexível: aceita números internacionais também
+                            _ok_jp_cel = bool(re.match(r"^0[789]0\d{8}$", _v_digits))
+                            _ok_jp_fixo = bool(re.match(r"^0\d{9,10}$", _v_digits))
+                            _ok_intl = bool(re.match(r"^\+\d{10,15}$", _v_digits))  # Internacional
+                            _ok_generic = bool(re.match(r"^\d{10,15}$", _v_digits))  # Apenas números
+                            
+                            if _v and not (_ok_jp_cel or _ok_jp_fixo or _ok_intl or _ok_generic):
                                 _rejeitar_aviso_col(
-                                    f"<b>Contato</b>: '{_v}' não segue o padrão japonês.<br>"
-                                    "<span style='font-size:0.78rem'>Celular: 090-XXXX-XXXX | Fixo: 0X-XXXX-XXXX</span>",
+                                    f"<b>Contato</b>: '{_v}' não parece ser um número válido.<br>"
+                                    "<span style='font-size:0.78rem'>Use formato: 090-XXXX-XXXX, +XX-XXXX-XXXX ou apenas números</span>",
                                     pode_salvar=True
                                 )
                                 _rejeitar = True
@@ -1797,22 +1801,27 @@ if not df.empty:
                                     )
                                     _rejeitar = True
 
-                            # ── Contato: padrão japonês ──
+                            # ── Contato: padrão japonês (validação mais flexível) ──
                             if col == "contato" and not _rejeitar:
                                 _v = val_salvar.strip()
-                                # Celular JP: 070/080/090-XXXX-XXXX
-                                # Fixo JP: 0X-XXXX-XXXX ou 0XX-XXX-XXXX
-                                # Aceita com ou sem hífens/espaços
-                                _v_digits = re.sub(r"[\s\-]", "", _v)
-                                _ok_cel = bool(re.match(r"^0[789]0\d{8}$", _v_digits))
-                                _ok_fixo = bool(re.match(r"^0\d{9,10}$", _v_digits))
-                                if _v and not (_ok_cel or _ok_fixo):
-                                    _rejeitar_aviso(
-                                        f"<b>Contato</b>: '{_v}' não segue o padrão japonês.<br>"
-                                        "<span style='font-size:0.78rem'>Celular: 090-XXXX-XXXX | Fixo: 0X-XXXX-XXXX</span>",
-                                        pode_salvar=True
-                                    )
-                                    _rejeitar = True
+                                # Aceita vazio ou qualquer formato válido
+                                if _v:
+                                    # Remove espaços e hífens para validação
+                                    _v_digits = re.sub(r"[\s\-]", "", _v)
+                                    # Validação mais flexível: aceita números internacionais também
+                                    _ok_jp_cel = bool(re.match(r"^0[789]0\d{8}$", _v_digits))
+                                    _ok_jp_fixo = bool(re.match(r"^0\d{9,10}$", _v_digits))
+                                    _ok_intl = bool(re.match(r"^\+\d{10,15}$", _v_digits))  # Internacional
+                                    _ok_generic = bool(re.match(r"^\d{10,15}$", _v_digits))  # Apenas números
+                                    
+                                    # Só rejeita se não for nenhum formato válido
+                                    if not (_ok_jp_cel or _ok_jp_fixo or _ok_intl or _ok_generic):
+                                        _rejeitar_aviso(
+                                            f"<b>Contato</b>: '{_v}' não parece ser um número válido.<br>"
+                                            "<span style='font-size:0.78rem'>Use formato: 090-XXXX-XXXX, +XX-XXXX-XXXX ou apenas números</span>",
+                                            pode_salvar=True
+                                        )
+                                        _rejeitar = True
 
                             if _rejeitar:
                                 st.rerun()
