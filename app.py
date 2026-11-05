@@ -810,12 +810,9 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                     st.write(f"**{r['nome']}**")
                 with col_btn:
                     if st.button("✅ Concluir", key=f"concluir_{r['id']}"):
-                        row_dict = r.drop(["dt", "status_norm"], errors='ignore').to_dict()
-                        row_dict["status"] = "🟢 Concluido"
-                        # Preenche data_conclusao automaticamente
-                        row_dict["data_conclusao"] = str(date.today())
-                        st.success(f"Data de conclusão definida: {row_dict['data_conclusao']}")
-                        atualizar_cliente(r["id"], row_dict)
+                        _data_conc = str(date.today())
+                        st.success(f"Data de conclusão definida: {_data_conc}")
+                        atualizar_cliente(r["id"], {"status": "🟢 Concluido", "data_conclusao": _data_conc})
                         st.session_state.df = carregar_clientes()
                         st.session_state._celebrar = True
                         st.session_state._sb_scroll = "concluidos"
@@ -869,9 +866,7 @@ if not df_all.empty and "shaken_vencimento" in df_all.columns:
                         st.markdown(f"**{r['nome']}**  \n<span style='font-size:0.78rem;color:rgba(255,255,255,0.55)'>Concluído: {_dt_fmt}</span>", unsafe_allow_html=True)
                     with col_btn:
                         if st.button("🔵 Reabrir", key=f"reabrir_{r['id']}"):
-                            row_dict = r.drop(["dt", "status_norm", "dt_conc"], errors='ignore').to_dict()
-                            row_dict["status"] = "🔵 Em processamento"
-                            atualizar_cliente(r["id"], row_dict)
+                            atualizar_cliente(r["id"], {"status": "🔵 Em processamento"})
                             st.session_state.df = carregar_clientes()
                             st.session_state._sb_scroll = "processamento"
                             st.session_state._editor_v += 1
@@ -1067,7 +1062,16 @@ if st.session_state.get("acoes_expandido") and (can("excluir") or can("desfazer"
                 if st.session_state.linhas_excluidas:
                     linhas_a_restaurar = st.session_state.linhas_excluidas.pop()
                     for linha in linhas_a_restaurar:
-                        salvar_cliente(linha)
+                        _l = dict(linha)
+                        # Normaliza datas DD/MM/AAAA -> AAAA-MM-DD antes de re-inserir
+                        for _dc in ("shaken_vencimento", "data_registro", "data_conclusao"):
+                            _v = str(_l.get(_dc, "") or "").strip()
+                            _m = re.match(r"^(\d{2})/(\d{2})/(\d{4})$", _v)
+                            if _m:
+                                _l[_dc] = f"{_m.group(3)}-{_m.group(2)}-{_m.group(1)}"
+                            elif _v.lower() in ("nan", "none", ""):
+                                _l[_dc] = ""
+                        salvar_cliente(_l)
                     st.success(f"{len(linhas_a_restaurar)} cliente(s) restaurado(s)")
                     st.session_state.df = carregar_clientes()
                     st.rerun()
@@ -1082,9 +1086,7 @@ if st.session_state.get("acoes_expandido") and (can("excluir") or can("desfazer"
                 valor_antigo = info["valor_antigo"]
                 mask = st.session_state.df["id"] == cliente_id
                 if mask.any():
-                    row_dict = st.session_state.df[mask].iloc[0].to_dict()
-                    row_dict[col] = valor_antigo
-                    atualizar_cliente(cliente_id, row_dict)
+                    atualizar_cliente(cliente_id, {info["coluna"]: info["valor_antigo"]})
                     st.session_state.ultima_edicao = None
                     st.session_state.df = carregar_clientes()
                     st.success("Última edição desfeita")
@@ -1151,10 +1153,8 @@ if st.session_state.get("_aviso_formato"):
             </style>
             """, unsafe_allow_html=True)
             if st.button("💾 Salvar\nmesmo assim", key="salvar_fmt"):
-                _rd = _af["row_dict"]
-                _rd[_af["col"]] = _af["val"]
                 try:
-                    atualizar_cliente(_af["cliente_id"], _rd)
+                    atualizar_cliente(_af["cliente_id"], {_af["col"]: _af["val"]})
                     st.session_state.df = carregar_clientes()
                     st.session_state._aviso_formato = None
                     if "editor" in st.session_state:
@@ -1515,7 +1515,15 @@ if not df.empty:
                         if st.button("↩️ Desfazer Excluir Cliente", key="col_undo_del"):
                             if st.session_state.linhas_excluidas:
                                 for linha in st.session_state.linhas_excluidas.pop():
-                                    salvar_cliente(linha)
+                                    _l = dict(linha)
+                                    for _dc in ("shaken_vencimento", "data_registro", "data_conclusao"):
+                                        _v = str(_l.get(_dc, "") or "").strip()
+                                        _m = re.match(r"^(\d{2})/(\d{2})/(\d{4})$", _v)
+                                        if _m:
+                                            _l[_dc] = f"{_m.group(3)}-{_m.group(2)}-{_m.group(1)}"
+                                        elif _v.lower() in ("nan", "none", ""):
+                                            _l[_dc] = ""
+                                    salvar_cliente(_l)
                                 st.session_state.df = carregar_clientes()
                                 st.rerun()
                             else:
@@ -1525,9 +1533,7 @@ if not df.empty:
                                 info = st.session_state.ultima_edicao
                                 mask = st.session_state.df["id"] == info["cliente_id"]
                                 if mask.any():
-                                    row_dict = st.session_state.df[mask].iloc[0].to_dict()
-                                    row_dict[info["coluna"]] = info["valor_antigo"]
-                                    atualizar_cliente(info["cliente_id"], row_dict)
+                                    atualizar_cliente(info["cliente_id"], {info["coluna"]: info["valor_antigo"]})
                                     st.session_state.ultima_edicao = None
                                     st.session_state.df = carregar_clientes()
                                     st.success("Última edição desfeita")
@@ -1649,8 +1655,11 @@ if not df.empty:
                                     if "_conc_ciclos" not in st.session_state:
                                         st.session_state._conc_ciclos = set()
                                     st.session_state._conc_ciclos.add(ids[i])
-                        row_dict[col] = val_salvar
-                        atualizar_cliente(ids[i], row_dict)
+                        # Update parcial: envia somente o campo alterado (+ data_conclusao se concluiu)
+                        _update = {col: val_salvar}
+                        if col == "status" and val_salvar == "🟢 Concluido":
+                            _update["data_conclusao"] = str(date.today())
+                        atualizar_cliente(ids[i], _update)
                         st.session_state.df = carregar_clientes()
                         st.session_state._editor_v += 1
                         _edit_found = True
@@ -1829,6 +1838,9 @@ if not df.empty:
 
                             if col == "veiculo":
                                 val_salvar = traduzir_veiculo(val_salvar)
+                            # Remove marcador visual "↺" do ciclo de conclusão
+                            if col == "data_conclusao" and val_salvar.startswith("↺"):
+                                val_salvar = val_salvar[1:].strip()
                             if col == "status":
                                 val_salvar = {"🔵":"🔵 Em processamento","🟢":"🟢 Concluido","⚪":"⚪"}.get(val_salvar, val_salvar)
                                 if val_salvar == "🟢 Concluido":
@@ -1845,8 +1857,11 @@ if not df.empty:
                                             if "_conc_ciclos" not in st.session_state:
                                                 st.session_state._conc_ciclos = set()
                                             st.session_state._conc_ciclos.add(ids[i])
-                            row_dict[col] = val_salvar
-                            atualizar_cliente(ids[i], row_dict)
+                            # Update parcial: envia somente o campo alterado
+                            _update = {col: val_salvar}
+                            if col == "status":
+                                _update["data_conclusao"] = row_dict.get("data_conclusao", "")
+                            atualizar_cliente(ids[i], _update)
                         celula_mudou = True
                         break
                 if celula_mudou:
