@@ -1,10 +1,89 @@
 import os
 import json
 import base64
+import urllib.parse
 import streamlit as st
 
 _SESSION_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "session.json")
 _CONFIG_FILE = os.path.join(os.path.dirname(__file__), ".streamlit", "config.json")
+
+# =========================================================
+# SESSÃO VIA COOKIES (por navegador/dispositivo)
+#
+# Antes a sessão era salva em .streamlit/session.json NO SERVIDOR,
+# compartilhado entre todos os usuários do app — no Streamlit Cloud
+# isso causava logout aleatório e até login com o usuário errado.
+# Cookies ficam no navegador de cada pessoa: sessão persiste por
+# dispositivo e nunca vaza para outro usuário.
+# =========================================================
+
+_COOKIE_DAYS = 30
+_CK_USER = "minami_user"
+_CK_ROLE = "minami_role"
+_CK_NOME = "minami_nome"
+
+
+def _ck_set(nome, valor):
+    try:
+        st.context.cookies[nome] = urllib.parse.quote(str(valor), safe="")
+    except Exception as e:
+        print(f"[AUTH] Erro ao gravar cookie {nome}: {e}")
+
+
+def _ck_get(nome):
+    try:
+        v = st.context.cookies.get(nome)
+        return urllib.parse.unquote(v) if v else None
+    except Exception:
+        return None
+
+
+def _ck_clear():
+    for _c in (_CK_USER, _CK_ROLE, _CK_NOME):
+        try:
+            st.context.cookies[_c] = ""
+        except Exception:
+            pass
+
+
+def _save_session(usuario, role, nome, lembrar=True):
+    # Cookies no navegador do usuário (preferencial)
+    if lembrar:
+        _ck_set(_CK_USER, usuario)
+        _ck_set(_CK_ROLE, role)
+        _ck_set(_CK_NOME, nome)
+    else:
+        _ck_clear()
+    # Mantém arquivo local apenas como fallback offline/dev
+    try:
+        with open(_SESSION_FILE, "w") as f:
+            json.dump({"usuario": usuario, "role": role, "nome": nome, "lembrar": lembrar}, f)
+    except Exception:
+        pass
+
+
+def _load_session():
+    # 1) Cookies do navegador (funciona no Streamlit Cloud, por dispositivo)
+    u = _ck_get(_CK_USER)
+    r = _ck_get(_CK_ROLE)
+    n = _ck_get(_CK_NOME)
+    if u and r:
+        return {"usuario": u, "role": r, "nome": n or u, "lembrar": True}
+    # 2) Fallback: arquivo local (execução local/dev)
+    try:
+        with open(_SESSION_FILE, "r") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _clear_session():
+    _ck_clear()
+    try:
+        if os.path.exists(_SESSION_FILE):
+            os.remove(_SESSION_FILE)
+    except Exception:
+        pass
 
 def _save_config(dark_mode, celebration_enabled):
     try:
@@ -19,27 +98,6 @@ def _load_config():
             return json.load(f)
     except Exception:
         return {"dark_mode": False, "celebration_enabled": True}
-
-def _save_session(usuario, role, nome, lembrar=True):
-    try:
-        with open(_SESSION_FILE, "w") as f:
-            json.dump({"usuario": usuario, "role": role, "nome": nome, "lembrar": lembrar}, f)
-    except Exception:
-        pass
-
-def _load_session():
-    try:
-        with open(_SESSION_FILE, "r") as f:
-            return json.load(f)
-    except Exception:
-        return None
-
-def _clear_session():
-    try:
-        if os.path.exists(_SESSION_FILE):
-            os.remove(_SESSION_FILE)
-    except Exception:
-        pass
 
 def _get_logo_b64():
     path = os.path.join(os.path.dirname(__file__), ".streamlit", "icon_b64.txt")
