@@ -1003,12 +1003,7 @@ else:
             elif _duplicado_fila:
                 _probs.append(("🔴", f"Registro {idx+1} (Chassi {_ch_visivel_exato or 'vazio'}): duplicado na fila"))
         
-        # Contato formato
-        if _contato:
-            _digits = re.sub(r"[\s\-]", "", _contato)
-            _ok = bool(re.match(r"^0[789]0\d{8}$", _digits)) or bool(re.match(r"^0\d{9,10}$", _digits))
-            if not _ok:
-                _probs.append(("🟡", f"Registro {idx+1} (Contato): fora do padrão japonês"))
+        # Contato: sem validação de formato (aceita qualquer valor)
         
         # Placa formato (aviso não bloqueante)
         _placa = str(row_dict.get("placa", "")).strip()
