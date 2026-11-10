@@ -429,7 +429,7 @@ if "sort_col" not in st.session_state:
 if "pagina_atual" not in st.session_state:
     st.session_state.pagina_atual = 0
 
-PAGE_SIZE = 50
+PAGE_SIZE = 5000
 
 def carregar_clientes():
     df = listar_clientes()
